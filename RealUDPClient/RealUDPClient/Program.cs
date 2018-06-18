@@ -34,13 +34,18 @@ namespace RealUDPClient
                 IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
 
                 // Serializing the data and sending it (atm just sends a test book obj)
-                byte[] sendObject = Protobuf.SerializeData();
+                // Would we want to read a file then send some classes over or how do we want to do this? 
+                Book toSend = methods.GetData();
+                byte[] sendObject = Sender.SerializeData(toSend);
                 thisSocket.SendTo(sendObject, theEndPoint);
 
                 SendBack(_done, listener, thisSocket, theEndPoint);
             }
         }
-
+        
+        /// <summary>
+        /// Method for testing the server -- requests a sendback of the class that was sent
+        /// </summary>
         static void SendBack(bool _done, UdpClient listener, Socket sendSocket, IPEndPoint theEndPoint)
         {
             Console.WriteLine("Message sent to the broadcast address.");
@@ -63,10 +68,6 @@ namespace RealUDPClient
                 Console.WriteLine(receivedBook.ToString());
                 Console.WriteLine(Encoding.ASCII.GetString(receivedData, 0, receivedData.Length));
                 Console.ReadLine();
-                
-
-
-
             }
         }
     }
@@ -74,9 +75,34 @@ namespace RealUDPClient
     /// <summary>
     /// This class currently contains a test method for serializing data to send over.
     /// </summary>
-    class Protobuf
+    class Sender
     {
-        public static byte[] SerializeData()
+        /// <summary>
+        /// Actual method returns a byte array of the serialized object passed in.
+        /// </summary>
+        public static byte[] SerializeData<T>(T arg)
+        {
+            try
+            {
+                using (var testStream = new MemoryStream())
+                {
+                    Serializer.Serialize(testStream, arg);
+                    byte[] returning = testStream.ToArray();
+                    return returning;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                byte[] sendError = Encoding.ASCII.GetBytes(e.ToString());
+                return sendError;
+            }
+        }
+
+        /// <summary>
+        /// The method that tests serialization with a book object.
+        /// </summary>
+        public static byte[] testSerialization()
         {
             using (var testStream = new MemoryStream())
             {
