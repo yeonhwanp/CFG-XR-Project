@@ -19,6 +19,9 @@ namespace RealUDPServer
         }
     }
 
+    /// <summary>
+    /// This class contains a method for starting up the UDP Server.
+    /// </summary>
     public class UDPServer
     {
 
@@ -51,8 +54,6 @@ namespace RealUDPServer
                     if (theReply.ToUpper() == "SENDBACK")
                     {
                         Console.WriteLine("Request for sendback receieved, sending back...");
-
-                        Console.WriteLine("Debugging {0}", initial);
 
                         SendBack(other.Address, initial, ReplyPort);
                     }
