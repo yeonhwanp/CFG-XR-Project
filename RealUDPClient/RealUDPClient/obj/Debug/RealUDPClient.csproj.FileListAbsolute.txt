@@ -1,0 +1,10 @@
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\obj\Debug\RealUDPClient.csprojAssemblyReference.cache
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\obj\Debug\RealUDPClient.csproj.CoreCompileInputs.cache
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\bin\Debug\RealUDPClient.exe.config
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\bin\Debug\RealUDPClient.exe
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\bin\Debug\RealUDPClient.pdb
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\bin\Debug\protobuf-net.dll
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\bin\Debug\protobuf-net.xml
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\obj\Debug\RealUDPClient.csproj.CopyComplete
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\obj\Debug\RealUDPClient.exe
+c:\users\brian\source\repos\RealUDPClient\RealUDPClient\obj\Debug\RealUDPClient.pdb
