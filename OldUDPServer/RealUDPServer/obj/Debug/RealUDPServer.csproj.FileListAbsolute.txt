@@ -1,0 +1,14 @@
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.csprojAssemblyReference.cache
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.csproj.CoreCompileInputs.cache
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.exe.config
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.exe
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.pdb
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.exe
+C:\Users\Brian\source\repos\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.pdb
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.exe.config
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.exe
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\bin\Debug\RealUDPServer.pdb
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.csprojAssemblyReference.cache
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.csproj.CoreCompileInputs.cache
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.exe
+C:\Users\Brian\Desktop\RealProjects\RealUDPServer\RealUDPServer\obj\Debug\RealUDPServer.pdb
