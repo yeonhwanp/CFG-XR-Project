@@ -5,3 +5,10 @@ C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\AsyncServer.cs
 C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\AsyncServer.csproj.CoreCompileInputs.cache
 C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.exe
 C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.pdb
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\bin\Debug\TestTCPAccept.exe.config
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\bin\Debug\TestTCPAccept.exe
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\bin\Debug\TestTCPAccept.pdb
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\obj\Debug\AsyncServer.csprojAssemblyReference.cache
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\obj\Debug\AsyncServer.csproj.CoreCompileInputs.cache
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\obj\Debug\TestTCPAccept.exe
+C:\Users\Brian\Desktop\RealProjects\ASyncServer\TestTCPAccept\obj\Debug\TestTCPAccept.pdb
