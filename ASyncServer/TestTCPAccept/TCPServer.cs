@@ -24,16 +24,21 @@ namespace Servers
         public StringBuilder sb = new StringBuilder();
     }
 
+    /// <summary>
+    /// The TCPListener
+    /// Port: 15000;
+    /// </summary>
     public class TCPAsyncListener
     {
         // Has the event happened?
         public static ManualResetEvent allDone = new ManualResetEvent(false);
+        private const int port = 15000;
 
         public static void StartListening()
         {
             // Create the things we need for a server
             IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             try
@@ -42,27 +47,19 @@ namespace Servers
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
 
-                while (true)
-                {
+                allDone.Reset();
 
-                    // Setting event to nonsignaled (I thought it was before? but ok)
-                    allDone.Reset();
+                // Same thing as listener.receive but in this case does it without hogging up the system.
+                // listener is plugged into AcceptCallBack(ar) -- ar.AsyncState is "listener."
+                listener.BeginAccept(new AsyncCallback(AcceptCallBack), listener);
 
-                    // Same thing as listener.receive but in this case does it without hogging up the system.
-                    // listener is plugged into AcceptCallBack(ar) -- ar.AsyncState is "listener."
-                    listener.BeginAccept(new AsyncCallback(AcceptCallBack), listener);
-
-                    // Wait until connection is made before continuing
-                    allDone.WaitOne();
-                }
+                allDone.WaitOne();
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
-
-            Console.WriteLine("\n Press ENTER to continue...");
-            Console.Read();
         }
 
         public static void AcceptCallBack(IAsyncResult ar)
@@ -98,9 +95,12 @@ namespace Servers
             // Append to the stringbuilder -> print out the result
             state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
             content = state.sb.ToString();
-            Console.WriteLine("The client sent this: {0}", content);
-            Console.WriteLine("Complete!\n");
+            Console.WriteLine("\nThe client sent this: {0}\n", content);
 
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
+
+            InitializeServer.UDPDone.Set();
             allDone.Set();
         }
     }
@@ -209,17 +209,18 @@ namespace Servers
         public static void ReadType(IAsyncResult ar)
         {
             IPEndPoint other = new IPEndPoint(IPAddress.Any, port);
-            byte[] message = UDPlistener.EndReceive(ar, ref other);
+            byte[] message = UDPlistener.EndReceive(ar, ref other); 
             string encodedMessage = Encoding.ASCII.GetString(message, 0, message.Length);
 
-            if (encodedMessage == "UDP")
+            if (encodedMessage.ToUpper() == "UDP")
             {
                 Console.WriteLine("UDP socket requested. Launching UDP Server...");
                 UDPAsyncListener.StartListening();
             }
-            else if (encodedMessage == "TCP")
+            else if (encodedMessage.ToUpper() == "TCP")
             {
-                Console.WriteLine("TCP placeholder");
+                Console.WriteLine("TCP socket requested. Launching TCP Server...");
+                TCPAsyncListener.StartListening();
             }
             else
             {
