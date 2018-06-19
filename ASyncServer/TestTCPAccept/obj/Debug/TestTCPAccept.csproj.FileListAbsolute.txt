@@ -1,0 +1,7 @@
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\bin\Debug\TestTCPAccept.exe.config
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\bin\Debug\TestTCPAccept.exe
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\bin\Debug\TestTCPAccept.pdb
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.csprojAssemblyReference.cache
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.csproj.CoreCompileInputs.cache
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.exe
+C:\Users\Brian\source\repos\TestTCPAccept\TestTCPAccept\obj\Debug\TestTCPAccept.pdb
