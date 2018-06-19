@@ -14,7 +14,12 @@ namespace RealUDPServer
         static void Main(string[] args)
         {
 
-            UDPServer.StartListener();
+            TcpListener test = null;
+            int port = 11000;
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            test = new TcpListener(ip, port);
+            test.Start();
+            test.BeginAcceptSocket();
 
         }
     }
@@ -49,6 +54,7 @@ namespace RealUDPServer
                     Console.WriteLine("Waiting for sendback request...");
 
                     byte[] toSendBack = listener.Receive(ref other);
+
                     string theReply = Encoding.ASCII.GetString(toSendBack, 0, toSendBack.Length);
 
                     if (theReply.ToUpper() == "SENDBACK")
@@ -90,4 +96,61 @@ namespace RealUDPServer
         }
 
     }
+
+    class TCPServer
+    {
+        public static void StartTCP()
+        {
+            TcpListener server = null;
+            try
+            {
+                int port = 11000;
+                IPAddress local = IPAddress.Parse("127.0.0.1");
+
+                server = new TcpListener(local, port);
+                server.Start();
+
+                Byte[] bytes = new byte[256];
+                String data = null;
+                while (true)
+                {
+                    Console.Write("Waiting for a connection...");
+                    TcpClient client = server.AcceptTcpClient();
+                    Console.WriteLine("Connected!");
+
+                    data = null;
+
+                    NetworkStream stream = client.GetStream();
+
+                    int i;
+
+                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                        Console.WriteLine("Received: {0}", data);
+
+                        data = data.ToUpper();
+                        byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+
+                        stream.Write(msg, 0, msg.Length);
+                        Console.WriteLine("Sent: {0}", data);
+                    }
+
+                    client.Close();
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("SocketExcpetion: {0}", e);
+            }
+            finally
+            {
+                server.Stop();
+            }
+
+            Console.WriteLine("\nHit enter to continue...");
+            Console.Read();
+        }
+    }
 }
+
