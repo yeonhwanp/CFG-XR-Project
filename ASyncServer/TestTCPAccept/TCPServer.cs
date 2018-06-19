@@ -111,13 +111,14 @@ namespace Servers
     /// </summary>
     public class UDPAsyncListener
     {
-        const int port = 8888;
+        const int listenPort = 8888;
+        const int replyPort = 9999;
 
         // Initializing the listener
-        public static UdpClient listener = new UdpClient(port);
+        public static UdpClient listener = new UdpClient(listenPort);
 
         /// <summary>
-        /// Waits for data from the client
+        /// Waits for data from the client -- do we even need to use beginreceive? hmm... I'll leave it in there for now.
         /// </summary>
         public static void StartListening()
         {
@@ -135,13 +136,35 @@ namespace Servers
         public static void ReadCallBack(IAsyncResult res)
         {
             UdpClient client = (UdpClient)res.AsyncState;
-            IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, port);
+            IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
 
             Console.WriteLine("Receiving data...");
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
             string message = Encoding.ASCII.GetString(received, 0, received.Length);
 
-            Console.WriteLine("Data received: {0}", message);
+            Console.WriteLine("Data received: \n {0} \n", message);
+            Console.WriteLine("Waiting for sendback request...");
+
+            byte[] toSendBack = client.Receive(ref RemoteIPEndPoint);
+            string theReply = Encoding.ASCII.GetString(toSendBack, 0, toSendBack.Length);
+
+            if (theReply.ToUpper() == "SENDBACK")
+            {
+                Console.WriteLine("Request for sendback received, sending back...");
+                SendBack(RemoteIPEndPoint.Address, received, replyPort);
+                InitializeServer.UDPDone.Set();
+            }
+            InitializeServer.UDPDone.Set();
+        }
+
+        public static void SendBack(IPAddress otherIP, byte[] data, int replyPort)
+        {
+            Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPEndPoint replyEndPoint = new IPEndPoint(otherIP, replyPort);
+
+            thisSocket.SendTo(data, replyEndPoint);
+            Console.WriteLine("Data sent back.");
+            Console.WriteLine();
         }
     }
 
@@ -167,6 +190,7 @@ namespace Servers
                 try
                 {
                     UDPDone.Reset();
+                    Console.WriteLine("---------------------------");
                     Console.WriteLine("Waiting for a connection...");
                     UDPlistener.BeginReceive(new AsyncCallback(ReadType), null);
                     UDPDone.WaitOne();

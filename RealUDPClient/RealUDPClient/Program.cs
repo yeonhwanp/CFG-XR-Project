@@ -20,59 +20,34 @@ namespace RealUDPClient
 
             // Private constants 
             bool _done = false;
-            const int listenPort = 12000;
-            const int sendPort = 11000;
+            const int listenPort = 9999;
+            const int sendPort = 8888;
+            const int initialPort = 11000;
 
             // To listen for a response from the server
             UdpClient listener = new UdpClient(listenPort);
-
-            // TEST AREA
-
-            Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress target = IPAddress.Parse("127.0.0.1");
-            IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
 
-            const int testPort = 8888;
-            Socket testSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint testPoint = new IPEndPoint(target, testPort);
+            Socket UDPConfirmSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPEndPoint initialPoint = new IPEndPoint(target, initialPort);
+            byte[] initialMessage = Encoding.ASCII.GetBytes("UDP");
 
-            string testUDP = "UDP";
-            byte[] sendTest = Encoding.ASCII.GetBytes(testUDP);
-            thisSocket.SendTo(sendTest, theEndPoint);
+            UDPConfirmSocket.SendTo(initialMessage, initialPoint);
 
-            Console.WriteLine("sent one");
+            while (!_done)
+            {
+                // Setting the networking stuff up here
+                Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
 
-            string testCall = "HELLO";
-            byte[] testCallArray = Encoding.ASCII.GetBytes(testCall);
-            testSocket.SendTo(testCallArray, testPoint);
+                // Serializing the data and sending it (atm just sends a test book obj)
+                // Would we want to read a file then send some classes over or how do we want to do this? 
+                Book toSend = methods.GetData();
+                byte[] sendObject = Sender.SerializeData(toSend);
+                thisSocket.SendTo(sendObject, theEndPoint);
 
-            Console.WriteLine("sent two");
-
-            Console.Read();
-
-            // TEST AREA
-
-            //while (!_done)
-            //{
-            //    //// Setting the networking stuff up here
-            //    //Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            //    //IPAddress target = IPAddress.Parse("127.0.0.1");
-            //    //IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
-
-            //    // TESTING AREA
-
-
-
-            //    // TESTING AREA
-
-            //    // Serializing the data and sending it (atm just sends a test book obj)
-            //    // Would we want to read a file then send some classes over or how do we want to do this? 
-            //    //Book toSend = methods.GetData();
-            //    //byte[] sendObject = Sender.SerializeData(toSend);
-            //    //thisSocket.SendTo(sendObject, theEndPoint);
-
-            //    //SendBack(_done, listener, thisSocket, theEndPoint);
-            //}
+                SendBack(_done, listener, thisSocket, theEndPoint);
+            }
         }
         
         /// <summary>
