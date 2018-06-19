@@ -18,21 +18,22 @@ namespace RealUDPClient
         static void Main(string[] args)
         {
 
-            // Private constants 
+            Initializer.sendType();
+
+        }
+    }
+
+    class UDPClient
+    {
+
+        public static void UDPStart()
+        {
             bool _done = false;
             const int listenPort = 9999;
             const int sendPort = 8888;
-            const int initialPort = 11000;
 
-            // To listen for a response from the server
             UdpClient listener = new UdpClient(listenPort);
             IPAddress target = IPAddress.Parse("127.0.0.1");
-
-            Socket UDPConfirmSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint initialPoint = new IPEndPoint(target, initialPort);
-            byte[] initialMessage = Encoding.ASCII.GetBytes("UDP");
-
-            UDPConfirmSocket.SendTo(initialMessage, initialPoint);
 
             while (!_done)
             {
@@ -49,10 +50,7 @@ namespace RealUDPClient
                 SendBack(_done, listener, thisSocket, theEndPoint);
             }
         }
-        
-        /// <summary>
-        /// Method for testing the server -- requests a sendback of the class that was sent
-        /// </summary>
+
         static void SendBack(bool _done, UdpClient listener, Socket sendSocket, IPEndPoint theEndPoint)
         {
             Console.WriteLine("Message sent to the broadcast address.");
@@ -77,6 +75,40 @@ namespace RealUDPClient
                 Console.ReadLine();
             }
         }
+
+    }
+
+    class Initializer
+    {
+        public static void sendType()
+        {
+            const int initialPort = 11000;
+            Socket UDPConfirmSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPAddress target = IPAddress.Parse("127.0.0.1");
+            IPEndPoint initialPoint = new IPEndPoint(target, initialPort);
+
+            Console.WriteLine("Please enter your preference: TCP/UDP");
+            string userMessage = Console.ReadLine();
+            byte[] initialMessage = Encoding.ASCII.GetBytes(userMessage);
+
+            if (userMessage.ToUpper() == "UDP")
+            {
+                UDPConfirmSocket.SendTo(initialMessage, initialPoint);
+                UDPClient.UDPStart();
+            }
+            else if (userMessage.ToUpper() == "TCP")
+            {
+
+            }
+            else
+            {
+                Console.WriteLine("That is not a valid option.");
+                sendType();
+            }
+        }
+
+
+        
     }
 
     /// <summary>
