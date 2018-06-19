@@ -75,7 +75,25 @@ namespace RealUDPClient
                 Console.ReadLine();
             }
         }
+    }
 
+    class TCPClient
+    {
+        private const int port = 15000;
+        
+        public static void TCPStart()
+        {
+            string local = "127.0.0.1";
+            string sendText = "TCPClient works!";
+            byte[] sendBytes = Encoding.ASCII.GetBytes("TCPClient works!");
+
+            TcpClient client = new TcpClient(local, port);
+            NetworkStream nwStream = client.GetStream();
+
+            Console.WriteLine("Sending: " + sendText);
+            nwStream.Write(sendBytes, 0, sendBytes.Length);
+            Console.Read();
+        }
     }
 
     class Initializer
@@ -98,7 +116,8 @@ namespace RealUDPClient
             }
             else if (userMessage.ToUpper() == "TCP")
             {
-
+                UDPConfirmSocket.SendTo(initialMessage, initialPoint);
+                TCPClient.TCPStart();
             }
             else
             {

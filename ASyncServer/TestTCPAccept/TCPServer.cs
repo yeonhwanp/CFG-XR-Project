@@ -24,6 +24,10 @@ namespace Servers
         public StringBuilder sb = new StringBuilder();
     }
 
+    /// <summary>
+    /// The TCPListener
+    /// Port: 15000;
+    /// </summary>
     public class TCPAsyncListener
     {
         // Has the event happened?
@@ -91,9 +95,12 @@ namespace Servers
             // Append to the stringbuilder -> print out the result
             state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
             content = state.sb.ToString();
-            Console.WriteLine("The client sent this: {0}", content);
-            Console.WriteLine("Complete!\n");
+            Console.WriteLine("\nThe client sent this: {0}\n", content);
 
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
+
+            InitializeServer.UDPDone.Set();
             allDone.Set();
         }
     }
