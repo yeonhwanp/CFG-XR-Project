@@ -10,7 +10,7 @@ namespace TestTCPAccept
     {
         static void Main(string[] args)
         {
-            Servers.InitializeServer.StartListening();
+            Servers.StartBoth.StartListening();
         }
     }
 }

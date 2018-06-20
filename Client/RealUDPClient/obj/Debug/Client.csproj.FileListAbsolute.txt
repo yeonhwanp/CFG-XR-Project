@@ -8,3 +8,7 @@ C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\Client.csproj
 C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\Client.csproj.CopyComplete
 C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\RealUDPClient.exe
 C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\RealUDPClient.pdb
+C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\bin\Debug\RealUDPClient.exe.manifest
+C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\bin\Debug\RealUDPClient.application
+C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\RealUDPClient.exe.manifest
+C:\Users\Brian\Desktop\RealProjects\Client\RealUDPClient\obj\Debug\RealUDPClient.application

@@ -51,7 +51,8 @@ namespace RealUDPClient
 
             SendBack(listener, thisSocket, theEndPoint);
 
-
+            thisSocket.Close();
+            listener.Close();
         }
 
         /// <summary>
@@ -65,6 +66,8 @@ namespace RealUDPClient
 
             if (userResponse.ToLower() == "no")
             {
+                byte[] sendMessage = Encoding.ASCII.GetBytes("NO");
+                sendSocket.SendTo(sendMessage, theEndPoint);
                 Console.WriteLine("Exiting...");
             }
             else
