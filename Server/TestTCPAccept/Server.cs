@@ -41,8 +41,8 @@ namespace Servers
         public static void StartListening()
         {
 
+            // Doing some stuff at start
             TCPlistener.Bind(TCPEndPoint);
-
             Console.WriteLine("Waiting for connections...");
 
             while (true)
@@ -70,10 +70,21 @@ namespace Servers
                     Console.WriteLine(e.ToString());
                 }
             }
+        }
 
+        /// <summary>
+        /// For a cleaner interface + verification that process was indeed finshed
+        /// </summary>
+        public static void ListeningMessage()
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Waiting for Connection...");
         }
     }
 
+    /// <summary>
+    /// Object for helping the TCPlistener.
+    /// </summary>
     public class StateObject
     {
         public Socket workSocket = null;
@@ -92,8 +103,9 @@ namespace Servers
         /// Here we go after we get a signal.
         /// </summary>
         public static void AcceptCallBack(IAsyncResult ar)
-        { 
+        {
 
+            Console.WriteLine("-----------------------");
             Console.WriteLine("TCP Connection made. Waiting for information...");
 
             // Socket that was plugged in
@@ -144,6 +156,7 @@ namespace Servers
             handler.Close();
 
             StartBoth._TCPlistening = false;
+            StartBoth.ListeningMessage();
         }
     }
 
@@ -164,7 +177,9 @@ namespace Servers
             UdpClient client = (UdpClient)res.AsyncState;
             IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
 
-            Console.WriteLine("Receiving data...");
+            Console.WriteLine("----------------------");
+            Console.WriteLine("UDP Connection made. Receiving data...");
+
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
             string message = Encoding.ASCII.GetString(received, 0, received.Length);
 
@@ -178,14 +193,20 @@ namespace Servers
             {
                 Console.WriteLine("Request for sendback received, sending back...");
                 SendBack(RemoteIPEndPoint.Address, received, replyPort);
+                StartBoth.ListeningMessage();
             }
             else
             {
+                Console.WriteLine("Request for sendback denied. Ending UDP Connection.");
                 StartBoth._UDPlistening = false;
+                StartBoth.ListeningMessage();
             }
             StartBoth._UDPlistening = false;
         }
 
+        /// <summary>
+        /// Sends back the data provided a sendback request.
+        /// </summary>
         public static void SendBack(IPAddress otherIP, byte[] data, int replyPort)
         {
             Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
