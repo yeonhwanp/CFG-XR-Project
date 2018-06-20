@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TestTCPAccept.exe" size="8672">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TestTCPAccept.exe" size="9184">
       <assemblyIdentity name="TestTCPAccept" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>tK2Lk5yDrySU8mgBdNMdtp8rKB9sbX/ZK7MNo6yCiMs=</dsig:DigestValue>
+        <dsig:DigestValue>503e2V4jvDvum5eqBaVVVFIq2oUmntdbcZ65j05fThA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
