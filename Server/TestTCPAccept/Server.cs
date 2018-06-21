@@ -10,13 +10,13 @@ using System.Net;
 
 // Notes: Abstract the protobuf method to <T>
 // Notes: Two separate streams for UDP and TCP.
+// Notes: Need to test receiving TCP when receiving UDP. Otherwise good (?)
 
 namespace Servers
 {
     /// <summary>
     /// Object to store stuff for TCPAsyncListener
     /// </summary>
-    /// 
 
     public class StartBoth
     {
