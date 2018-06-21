@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
 
+
+/// <summary>
+/// Generic class to inherit from such that one can just use this to deserialize protobufs
+/// </summary>
 [ProtoContract]
 [ProtoInclude (500, typeof(Book))]
 [ProtoInclude (501, typeof(tester))]
