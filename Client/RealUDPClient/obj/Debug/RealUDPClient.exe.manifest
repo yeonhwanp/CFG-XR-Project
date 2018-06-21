@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RealUDPClient.exe" size="10720">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RealUDPClient.exe" size="11232">
       <assemblyIdentity name="RealUDPClient" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>fcqAhs0NG1yEUA91aDmCwDdOQTTfrSIC1k/3W04WSik=</dsig:DigestValue>
+        <dsig:DigestValue>9IVyc8em66qJ7Y01L0zDC5NSmuyyaHFgG5YT+EZjrEY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 using ProtoBuf;
 
 [ProtoContract]
-public class Book
+[ProtoInclude (500, typeof(Book))]
+[ProtoInclude (501, typeof(tester))]
+public abstract class Generic
+{
+}
+
+[ProtoContract]
+public class Book : Generic
 {
     [ProtoMember(1)]
     public string author;
@@ -20,6 +27,7 @@ public class Book
     public double price;
     [ProtoMember(6)]
     public bool isEbook;
+
 
     public override string ToString()
     {
@@ -48,6 +56,20 @@ public class Fable
     public string title;
     [ProtoMember(2)]
     public double[] customerRatings;
+}
+
+/// <summary>
+/// Testing inheritance
+/// </summary>
+[ProtoContract]
+public class tester : Generic
+{
+    [ProtoMember(1)]
+    public string hello = "hello";
+    public override string ToString()
+    {
+        return hello;
+    }
 }
 
 public static class methods

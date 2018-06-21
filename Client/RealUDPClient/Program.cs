@@ -78,9 +78,10 @@ namespace RealUDPClient
 
                 byte[] receivedData = listener.Receive(ref theEndPoint);
                 MemoryStream tempStream = new MemoryStream(receivedData);
-                Book receivedBook = Serializer.Deserialize<Book>(tempStream);
+                Generic receivedBook = Serializer.Deserialize<Generic>(tempStream);
 
                 Console.WriteLine("Here is the data: \n");
+
                 Console.WriteLine(receivedBook.ToString());
             }
         }
@@ -197,7 +198,7 @@ namespace RealUDPClient
         {
             using (var testStream = new MemoryStream())
             {
-                Book testBook = methods.GetData();
+                Generic testBook = methods.GetData();
                 Serializer.Serialize(testStream, testBook);
                 byte[] returning = testStream.ToArray();
                 return returning;
