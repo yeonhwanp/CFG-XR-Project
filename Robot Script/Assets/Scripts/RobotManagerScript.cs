@@ -13,7 +13,6 @@ public class RobotManagerScript : MonoBehaviour
     /// </summary>
     public class RobotTree
     {
-        private int test = 0;
 
         #region Public Variables
         // General Properties of the GameObject
@@ -22,15 +21,20 @@ public class RobotManagerScript : MonoBehaviour
         public Vector3 inertiaTensor;
         public float mass;
 
-        // BaseType so we know how to render the object
+        // If BaseType == "Floating"
+        public Vector3 RootPosition;
+        public Quaternion RootRotation;
+
+        // Variables to know how we should be rendering object and what we should be storing.
         public string BaseType;
         public bool isRoot;
 
         // Optional Parameters
         public RobotTree Parent;
 
-        // List of the connected joints -- can get the objects through these as well.
-        public Dictionary<Joint, RobotTree> JointDict = new Dictionary<Joint, RobotTree>();
+        // Directory of connected Joints. This one is for getting the children. The list is for all of the joints (to send back and forth).
+        public Dictionary<RobotJoint, RobotTree> JointDict = new Dictionary<RobotJoint, RobotTree>();
+
         #endregion
 
         /// <summary>
@@ -38,16 +42,22 @@ public class RobotManagerScript : MonoBehaviour
         /// </summary>
         public RobotTree(GameObject sObject, string typeBase, bool iRoot, RobotTree parent = null)
         {
-            Rigidbody thisObejctRB = sObject.GetComponent<Rigidbody>();
+            Rigidbody thisObjectRB = sObject.GetComponent<Rigidbody>();
 
             SelfObject = sObject;
             BaseType = typeBase;
             isRoot = iRoot;
             Parent = parent;
-            localCOM = thisObejctRB.centerOfMass;
-            inertiaTensor = thisObejctRB.inertiaTensor;
-            mass = thisObejctRB.mass;
-            
+            localCOM = thisObjectRB.centerOfMass;
+            inertiaTensor = thisObjectRB.inertiaTensor;
+            mass = thisObjectRB.mass;
+
+            // If it's a root and floating, then we need to store the position as well as the rotation
+            if (isRoot && BaseType.ToLower() == "floating")
+            {
+                RootPosition = thisObjectRB.position;
+                RootRotation = thisObjectRB.rotation;
+            }
         }
 
         // Configures a new RobotTree given the root of the robot... Yea.
@@ -55,13 +65,13 @@ public class RobotManagerScript : MonoBehaviour
         public static RobotTree ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotTree parentTree = null)
         {
 
-            HingeJoint[] hingeJoints = rootObject.GetComponents<HingeJoint>();
+            RobotJoint[] robotJoints = rootObject.GetComponents<RobotJoint>();
 
             if (_isTheRoot)
             {
                 RobotTree newRobotTree = new RobotTree(rootObject, RobotType, true);
                 newRobotTree.BaseType = RobotType;
-                addToList(hingeJoints, newRobotTree, RobotType);
+                addToList(robotJoints, newRobotTree, RobotType);
                 return newRobotTree;
             }
             else
@@ -69,72 +79,58 @@ public class RobotManagerScript : MonoBehaviour
                 RobotTree newRobotTree = new RobotTree(rootObject, RobotType, false);
                 newRobotTree.BaseType = RobotType;
                 newRobotTree.Parent = parentTree;
-                addToList(hingeJoints, newRobotTree, RobotType);
+                addToList(robotJoints, newRobotTree, RobotType);
                 return null;
             }
 
         }
 
         // Method to add the hinge to the list then recursively run ConfigureRobot 
-        private static void addToList(HingeJoint[] listJoints, RobotTree theTree, string RobotType)
+        private static void addToList(RobotJoint[] listJoints, RobotTree theTree, string RobotType)
         {
-            foreach(HingeJoint joint in listJoints)
+            foreach (RobotJoint joint in listJoints)
             {
                 theTree.JointDict.Add(joint, theTree);
-                if (joint.connectedBody != null)
+                if (joint.ChildGO != null)
                 {
-                    ConfigureRobot(joint.connectedBody.gameObject, RobotType, false, theTree);
+                    ConfigureRobot(joint.ChildGO.gameObject, RobotType, false, theTree);
                 }
             }
         }
 
+        /// <summary>
+        /// Protobuf to send and receive joint positions and velocities.
+        /// </summary>
+        public class JointConfigsList
+        {
+            List<JointConfigs> TheList = new List<JointConfigs>();
 
-        #region DebugArea (Currently broken due to dict -> list)
-        /// <summary>
-        /// Going to create a new RobotTree to attach to a current robotTree instance
-        /// Have to give a GameObject you want to attach it to though.
-        /// </summary>
-        public RobotTree createRobotTreePart(GameObject newObject)
-        {
-            return new RobotTree(newObject, BaseType, false, this);
-        }
-        
-        /// <summary>
-        /// Method for creating a new Joint, to be used in conjunction with createRobotTreePart
-        /// Because Unity doesn't allow for independent components, will add to GameObject itself.
-        /// 
-        /// Also, currently only focusing on the hinge Joint for debug purposes. Can easily add in other joints later.
-        /// </summary>
-        public Joint createJointPart(string JointType, int limitmin, int limitmax)
-        {
-            if (JointType.ToLower() == "hinge")
+            // Takes in the jointlist from the RobotTree, adds as JointConfigs into TheList.
+            public void AddToJointList(List<Joint> jointlist)
             {
-                HingeJoint newJoint = SelfObject.AddComponent<HingeJoint>();
-                JointLimits newJointLimits = newJoint.limits;
-                newJointLimits.min = limitmin;
-                newJointLimits.max = limitmax;
-                return newJoint;
+                foreach (Joint joint in jointlist)
+                {
+
+                }
             }
-            else
-            {
-                return null;
-            }
+
         }
 
         /// <summary>
-        /// Adds a newRobotPart as a child of this RobotTree
-        /// 
-        /// ATM the gameobject is a cube
+        /// Class to store each JointPosition and JointVelocity
+        /// But... seems like you can't change the position and velocity? It's read only...
+        /// Also, skipping over prismatic joints for now.
         /// </summary>
-        public void AddRobotPart()
+        public class JointConfigs : JointConfigsList
         {
-            GameObject testCubePart = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Rigidbody cubeRigid = testCubePart.AddComponent<Rigidbody>();
-            cubeRigid.useGravity = false;
-            RobotTree newPart = createRobotTreePart(testCubePart);
-            Joint newJoint = createJointPart("hinge", 0, 180);
-            newJoint.connectedBody = cubeRigid;
+            public Vector3 JointPosition;
+            public Vector3 JointVelocity;
+
+            public JointConfigs(Vector3 position, Vector3 velocity)
+            {
+
+            }
         }
-        #endregion
+
     }
 }
