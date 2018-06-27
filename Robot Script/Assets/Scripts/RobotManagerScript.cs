@@ -100,24 +100,23 @@ public class RobotManagerScript : MonoBehaviour
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Protobuf class to hold the information to be sent over
-        /// </summary>
-        [ProtoContract]
-        public class sendJointClass
+    /// <summary>
+    /// Protobuf class to hold the information to be sent over
+    /// </summary>
+    [ProtoContract]
+    public class SendJointClass
+    {
+        [ProtoMember (1)]
+        public List<RobotJoint> JointList;
+        [ProtoMember (2)]
+        public Transform RootTransform;
+
+        public SendJointClass(List<RobotJoint> listJoint, Transform transformRoot)
         {
-            [ProtoMember (1)]
-            public List<RobotJoint> JointList;
-            [ProtoMember (2)]
-            public Transform RootTransform;
-
-            public sendJointClass(List<RobotJoint> listJoint, Transform transformRoot)
-            {
-                JointList = listJoint;
-                RootTransform = transformRoot;
-            }
+            JointList = listJoint;
+            RootTransform = transformRoot;
         }
-
     }
 }
