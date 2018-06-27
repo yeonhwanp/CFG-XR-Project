@@ -14,7 +14,7 @@ public class ExampleRobot : MonoBehaviour {
     {
         int counter = 0;
         RobotManagerScript.RobotTree testTree = RobotManagerScript.RobotTree.ConfigureRobot(robotRoot, "Fixed");
-        foreach(KeyValuePair<RobotJoint, RobotManagerScript.RobotTree> entry in testTree.JointDict)
+        foreach(RobotJoint entry in testTree.RobotJoints)
         {
             counter += 1;
         }

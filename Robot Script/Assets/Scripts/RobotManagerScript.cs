@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProtoBuf;
 
 // Note: Need to add the joints to the parent in order for this to work
 //       This is because you need to get the gameObjects from the joints
@@ -34,6 +35,7 @@ public class RobotManagerScript : MonoBehaviour
 
         // Directory of connected Joints. This one is for getting the children. The list is for all of the joints (to send back and forth).
         public Dictionary<RobotJoint, RobotTree> JointDict = new Dictionary<RobotJoint, RobotTree>();
+        public List<RobotJoint> RobotJoints = new List<RobotJoint>();
 
         #endregion
 
@@ -62,7 +64,7 @@ public class RobotManagerScript : MonoBehaviour
 
         // Configures a new RobotTree given the root of the robot... Yea.
         // These seem to work. Need to test the parents. Should work though.
-        public static RobotTree ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotTree parentTree = null)
+        public static RobotTree ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotTree parentTree = null, List<RobotJoint> originalList = null)
         {
 
             RobotJoint[] robotJoints = rootObject.GetComponents<RobotJoint>();
@@ -71,7 +73,7 @@ public class RobotManagerScript : MonoBehaviour
             {
                 RobotTree newRobotTree = new RobotTree(rootObject, RobotType, true);
                 newRobotTree.BaseType = RobotType;
-                addToList(robotJoints, newRobotTree, RobotType);
+                addToList(robotJoints, newRobotTree, RobotType, newRobotTree.RobotJoints);
                 return newRobotTree;
             }
             else
@@ -79,56 +81,41 @@ public class RobotManagerScript : MonoBehaviour
                 RobotTree newRobotTree = new RobotTree(rootObject, RobotType, false);
                 newRobotTree.BaseType = RobotType;
                 newRobotTree.Parent = parentTree;
-                addToList(robotJoints, newRobotTree, RobotType);
+                addToList(robotJoints, newRobotTree, RobotType, originalList);
                 return null;
             }
 
         }
 
         // Method to add the hinge to the list then recursively run ConfigureRobot 
-        private static void addToList(RobotJoint[] listJoints, RobotTree theTree, string RobotType)
+        private static void addToList(RobotJoint[] listJoints, RobotTree theTree, string RobotType, List<RobotJoint> originalList = null)
         {
             foreach (RobotJoint joint in listJoints)
             {
                 theTree.JointDict.Add(joint, theTree);
+                originalList.Add(joint);
                 if (joint.ChildGO != null)
                 {
-                    ConfigureRobot(joint.ChildGO.gameObject, RobotType, false, theTree);
+                    ConfigureRobot(joint.ChildGO.gameObject, RobotType, false, theTree, originalList);
                 }
             }
         }
 
         /// <summary>
-        /// Protobuf to send and receive joint positions and velocities.
+        /// Protobuf class to hold the information to be sent over
         /// </summary>
-        public class JointConfigsList
+        [ProtoContract]
+        public class sendJointClass
         {
-            List<JointConfigs> TheList = new List<JointConfigs>();
+            [ProtoMember (1)]
+            public List<RobotJoint> JointList;
+            [ProtoMember (2)]
+            public Transform RootTransform;
 
-            // Takes in the jointlist from the RobotTree, adds as JointConfigs into TheList.
-            public void AddToJointList(List<Joint> jointlist)
+            public sendJointClass(List<RobotJoint> listJoint, Transform transformRoot)
             {
-                foreach (Joint joint in jointlist)
-                {
-
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Class to store each JointPosition and JointVelocity
-        /// But... seems like you can't change the position and velocity? It's read only...
-        /// Also, skipping over prismatic joints for now.
-        /// </summary>
-        public class JointConfigs : JointConfigsList
-        {
-            public Vector3 JointPosition;
-            public Vector3 JointVelocity;
-
-            public JointConfigs(Vector3 position, Vector3 velocity)
-            {
-
+                JointList = listJoint;
+                RootTransform = transformRoot;
             }
         }
 
