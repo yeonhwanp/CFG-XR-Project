@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProtoBuf;
 
 // If you add this script to an object and the attach ANOTHERGO, then this becomes the parent of ANOTHERGO.
     // This allows for "joint movement" but the child can move freely... NICE
@@ -9,13 +10,19 @@ using UnityEngine;
 
 // Note: Individual parts still affected by gravity if you turn it on?? --> oh wait that makes sense...
 // Note: Would that cause problems though? If we're ever using gravity as a factor in our program
+
+[ProtoContract]
 public class RobotJoint : MonoBehaviour {
 
     // GameObject to attach
+    [ProtoMember (1)]
     public GameObject ChildGO;
 
     // Properties of the joint that we want
+    [ProtoMember(2)]
     public Quaternion JointRotation;
+
+    [ProtoMember (3)]
     public Vector3 JointVelocity;
 
     // On start, it's going to match the configs
