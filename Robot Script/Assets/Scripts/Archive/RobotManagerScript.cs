@@ -7,7 +7,7 @@ public class RobotManagerScript : MonoBehaviour
     /// <summary>
     /// At the moment, just a structure. Also, most variables are public. Need to change this soon...
     /// </summary>
-    public class RobotTree
+    public class RobotLink
     {
 
         #region Public Variables
@@ -26,10 +26,10 @@ public class RobotManagerScript : MonoBehaviour
         public bool isRoot;
 
         // Optional Parameters
-        public RobotTree Parent;
+        public RobotLink Parent;
 
         // Directory of connected Joints. This one is for getting the children. The list is for all of the joints (to send back and forth).
-        public Dictionary<RobotJoint, RobotTree> JointDict = new Dictionary<RobotJoint, RobotTree>();
+        public Dictionary<RobotJoint, RobotLink> JointDict = new Dictionary<RobotJoint, RobotLink>();
         public List<RobotJoint> RobotJoints = new List<RobotJoint>();
 
         #endregion
@@ -37,7 +37,7 @@ public class RobotManagerScript : MonoBehaviour
         /// <summary>
         /// Initializer
         /// </summary>
-        public RobotTree(GameObject sObject, string typeBase, bool iRoot, RobotTree parent = null)
+        public RobotLink(GameObject sObject, string typeBase, bool iRoot, RobotLink parent = null)
         {
             Rigidbody thisObjectRB = sObject.GetComponent<Rigidbody>();
 
@@ -58,26 +58,26 @@ public class RobotManagerScript : MonoBehaviour
         }
 
         /// <summary>
-        /// Makes a new "RobotTree" instance given the root of a robot
+        /// Makes a new "RobotLink" instance given the root of a robot
         /// </summary>
-        public static RobotTree ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotTree parentTree = null, List<RobotJoint> originalList = null)
+        public static RobotLink ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotLink parentTree = null, List<RobotJoint> originalList = null)
         {
 
             RobotJoint[] robotJoints = rootObject.GetComponents<RobotJoint>();
 
             if (_isTheRoot)
             {
-                RobotTree newRobotTree = new RobotTree(rootObject, RobotType, true);
-                newRobotTree.BaseType = RobotType;
-                addToList(robotJoints, newRobotTree, RobotType, newRobotTree.RobotJoints);
-                return newRobotTree;
+                RobotLink newRobotLink = new RobotLink(rootObject, RobotType, true);
+                newRobotLink.BaseType = RobotType;
+                addToList(robotJoints, newRobotLink, RobotType, newRobotLink.RobotJoints);
+                return newRobotLink;
             }
             else
             {
-                RobotTree newRobotTree = new RobotTree(rootObject, RobotType, false);
-                newRobotTree.BaseType = RobotType;
-                newRobotTree.Parent = parentTree;
-                addToList(robotJoints, newRobotTree, RobotType, originalList);
+                RobotLink newRobotLink = new RobotLink(rootObject, RobotType, false);
+                newRobotLink.BaseType = RobotType;
+                newRobotLink.Parent = parentTree;
+                addToList(robotJoints, newRobotLink, RobotType, originalList);
                 return null;
             }
 
@@ -86,7 +86,7 @@ public class RobotManagerScript : MonoBehaviour
         /// <summary>
         /// Helps ConfigureRobot by adding into the dict and list, recurses onto the next child
         /// </summary>
-        private static void addToList(RobotJoint[] listJoints, RobotTree theTree, string RobotType, List<RobotJoint> originalList = null)
+        private static void addToList(RobotJoint[] listJoints, RobotLink theTree, string RobotType, List<RobotJoint> originalList = null)
         {
             foreach (RobotJoint joint in listJoints)
             {

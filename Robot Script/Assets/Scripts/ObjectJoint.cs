@@ -1,45 +1,54 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Google.Protobuf;
 
 /// <summary>
-/// This is going to be on a joint itself.
-/// But... Do we attach the joints as children of the rigidbodies? I think we do?
+/// Simple Joint Component. Parent should be a joint, child should be a gameobject.
+/// Uh... correlation with RobotLink kind of jank.
 /// </summary>
 
-public class ObjectJoint : MonoBehaviour {
+
+public class ObjectJoint : MonoBehaviour
+{
 
     // Objects attached
-    public GameObject ParentObject;
-    public GameObject ChildObject;
+    public GameObject ParentJoint;
+    public List<GameObject> ChildJoints = new List<GameObject>();
+    public GameObject ChildLink;
+    public bool IsRoot;
 
     // Position values
     public Vector3 AxisPoint;
-    public Vector3 AxisRotation;
-    public float RotateAngle; // It seems like this can be used as the "localRotation?"
+    public Vector3 AxisRotation; 
+    public float RotateAngle { get; set; } // Seems like it can be used as "localRotation"
+
+    // Velocity (Not doing anything with this yet)
+    public float LocalVelocity = 0.0f;
 
     // Just for recognition and debugging purposes
     public string Name;
 
+    // Setting the variables + the transforms
+    public ObjectJoint (GameObject parent, List<GameObject> children)
+    {
+        ParentJoint = parent;
+        ChildJoints = children;
+
+        IsRoot = ParentJoint == null ? true : false;
+    }
+
+    // Set the transforms on load.
     private void Start()
     {
-        // Setting the child and parent transforms
 
-        if (ParentObject != null)
+        foreach(GameObject child in ChildJoints)
         {
-            gameObject.transform.parent = ParentObject.transform;
+            child.transform.parent = gameObject.transform;
         }
 
-        if (ChildObject != null)
-        {
-            ChildObject.transform.parent = gameObject.transform;
-        }
-
-        // Setting the position
-        gameObject.transform.RotateAround(AxisPoint, AxisRotation, RotateAngle);
-
-        Debug.Log(Name + ": " + RotateAngle);
-
+        ChildLink.transform.parent = gameObject.transform;
     }
 }
+
+
