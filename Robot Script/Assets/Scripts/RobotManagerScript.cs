@@ -1,12 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ProtoBuf;
 
-// Note: Need to add the joints to the parent in order for this to work
-//       This is because you need to get the gameObjects from the joints
-
-// Note: still need to include: CoM (in local fram), mass, intertia tensor, link extents (?)
 public class RobotManagerScript : MonoBehaviour
 {
     /// <summary>
@@ -40,7 +35,7 @@ public class RobotManagerScript : MonoBehaviour
         #endregion
 
         /// <summary>
-        /// Method to actually initialize the part
+        /// Initializer
         /// </summary>
         public RobotTree(GameObject sObject, string typeBase, bool iRoot, RobotTree parent = null)
         {
@@ -62,8 +57,9 @@ public class RobotManagerScript : MonoBehaviour
             }
         }
 
-        // Configures a new RobotTree given the root of the robot... Yea.
-        // These seem to work. Need to test the parents. Should work though.
+        /// <summary>
+        /// Makes a new "RobotTree" instance given the root of a robot
+        /// </summary>
         public static RobotTree ConfigureRobot(GameObject rootObject, string RobotType, bool _isTheRoot = true, RobotTree parentTree = null, List<RobotJoint> originalList = null)
         {
 
@@ -87,7 +83,9 @@ public class RobotManagerScript : MonoBehaviour
 
         }
 
-        // Method to add the hinge to the list then recursively run ConfigureRobot 
+        /// <summary>
+        /// Helps ConfigureRobot by adding into the dict and list, recurses onto the next child
+        /// </summary>
         private static void addToList(RobotJoint[] listJoints, RobotTree theTree, string RobotType, List<RobotJoint> originalList = null)
         {
             foreach (RobotJoint joint in listJoints)
@@ -100,24 +98,20 @@ public class RobotManagerScript : MonoBehaviour
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Protobuf class to hold the information to be sent over
-        /// </summary>
-        [ProtoContract]
-        public class sendJointClass
+    /// <summary>
+    /// Protobuf class to hold the information to be sent over
+    /// </summary>
+    public class SendJointClass
+    {
+        public List<RobotJoint> JointList;
+        public Transform RootTransform;
+
+        public SendJointClass(List<RobotJoint> listJoint, Transform transformRoot)
         {
-            [ProtoMember (1)]
-            public List<RobotJoint> JointList;
-            [ProtoMember (2)]
-            public Transform RootTransform;
-
-            public sendJointClass(List<RobotJoint> listJoint, Transform transformRoot)
-            {
-                JointList = listJoint;
-                RootTransform = transformRoot;
-            }
+            JointList = listJoint;
+            RootTransform = transformRoot;
         }
-
     }
 }
