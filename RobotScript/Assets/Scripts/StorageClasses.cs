@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProtoBuf;
 
-// NOTE: CANNOT STORE VECTOR3 IN PROTOBUF -- HOW TO STORE?
+// NOTE: CANNOT STORE VECTOR3 IN PROTOBUF -- HOW TO STORE (for root)?
 
 /// <summary>
 /// Classes to store the values to be sent over.
@@ -64,10 +64,4 @@ public class PositionStorage : PositionList
     //[ProtoMember (4)]
     //public Quaternion rootRotation;
     #endregion 
-
-    //public PositionStorage (float rot, float vel)
-    //{
-    //    Rotation = rot;
-    //    Velocity = vel;
-    //}
 }
