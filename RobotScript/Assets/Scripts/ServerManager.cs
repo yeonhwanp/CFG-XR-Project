@@ -16,23 +16,32 @@ using ProtoBuf;
 public class ClientUDP
 {
     // ATM just sends data over UDP (but not working because protobuf not workng)
-    public static void UDPSend(string ipAddress, System.Object sendObject)
+    public static PositionList UDPSend(string ipAddress, System.Object sendObject)
     {
         const int listenPort = 9999;
         const int sendPort = 8888;
 
+        Debug.Log("Doing...");
         UdpClient listener = new UdpClient(listenPort);
         IPAddress target = IPAddress.Parse(ipAddress);
         Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
 
-        // Serializes data using protobufs, but protobuf not working here.
+        // Sending Data
+        Debug.Log("Sending data...");
         byte[] sendBytes = Sender.SerializeData(sendObject);
         thisSocket.SendTo(sendBytes, theEndPoint);
+        Debug.Log("Data sent!");
 
-        thisSocket.Close();
-        listener.Close();
-
+        // Receiving new Data then returning it.
+        byte[] receivedBytes = listener.Receive(ref theEndPoint);
+        using (MemoryStream tempStream = new MemoryStream(receivedBytes))
+        {
+            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
+            thisSocket.Close();
+            listener.Close();
+            return receivedList;
+        }
     }
 }
 

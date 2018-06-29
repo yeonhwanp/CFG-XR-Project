@@ -181,27 +181,19 @@ namespace Servers
             Console.WriteLine("----------------------");
             Console.WriteLine("UDP Connection made. Receiving data...");
 
+            // Currently only PositionList, can change later.
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
-            string message = Encoding.ASCII.GetString(received, 0, received.Length);
+            PositionList receivedList = Decoder.DecodeInfo(received);
 
-            Console.WriteLine("Data received: \n {0} \n", message);
-            Console.WriteLine("Waiting for sendback request...");
+            Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
+            Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
-            byte[] toSendBack = client.Receive(ref RemoteIPEndPoint);
-            string theReply = Encoding.ASCII.GetString(toSendBack, 0, toSendBack.Length);
-
-            if (theReply.ToUpper() == "SENDBACK")
-            {
-                Console.WriteLine("Request for sendback received, sending back...");
-                SendBack(RemoteIPEndPoint.Address, received, replyPort);
-                StartBoth.ListeningMessage();
-            }
-            else
-            {
-                Console.WriteLine("Request for sendback denied. Ending UDP Connection.");
-                StartBoth._UDPlistening = false;
-                StartBoth.ListeningMessage();
-            }
+            receivedList.PList[0].Rotation = 30;
+            receivedList.PList[0].Velocity = 500;
+            byte[] toSend = DataSerializer.SerializeData(receivedList);
+            SendBack(RemoteIPEndPoint.Address, toSend, replyPort);
+            Console.WriteLine("Data sent!");
+            StartBoth.ListeningMessage();
             StartBoth._UDPlistening = false;
         }
 
@@ -218,4 +210,35 @@ namespace Servers
             Console.WriteLine();
         }
     }
+}
+
+
+/// <summary>
+/// Returns the deserialized information 
+/// </summary>
+class Decoder
+{
+    public static PositionList DecodeInfo(byte[] data)
+    {
+        using (MemoryStream tempStream = new MemoryStream(data))
+        {
+            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
+
+            return receivedList;
+        }
+    }
+}
+
+class DataSerializer
+{
+    public static byte[] SerializeData(PositionList data)
+    {
+        using (var sendStream = new MemoryStream())
+        {
+            Serializer.Serialize(sendStream, data);
+            byte[] returning = sendStream.ToArray();
+            return returning;
+        }
+    }
+
 }
