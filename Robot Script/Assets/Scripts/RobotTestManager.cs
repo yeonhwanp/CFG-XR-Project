@@ -5,12 +5,11 @@ using UnityEngine;
 public class RobotTestManager : MonoBehaviour {
 
     public GameObject rootObject;
+    public PositionList testList = new PositionList();
 
 	// Use this for initialization
 	void Start ()
     {
-
-        PositionList testList = new PositionList();
         testList.CreateList(rootObject, testList.PList);
 
         int counter = 0;
@@ -22,4 +21,14 @@ public class RobotTestManager : MonoBehaviour {
 
         Debug.Log("hello: " + counter);
 	}
+
+    private void Update()
+    {
+
+        // To test the sending.. But would also have to handle receiving. Whoop de doo going to have to work on this too.
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ClientUDP.UDPSend("127.0.0.1", testList);
+        }
+    }
 }
