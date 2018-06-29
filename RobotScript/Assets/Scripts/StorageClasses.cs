@@ -9,6 +9,7 @@ using ProtoBuf;
 /// Classes to store the values to be sent over.
 /// </summary>
 
+[ProtoInclude(500, typeof(PositionStorage))]
 [ProtoContract]
 public class PositionList
 {
@@ -20,7 +21,10 @@ public class PositionList
     {
         List<GameObject> children = rootJoint.GetComponent<ObjectJoint>().ChildJoints;
         ObjectJoint thisJoint = rootJoint.GetComponent<ObjectJoint>();
-        PositionStorage newStorage = new PositionStorage(thisJoint.RotateAngle, thisJoint.LocalVelocity);
+        PositionStorage newStorage = new PositionStorage();
+
+        newStorage.Rotation = thisJoint.RotateAngle;
+        newStorage.Velocity = thisJoint.LocalVelocity;
 
         #region for root (need to fix)
 
@@ -56,9 +60,9 @@ public class PositionStorage : PositionList
     //public Quaternion rootRotation;
     #endregion 
 
-    public PositionStorage (float rot, float vel)
-    {
-        Rotation = rot;
-        Velocity = vel;
-    }
+    //public PositionStorage (float rot, float vel)
+    //{
+    //    Rotation = rot;
+    //    Velocity = vel;
+    //}
 }

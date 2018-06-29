@@ -13,7 +13,7 @@ public class ObjectJoint : MonoBehaviour
 {
 
     // Objects attached
-    public GameObject ParentJoint;
+    public GameObject ParentJoint = null;
     public List<GameObject> ChildJoints = new List<GameObject>();
     public List<ObjectJoint> ChildObjectJoints = new List<ObjectJoint>();
     public GameObject ChildLink;
@@ -30,39 +30,51 @@ public class ObjectJoint : MonoBehaviour
     // Just for recognition and debugging purposes
     public string Name;
 
-    // Setting the variables + the transforms
+    // For initailization
     public ObjectJoint (GameObject parent, List<GameObject> children)
     {
         ParentJoint = parent;
         ChildJoints = children;
-
-        IsRoot = ParentJoint == null ? true : false;
     }
 
-    public void SetJoints(List<PositionStorage> newJoints, GameObject rootObject)
+    // Gets all into a list
+    public static void GetJoints(List<ObjectJoint> defaultList, GameObject initialObject)
     {
-        ObjectJoint rootJoint = rootObject.GetComponent<ObjectJoint>();
+        ObjectJoint theJoint = initialObject.GetComponent<ObjectJoint>();
+        defaultList.Add(theJoint);
 
-        foreach(PositionStorage storageObject in newJoints)
+        foreach(GameObject childJoint in theJoint.ChildJoints)
         {
-            int jointPosition = newJoints.IndexOf(storageObject);
+            if (childJoint != null)
+                GetJoints(defaultList, childJoint);
+        }
+    }
 
+    // We can set the position of the joints now.
+    public static void SetJoints(PositionList newJoints, GameObject rootObject)
+    {
+        List<PositionStorage> newPositions = newJoints.PList;
+        List<ObjectJoint> allJoints = rootObject.GetComponent<ObjectJoint>().ChildObjectJoints;
+
+        int counter = 0;
+        foreach (PositionStorage storage in newPositions)
+        {
+            float newPosition = storage.Rotation;
+            float newVelocity = storage.Velocity;
+
+            Debug.Log("new" + newPosition);
+            allJoints[counter].transform.RotateAround(allJoints[counter].AxisPoint, allJoints[counter].AxisRotation, newPosition);
+            allJoints[counter].RotateAngle = newPosition;
+            allJoints[counter].LocalVelocity = newVelocity;
+
+            counter += 1;
         }
     }
 
     // Set the transforms on load.
     private void Start()
     {
-        // Creating the childJoint so we can set all of the joint positions and such
-        if (IsRoot)
-        {
-            ChildObjectJoints.Add(this);
-
-            foreach(GameObject childJoint in ChildJoints)
-            {
-
-            }
-        }
+        IsRoot = ParentJoint == null ? true : false;
 
         foreach(GameObject child in ChildJoints)
         {
