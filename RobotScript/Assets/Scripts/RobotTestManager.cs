@@ -11,26 +11,27 @@ public class RobotTestManager : MonoBehaviour {
 	void Start ()
     {
         testList.CreateList(rootObject, testList.PList);
+        ObjectJoint.SetParents(rootObject);
 	}
 
     private void Update()
     {
+        //For testing purposes-- > sends joint information then gets updated joint information, updates the information.
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
 
-        // To test the sending.. But would also have to handle receiving. Whoop de doo going to have to work on this too.
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Working?");
+        //    ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
+        //    ObjectJoint.SetJoints(newList, rootObject);
 
-            PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
-            Debug.Log("helo" + newList.PList.Count);
+        //    Debug.Log("Complete!");
+        //}
 
-            ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
-            ObjectJoint.SetJoints(newList, rootObject);
+        PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
 
-            Debug.Log("Complete!");
-        }
+        ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
+        ObjectJoint.SetJoints(newList, rootObject);
 
-        // Should replace this later.
-        //rootObject.transform.RotateAround(rootObject.GetComponent<ObjectJoint>().AxisPoint, rootObject.GetComponent<ObjectJoint>().AxisRotation, 50);
+        Debug.Log("Complete!");
     }
 }

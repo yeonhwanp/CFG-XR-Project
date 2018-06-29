@@ -23,8 +23,9 @@ public class PositionList
         ObjectJoint thisJoint = rootJoint.GetComponent<ObjectJoint>();
         PositionStorage newStorage = new PositionStorage();
 
-        newStorage.Rotation = thisJoint.RotateAngle;
-        newStorage.Velocity = thisJoint.LocalVelocity;
+        newStorage.xRot = thisJoint.xRotation;
+        newStorage.yRot = thisJoint.yRotation;
+        newStorage.zRot = thisJoint.zRotation;
 
         #region for root (need to fix)
 
@@ -49,8 +50,12 @@ public class PositionList
 public class PositionStorage : PositionList
 {
     [ProtoMember (1)]
-    public float Rotation;
+    public float xRot;
     [ProtoMember (2)]
+    public float yRot;
+    [ProtoMember (3)]
+    public float zRot;
+    [ProtoMember (4)]
     public float Velocity;
 
     #region for root (need to fix)

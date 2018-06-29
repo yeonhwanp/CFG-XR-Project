@@ -8,7 +8,6 @@ using ProtoBuf;
 /// Uh... correlation with RobotLink kind of jank.
 /// </summary>
 
-
 public class ObjectJoint : MonoBehaviour
 {
 
@@ -16,13 +15,14 @@ public class ObjectJoint : MonoBehaviour
     public GameObject ParentJoint = null;
     public List<GameObject> ChildJoints = new List<GameObject>();
     public List<ObjectJoint> ChildObjectJoints = new List<ObjectJoint>();
-    public GameObject ChildLink;
+    public GameObject ParentLink = null;
+    public GameObject ChildLink = null;
     public bool IsRoot;
 
     // Position values
-    public Vector3 AxisPoint;
-    public Vector3 AxisRotation; 
-    public float RotateAngle { get; set; } // Seems like it can be used as "localRotation"
+    public float xRotation;
+    public float yRotation;
+    public float zRotation;
 
     // Velocity (Not doing anything with this yet)
     public float LocalVelocity = 0.0f;
@@ -59,12 +59,9 @@ public class ObjectJoint : MonoBehaviour
         int counter = 0;
         foreach (PositionStorage storage in newPositions)
         {
-            float newPosition = storage.Rotation;
             float newVelocity = storage.Velocity;
 
-            Debug.Log("new" + newPosition);
-            allJoints[counter].transform.RotateAround(allJoints[counter].AxisPoint, allJoints[counter].AxisRotation, newPosition);
-            allJoints[counter].RotateAngle = newPosition;
+            allJoints[counter].transform.Rotate(storage.xRot, storage.yRot, storage.zRot);
             allJoints[counter].LocalVelocity = newVelocity;
 
             counter += 1;
@@ -75,13 +72,32 @@ public class ObjectJoint : MonoBehaviour
     private void Start()
     {
         IsRoot = ParentJoint == null ? true : false;
+    }
 
-        foreach(GameObject child in ChildJoints)
+    // Only to be run one time at start
+    public static void SetParents(GameObject Root)
+    {
+        ObjectJoint rootJoint = Root.GetComponent<ObjectJoint>();
+
+        if (rootJoint.ChildLink != null)
         {
-            child.transform.parent = gameObject.transform;
+            rootJoint.ChildLink.transform.parent = rootJoint.transform;
         }
 
-        ChildLink.transform.parent = gameObject.transform;
+        foreach(GameObject joint in rootJoint.ChildJoints)
+        {
+            joint.transform.parent = rootJoint.transform;
+        }
+
+        if (rootJoint.ParentLink != null)
+        {
+            rootJoint.transform.parent = rootJoint.ParentLink.transform;
+        }
+
+        foreach(GameObject joint in rootJoint.ChildJoints)
+        {
+            SetParents(joint);
+        }
     }
 }
 
