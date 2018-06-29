@@ -12,3 +12,6 @@ Currently Working:
 - Basic RobotTree Methods:
   - Methods to do things from script (a bit iffy and a bit useless atm)
   - Methods to create a new RobotTree if given a root object
+- TODO: 
+  - Add more features (and working features) to the joints
+  - Make joints work like actual joints
