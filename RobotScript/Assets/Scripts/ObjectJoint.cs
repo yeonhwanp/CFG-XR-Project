@@ -68,12 +68,6 @@ public class ObjectJoint : MonoBehaviour
         }
     }
 
-    // Set the transforms on load.
-    private void Start()
-    {
-        IsRoot = ParentJoint == null ? true : false;
-    }
-
     // Only to be run one time at start
     public static void SetParents(GameObject Root)
     {
@@ -84,7 +78,7 @@ public class ObjectJoint : MonoBehaviour
             rootJoint.ChildLink.transform.parent = rootJoint.transform;
         }
 
-        foreach(GameObject joint in rootJoint.ChildJoints)
+        foreach (GameObject joint in rootJoint.ChildJoints)
         {
             joint.transform.parent = rootJoint.transform;
         }
@@ -94,10 +88,16 @@ public class ObjectJoint : MonoBehaviour
             rootJoint.transform.parent = rootJoint.ParentLink.transform;
         }
 
-        foreach(GameObject joint in rootJoint.ChildJoints)
+        foreach (GameObject joint in rootJoint.ChildJoints)
         {
             SetParents(joint);
         }
+    }
+
+    // Set the transforms on load.
+    private void Start()
+    {
+        IsRoot = ParentJoint == null ? true : false;
     }
 }
 
