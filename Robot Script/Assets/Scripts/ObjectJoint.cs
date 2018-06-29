@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Google.Protobuf;
 
 /// <summary>
 /// Simple Joint Component. Parent should be a joint, child should be a gameobject.

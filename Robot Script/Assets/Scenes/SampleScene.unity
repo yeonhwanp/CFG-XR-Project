@@ -407,7 +407,7 @@ MonoBehaviour:
   AxisPoint: {x: 0, y: 0, z: 0}
   AxisRotation: {x: 0, y: 0, z: 0}
   LocalVelocity: 0
-  Name: Second
+  Name: 
 --- !u!135 &1410337383
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -505,7 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a1a024da774e34490c0bf657d8f81a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParentJoint: {fileID: 1410337381}
+  ParentJoint: {fileID: 0}
   ChildJoints: []
   ChildLink: {fileID: 0}
   IsRoot: 0
@@ -801,10 +801,10 @@ MonoBehaviour:
   - {fileID: 1410337381}
   ChildLink: {fileID: 1999929413}
   IsRoot: 0
-  AxisPoint: {x: 0, y: 1, z: 0}
-  AxisRotation: {x: 1, y: 0, z: 0}
+  AxisPoint: {x: 0, y: 0, z: 0}
+  AxisRotation: {x: 0, y: 0, z: 0}
   LocalVelocity: 0
-  Name: Root
+  Name: 
 --- !u!1 &1999929413
 GameObject:
   m_ObjectHideFlags: 0
