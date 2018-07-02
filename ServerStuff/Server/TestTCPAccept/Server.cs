@@ -38,7 +38,7 @@ namespace Servers
         public static bool _TCPlistening = false;
         public static bool _UDPlistening = false;
 
-
+        
         public static void StartListening()
         {
 
@@ -183,14 +183,14 @@ namespace Servers
 
             // Currently only PositionList, can change later.
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
-            PositionList receivedList = Decoder.DecodeInfo(received);
+            StorageProto<PositionList> receivedList = Decoder<PositionList>.DecodeInfo(received);
 
             Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
-            receivedList.PList[0].Rotation = 30;
-            receivedList.PList[1].Rotation = 50;
-            byte[] toSend = DataSerializer.SerializeData(receivedList);
+            receivedList.TestStorage.PList[0].Rotation = 30;
+            receivedList.TestStorage.PList[1].Rotation = 50;
+            byte[] toSend = DataSerializer<StorageProto<PositionList>>.SerializeData(receivedList);
             SendBack(RemoteIPEndPoint.Address, toSend, replyPort);
             Console.WriteLine("Data sent!");
             StartBoth.ListeningMessage();
@@ -216,22 +216,22 @@ namespace Servers
 /// <summary>
 /// Returns the deserialized information 
 /// </summary>
-class Decoder
+class Decoder<T>
 {
-    public static PositionList DecodeInfo(byte[] data)
+    public static StorageProto<T> DecodeInfo(byte[] data)
     {
         using (MemoryStream tempStream = new MemoryStream(data))
         {
-            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
+            StorageProto<T> receivedList = Serializer.Deserialize<StorageProto<T>>(tempStream);
 
             return receivedList;
         }
     }
 }
 
-class DataSerializer
+class DataSerializer<T>
 {
-    public static byte[] SerializeData(PositionList data)
+    public static byte[] SerializeData(T data)
     {
         using (var sendStream = new MemoryStream())
         {

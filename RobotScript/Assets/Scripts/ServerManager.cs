@@ -13,10 +13,10 @@ using ProtoBuf;
 /// I dont think we can send/receive multiple at a time... Will have to see about that. Worst case scenario, implement Async.
 /// </summary>
 
-public class ClientUDP
+public class ClientUDP<T>
 {
     // ATM just sends data over UDP (but not working because protobuf not workng)
-    public static PositionList UDPSend(string ipAddress, System.Object sendObject)
+    public static StorageProto<T> UDPSend(string ipAddress, StorageProto<T> sendObject)
     {
         const int listenPort = 9999;
         const int sendPort = 8888;
@@ -37,7 +37,7 @@ public class ClientUDP
         byte[] receivedBytes = listener.Receive(ref theEndPoint);
         using (MemoryStream tempStream = new MemoryStream(receivedBytes))
         {
-            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
+            StorageProto<T> receivedList = Serializer.Deserialize<StorageProto<T>>(tempStream);
             thisSocket.Close();
             listener.Close();
             return receivedList;

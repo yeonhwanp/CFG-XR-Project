@@ -64,6 +64,7 @@ public class ObjectJoint : MonoBehaviour
             ObjectJoint thisJoint = thisObject.GetComponent<ObjectJoint>();
 
             thisObject.transform.Rotate(thisJoint.RotateAxis, newPosition);
+            allJoints[counter].AxisRotation = newPosition;
             allJoints[counter].LocalVelocity = newVelocity;
 
             counter += 1;
