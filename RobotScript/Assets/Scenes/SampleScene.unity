@@ -407,9 +407,8 @@ MonoBehaviour:
   ParentLink: {fileID: 1999929413}
   ChildLink: {fileID: 907979596}
   IsRoot: 0
-  xRotation: 0
-  yRotation: 0
-  zRotation: 0
+  RotateAxis: {x: 1, y: 0, z: 0}
+  AxisRotation: 0
   LocalVelocity: 0
   Name: 
 --- !u!135 &1410337383
@@ -531,9 +530,8 @@ MonoBehaviour:
   ParentLink: {fileID: 907979596}
   ChildLink: {fileID: 0}
   IsRoot: 0
-  xRotation: 0
-  yRotation: 0
-  zRotation: 0
+  RotateAxis: {x: 0, y: 0, z: 0}
+  AxisRotation: 0
   LocalVelocity: 0
   Name: 
 --- !u!135 &1642806194
@@ -738,9 +736,8 @@ MonoBehaviour:
   ParentLink: {fileID: 0}
   ChildLink: {fileID: 1999929413}
   IsRoot: 0
-  xRotation: 0
-  yRotation: 0
-  zRotation: 0
+  RotateAxis: {x: 0, y: 0, z: 1}
+  AxisRotation: 0
   LocalVelocity: 0
   Name: 
 --- !u!1 &1999929413
@@ -889,6 +886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rootObject: {fileID: 1767081374}
+  secondObject: {fileID: 0}
 --- !u!4 &2033128420
 Transform:
   m_ObjectHideFlags: 0

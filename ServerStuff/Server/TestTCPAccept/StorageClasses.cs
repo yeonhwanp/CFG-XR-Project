@@ -7,6 +7,15 @@ using ProtoBuf;
 /// Server version: Doesn't contain the methods.
 /// </summary>
 
+
+[ProtoInclude(500, typeof(PositionList))]
+[ProtoContract]
+public class StorageProto<T>
+{
+    [ProtoMember (1)]
+    public T TestStorage;
+}
+
 [ProtoInclude(500, typeof(PositionStorage))]
 [ProtoContract]
 public class PositionList
