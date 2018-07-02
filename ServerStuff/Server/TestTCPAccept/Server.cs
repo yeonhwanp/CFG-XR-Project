@@ -189,7 +189,7 @@ namespace Servers
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
             receivedList.PList[0].Rotation = 30;
-            receivedList.PList[0].Velocity = 500;
+            receivedList.PList[1].Rotation = 50;
             byte[] toSend = DataSerializer.SerializeData(receivedList);
             SendBack(RemoteIPEndPoint.Address, toSend, replyPort);
             Console.WriteLine("Data sent!");

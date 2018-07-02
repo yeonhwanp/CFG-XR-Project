@@ -5,7 +5,9 @@ using UnityEngine;
 public class RobotTestManager : MonoBehaviour {
 
     public GameObject rootObject;
+    public GameObject secondObject;
     public PositionList testList = new PositionList();
+
 
 	// Use this for initialization
 	void Start ()
@@ -17,21 +19,14 @@ public class RobotTestManager : MonoBehaviour {
     private void Update()
     {
         //For testing purposes-- > sends joint information then gets updated joint information, updates the information.
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
 
-        //    ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
-        //    ObjectJoint.SetJoints(newList, rootObject);
+            ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
+            ObjectJoint.SetJoints(newList, rootObject);
 
-        //    Debug.Log("Complete!");
-        //}
-
-        PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
-
-        ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
-        ObjectJoint.SetJoints(newList, rootObject);
-
-        Debug.Log("Complete!");
+            Debug.Log("Complete!");
+        }
     }
 }
