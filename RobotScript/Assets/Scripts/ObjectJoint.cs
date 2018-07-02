@@ -19,10 +19,9 @@ public class ObjectJoint : MonoBehaviour
     public GameObject ChildLink = null;
     public bool IsRoot;
 
-    // Position values
-    public float xRotation;
-    public float yRotation;
-    public float zRotation;
+    // Position values (Going to have the set the axis then constantly update it with respect to local because thing might move)
+    public Vector3 RotateAxis;
+    public float AxisRotation;
 
     // Velocity (Not doing anything with this yet)
     public float LocalVelocity = 0.0f;
@@ -31,7 +30,7 @@ public class ObjectJoint : MonoBehaviour
     public string Name;
 
     // For initailization
-    public ObjectJoint (GameObject parent, List<GameObject> children)
+    public ObjectJoint(GameObject parent, List<GameObject> children)
     {
         ParentJoint = parent;
         ChildJoints = children;
@@ -60,8 +59,11 @@ public class ObjectJoint : MonoBehaviour
         foreach (PositionStorage storage in newPositions)
         {
             float newVelocity = storage.Velocity;
+            float newPosition = storage.Rotation;
+            GameObject thisObject = allJoints[counter].gameObject;
+            ObjectJoint thisJoint = thisObject.GetComponent<ObjectJoint>();
 
-            allJoints[counter].transform.Rotate(storage.xRot, storage.yRot, storage.zRot);
+            thisObject.transform.Rotate(thisJoint.RotateAxis, newPosition);
             allJoints[counter].LocalVelocity = newVelocity;
 
             counter += 1;
