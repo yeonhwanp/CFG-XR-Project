@@ -20,7 +20,7 @@ public class RobotLink : MonoBehaviour
     /// <summary>
     /// Initializer
     /// </summary>
-    public RobotLink()
+    private void Start()
     {
         Rigidbody thisObjectRB = gameObject.GetComponent<Rigidbody>();
         SelfObject = gameObject;

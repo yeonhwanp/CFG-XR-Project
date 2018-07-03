@@ -90,6 +90,61 @@ public class ObjectSpecs
     public float zScale;
 }
 
+/// <summary>
+/// Class to help make the required objects for a storage
+/// </summary>
+public class MakeMethods : MonoBehaviour
+{
+    // Returns a new JointStorage
+    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, JointStorage ParentJoint=null, List<int> Children=null, int child = 0, int parent = 0)
+    {
+        JointStorage newJointStorage = new JointStorage();
+        newJointStorage.xLoc = Position.x;
+        newJointStorage.yLoc = Position.y;
+        newJointStorage.zLoc = Position.z;
+        newJointStorage.xRot = Rotation.x;
+        newJointStorage.yRot = Rotation.y;
+        newJointStorage.zRot = Rotation.z;
+        newJointStorage.wRot = Rotation.w;
+        newJointStorage.xAxisPos = Axis.x;
+        newJointStorage.yAxisPos = Axis.y;
+        newJointStorage.zAxisPos = Axis.z;
+        newJointStorage.RotatePosition = RotationAmount;
+        newJointStorage.Parent = ParentJoint;
+        newJointStorage.ChildrenJoints = Children;
+        newJointStorage.ChildrenLink = child;
+        newJointStorage.ParentLink = parent;
+
+        return newJointStorage;
+    }
+
+    public static LinkStorage MakeLink(Vector3 Position, Quaternion Rotation, ObjectSpecs Shape)
+    {
+        LinkStorage newLinkStorage = new LinkStorage();
+        newLinkStorage.xLoc = Position.x;
+        newLinkStorage.yLoc = Position.y;
+        newLinkStorage.zLoc = Position.z;
+        newLinkStorage.xRot = Rotation.x;
+        newLinkStorage.yRot = Rotation.y;
+        newLinkStorage.zRot = Rotation.z;
+        newLinkStorage.wRot = Rotation.w;
+        newLinkStorage.shape = Shape;
+
+        return newLinkStorage;
+    }
+
+    public static ObjectSpecs MakeShape(string type, float x, float y, float z)
+    {
+        ObjectSpecs newShape = new ObjectSpecs();
+        newShape.Type = type;
+        newShape.xScale = x;
+        newShape.yScale = y;
+        newShape.zScale = z;
+
+        return newShape;
+    }
+}
+
 
 [ProtoInclude(500, typeof(PositionStorage))]
 [ProtoContract]

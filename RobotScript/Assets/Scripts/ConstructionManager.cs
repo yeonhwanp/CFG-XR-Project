@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //NOTE: Want to set objects as inactive as we spawn them because... it would look weird otherwise.
-//NOTE: Really hoping that this works... 
-//NOTE: Not sure if this works, am going to have to test it... lol.
+//NOTE: Spawning one object seems to work! Let's try childrening then... Rotating!
 
 /// <summary>
 /// Class to construct the data from the protobuf
@@ -56,16 +55,7 @@ public class ConstructionManager : MonoBehaviour {
     // Method to make each link
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
-        GameObject newLink = new GameObject(); // NOTE: really want to get around this later... I hope that it works LOL
-
-        switch (linkConfig.shape.Type) {
-            case "hello":
-                newLink = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                break;
-            default:
-                Debug.Log("huh");
-                break;
-        }
+        GameObject newLink = GenerateShape(linkConfig.shape);
 
         newLink.transform.localScale = new Vector3(linkConfig.shape.xScale, linkConfig.shape.yScale, linkConfig.shape.zScale);
         newLink.transform.position = new Vector3(linkConfig.xLoc, linkConfig.yLoc, linkConfig.zLoc);
@@ -76,6 +66,18 @@ public class ConstructionManager : MonoBehaviour {
         RobotLink newRobotLink = newLink.AddComponent<RobotLink>();
 
         return newLink;
+    }
+
+    public static GameObject GenerateShape(ObjectSpecs specs)
+    {
+        switch (specs.Type)
+        {
+            case "cube":
+                GameObject newLink = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                return newLink;
+            default:
+                return null;
+        }
     }
 
     // Method to set the transforms and relationship properties. Wait I think we good.
