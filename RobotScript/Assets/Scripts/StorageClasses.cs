@@ -3,15 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProtoBuf;
 
-// NOTE: CANNOT STORE VECTOR3 IN PROTOBUF -- HOW TO STORE (for root)?
-
-// NOTE: Store all of the links and joints in a dictionary, assigning an ID to each.
-// NOTE: That way, we can refernece parents and children by the ID values in a dictionary
-// NOTE: Then, instantiate each then add into the children of the actual value.
-// NOTE: Just annoying to set up...
-
 /// <summary>
-/// Classes to store the values to be sent over.
+/// <T> So we can store anything and unwarp generically.
 /// </summary>
 
 [ProtoInclude (500, typeof(PositionList))]
@@ -22,8 +15,10 @@ public class StorageProto<T>
     public T StoredObject;
 }
 
+#region RobotStructure
+
 /// <summary>
-/// Holds the root and all of the joints and the links in a dictinoary. 
+/// Used to hold all of the joint/link information.
 /// </summary>
 public class RobotStructure
 {
@@ -32,7 +27,9 @@ public class RobotStructure
     public Dictionary<int, LinkStorage> LinkDict = new Dictionary<int, LinkStorage>();
 }
 
-// Also... Why are we storing the relative positions? Like, I know, but I don't think we need it in this case. We CAN store it though.
+/// <summary>
+/// Stores information required to create an ObjectJoint
+/// </summary>
 public class JointStorage
 {
     // Required Parameters for Position
@@ -57,6 +54,9 @@ public class JointStorage
     public int ParentLink = 0;
 }
 
+/// <summary>
+/// Stores information required to create a Link
+/// </summary>
 public class LinkStorage
 {
     // Required Parameters for Position
@@ -82,6 +82,9 @@ public class LinkStorage
     public ObjectSpecs shape;
 }
 
+/// <summary>
+/// Stores information about the shape of the link
+/// </summary>
 public class ObjectSpecs
 {
     public string Type;
@@ -90,6 +93,77 @@ public class ObjectSpecs
     public float zScale;
 }
 
+/// <summary>
+/// Class to help make the required objects for a storage
+/// </summary>
+public class MakeMethods : MonoBehaviour
+{
+    // Returns a new JointStorage
+    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, JointStorage ParentJoint=null, List<int> Children = null, int child = 0, int parent = 0)
+    {
+        JointStorage newJointStorage = new JointStorage();
+        newJointStorage.xLoc = Position.x;
+        newJointStorage.yLoc = Position.y;
+        newJointStorage.zLoc = Position.z;
+        newJointStorage.xRot = Rotation.x;
+        newJointStorage.yRot = Rotation.y;
+        newJointStorage.zRot = Rotation.z;
+        newJointStorage.wRot = Rotation.w;
+        newJointStorage.xAxisPos = Axis.x;
+        newJointStorage.yAxisPos = Axis.y;
+        newJointStorage.zAxisPos = Axis.z;
+        newJointStorage.RotatePosition = RotationAmount;
+        newJointStorage.Parent = ParentJoint;
+        if (Children != null)
+        {
+            newJointStorage.ChildrenJoints = Children; 
+        }
+        else
+        {
+            newJointStorage.ChildrenJoints = new List<int>();
+        }
+        newJointStorage.ChildrenLink = child;
+        newJointStorage.ParentLink = parent;
+
+        return newJointStorage;
+    }
+
+    // Returns a new LinkStorage
+    public static LinkStorage MakeLink(Vector3 Position, Quaternion Rotation, ObjectSpecs Shape)
+    {
+        LinkStorage newLinkStorage = new LinkStorage();
+        newLinkStorage.xLoc = Position.x;
+        newLinkStorage.yLoc = Position.y;
+        newLinkStorage.zLoc = Position.z;
+        newLinkStorage.xRot = Rotation.x;
+        newLinkStorage.yRot = Rotation.y;
+        newLinkStorage.zRot = Rotation.z;
+        newLinkStorage.wRot = Rotation.w;
+        newLinkStorage.shape = Shape;
+
+        return newLinkStorage;
+    }
+
+    // Returns a new shape spec
+    public static ObjectSpecs MakeShape(string type, float x, float y, float z)
+    {
+        ObjectSpecs newShape = new ObjectSpecs();
+        newShape.Type = type;
+        newShape.xScale = x;
+        newShape.yScale = y;
+        newShape.zScale = z;
+
+        return newShape;
+    }
+}
+
+#endregion
+
+#region JointInfo
+
+/// <summary>
+/// Below: Data structures to hold information about joint movement and position.
+/// </summary>
 
 [ProtoInclude(500, typeof(PositionStorage))]
 [ProtoContract]
@@ -124,4 +198,4 @@ public class PositionStorage : PositionList
     public float Velocity;
 }
 
-//public class
+#endregion

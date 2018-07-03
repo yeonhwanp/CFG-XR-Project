@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Stores some values 
+/// Quite useless at the moment, but might have some use in the future.
+/// Stores all of the values.
 /// </summary>
 public class RobotLink : MonoBehaviour
 {
 
     #region Public Variables
+
     // General Properties of the GameObject
     public GameObject SelfObject;
     public Vector3 localCOM;
@@ -20,7 +22,7 @@ public class RobotLink : MonoBehaviour
     /// <summary>
     /// Initializer
     /// </summary>
-    public RobotLink()
+    private void Start()
     {
         Rigidbody thisObjectRB = gameObject.GetComponent<Rigidbody>();
         SelfObject = gameObject;

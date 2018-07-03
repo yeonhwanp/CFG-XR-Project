@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //NOTE: Want to set objects as inactive as we spawn them because... it would look weird otherwise.
-//NOTE: Really hoping that this works... 
-//NOTE: Not sure if this works, am going to have to test it... lol.
 
 /// <summary>
-/// Class to construct the data from the protobuf
+/// Class to help construct robot from data received
 /// </summary>
 public class ConstructionManager : MonoBehaviour {
 
-    // Main overarching method to generate the entire robot itself
+    /// <summary>
+    /// Create the robot by:
+    /// 1. Recreating all of the ObjectJoints/Links
+    /// 2. Setting the transforms 
+    /// </summary>
     public static void GenerateRobot(RobotStructure structure)
     {
         Dictionary<int, GameObject> jointDict = new Dictionary<int, GameObject>();
@@ -34,7 +36,9 @@ public class ConstructionManager : MonoBehaviour {
 
     }
 
-    // Method to make each joint
+    /// <summary>
+    /// Method to recreate a joint
+    /// </summary>
     public static GameObject GenerateJoint(JointStorage jointConfig)
     {
         // Creating actual joint
@@ -49,23 +53,18 @@ public class ConstructionManager : MonoBehaviour {
         newObjectJoint.ChildJointIDs = jointConfig.ChildrenJoints;
         newObjectJoint.ChildLinkID = jointConfig.ChildrenLink;
         newObjectJoint.ParentLinkID = jointConfig.ParentLink;
+        newObjectJoint.ChildJoints = new List<GameObject>();
+        newObjectJoint.ChildObjectJoints = new List<ObjectJoint>();
 
         return newJoint;
     }
 
-    // Method to make each link
+    /// <summary>
+    /// Method to recreate a link
+    /// </summary>
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
-        GameObject newLink = new GameObject(); // NOTE: really want to get around this later... I hope that it works LOL
-
-        switch (linkConfig.shape.Type) {
-            case "hello":
-                newLink = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                break;
-            default:
-                Debug.Log("huh");
-                break;
-        }
+        GameObject newLink = GenerateShape(linkConfig.shape);
 
         newLink.transform.localScale = new Vector3(linkConfig.shape.xScale, linkConfig.shape.yScale, linkConfig.shape.zScale);
         newLink.transform.position = new Vector3(linkConfig.xLoc, linkConfig.yLoc, linkConfig.zLoc);
@@ -78,7 +77,24 @@ public class ConstructionManager : MonoBehaviour {
         return newLink;
     }
 
-    // Method to set the transforms and relationship properties. Wait I think we good.
+    /// <summary>
+    /// Used to help GenerateLink (which object should it be?)
+    /// </summary>
+    public static GameObject GenerateShape(ObjectSpecs specs)
+    {
+        switch (specs.Type)
+        {
+            case "cube":
+                GameObject newLink = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                return newLink;
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>
+    /// Sets all of the transforms.
+    /// </summary>
     public static void SetTransforms(GameObject root, Dictionary<int, GameObject> jointDict, Dictionary<int, GameObject> linkDict)
     {
         ObjectJoint rootJoint = root.GetComponent<ObjectJoint>();
@@ -91,8 +107,11 @@ public class ConstructionManager : MonoBehaviour {
 
         foreach (int ID in rootJoint.ChildJointIDs)
         {
-            rootJoint.ChildJoints.Add(jointDict[ID]);
-            jointDict[ID].transform.parent = rootJoint.transform;
+            if (ID != 0)
+            {
+                rootJoint.ChildJoints.Add(jointDict[ID]);
+                jointDict[ID].transform.parent = rootJoint.transform;
+            }
         }
 
         if (rootJoint.ParentLinkID != 0)
@@ -103,8 +122,10 @@ public class ConstructionManager : MonoBehaviour {
 
         foreach (int ID in rootJoint.ChildJointIDs)
         {
-            rootJoint.ChildJoints.Add(jointDict[ID]);
-            SetTransforms(jointDict[ID], jointDict, linkDict);
+            if (ID != 0)
+            {
+                SetTransforms(jointDict[ID], jointDict, linkDict);
+            }
         }
     }
 }
