@@ -16,7 +16,8 @@ public class ObjectJoint : MonoBehaviour
     public List<GameObject> ChildJoints = new List<GameObject>();
     public List<ObjectJoint> ChildObjectJoints = new List<ObjectJoint>();
     public List<int> ChildJointIDs = new List<int>(); // For use when creating
-    public List<int> ChildLinkIDs = new List<int>(); // For use when creating
+    public int ChildLinkID; // For use when creating
+    public int ParentLinkID; // For use when creating
     public GameObject ParentLink = null;
     public GameObject ChildLink = null;
     public bool IsRoot;

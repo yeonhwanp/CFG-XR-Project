@@ -27,7 +27,7 @@ public class StorageProto<T>
 /// </summary>
 public class RobotStructure
 {
-    public JointStorage rootJoint;
+    public int rootJointID;
     public Dictionary<int, JointStorage> JointDict = new Dictionary<int, JointStorage>();
     public Dictionary<int, LinkStorage> LinkDict = new Dictionary<int, LinkStorage>();
 }
@@ -52,8 +52,9 @@ public class JointStorage
 
     // Optional Parameters
     public JointStorage Parent;
-    public List<JointStorage> ChildrenJoints = new List<JointStorage>();
-    public List<LinkStorage> ChildrenLinks = new List<LinkStorage>();
+    public List<int> ChildrenJoints = new List<int>();
+    public int ChildrenLink = 0; // Using 0 as a null value --> Should never have 0 as ID.
+    public int ParentLink = 0;
 }
 
 public class LinkStorage
@@ -65,8 +66,9 @@ public class LinkStorage
     public float xRot;
     public float yRot;
     public float zRot;
+    public float wRot;
 
-    // Required Parameters for Center of Mass
+    // Required Parameters for Center of Mass (But... InertiaTensor and COM are going to be left blank for now because.. I'm not experienced enough lol)
     public float xCOM;
     public float yCOM;
     public float zCOM;
