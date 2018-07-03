@@ -96,7 +96,7 @@ public class ObjectSpecs
 public class MakeMethods : MonoBehaviour
 {
     // Returns a new JointStorage
-    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, JointStorage ParentJoint=null, List<int> Children=null, int child = 0, int parent = 0)
+    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, JointStorage ParentJoint=null, List<int> Children = null, int child = 0, int parent = 0)
     {
         JointStorage newJointStorage = new JointStorage();
         newJointStorage.xLoc = Position.x;
@@ -111,7 +111,14 @@ public class MakeMethods : MonoBehaviour
         newJointStorage.zAxisPos = Axis.z;
         newJointStorage.RotatePosition = RotationAmount;
         newJointStorage.Parent = ParentJoint;
-        newJointStorage.ChildrenJoints = Children;
+        if (Children != null)
+        {
+            newJointStorage.ChildrenJoints = Children; // for now
+        }
+        else
+        {
+            newJointStorage.ChildrenJoints = new List<int>();
+        }
         newJointStorage.ChildrenLink = child;
         newJointStorage.ParentLink = parent;
 

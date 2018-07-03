@@ -48,6 +48,8 @@ public class ConstructionManager : MonoBehaviour {
         newObjectJoint.ChildJointIDs = jointConfig.ChildrenJoints;
         newObjectJoint.ChildLinkID = jointConfig.ChildrenLink;
         newObjectJoint.ParentLinkID = jointConfig.ParentLink;
+        newObjectJoint.ChildJoints = new List<GameObject>();
+        newObjectJoint.ChildObjectJoints = new List<ObjectJoint>();
 
         return newJoint;
     }
@@ -93,8 +95,11 @@ public class ConstructionManager : MonoBehaviour {
 
         foreach (int ID in rootJoint.ChildJointIDs)
         {
-            rootJoint.ChildJoints.Add(jointDict[ID]);
-            jointDict[ID].transform.parent = rootJoint.transform;
+            if (ID != 0)
+            {
+                rootJoint.ChildJoints.Add(jointDict[ID]);
+                jointDict[ID].transform.parent = rootJoint.transform;
+            }
         }
 
         if (rootJoint.ParentLinkID != 0)
@@ -105,8 +110,10 @@ public class ConstructionManager : MonoBehaviour {
 
         foreach (int ID in rootJoint.ChildJointIDs)
         {
-            rootJoint.ChildJoints.Add(jointDict[ID]);
-            SetTransforms(jointDict[ID], jointDict, linkDict);
+            if (ID != 0)
+            {
+                SetTransforms(jointDict[ID], jointDict, linkDict);
+            }
         }
     }
 }

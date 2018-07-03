@@ -31,19 +31,28 @@ public class CreateTestRobot : MonoBehaviour {
         // Childrening
         jointStorage1.ChildrenLink = 1;
 
-
         ConstructionManager.GenerateRobot(testStructure);
+
+        ObjectJoint tester = GameObject.Find("Sphere").GetComponent<ObjectJoint>();
+        if (tester.ChildJoints == null)
+            Debug.Log("WHERE IS IT GOING WRONG");
 
         testList.CreateList(GameObject.Find("Sphere"), testList.PList);
 	}
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            Debug.Log(testList.PList.Count);
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log(testList.PList);
             testList.PList[0].Rotation = 30;
+            ObjectJoint.GetJoints(GameObject.Find("Sphere").GetComponent<ObjectJoint>().ChildObjectJoints, GameObject.Find("Sphere"));
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
+            Debug.Log("hello?");
         }
     }
 }
