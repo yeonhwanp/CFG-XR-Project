@@ -270,7 +270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!136 &907979597
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -388,7 +388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1410337382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,16 +404,15 @@ MonoBehaviour:
   ChildJoints:
   - {fileID: 1642806192}
   ChildObjectJoints: []
-  ChildJointIDs: 
-  ChildLinkID: 0
-  ParentLinkID: 0
   ParentLink: {fileID: 1999929413}
   ChildLink: {fileID: 907979596}
   IsRoot: 0
+  ChildJointIDs: 
+  ChildLinkID: 0
+  ParentLinkID: 0
   RotateAxis: {x: 1, y: 0, z: 0}
   AxisRotation: 0
   LocalVelocity: 0
-  Name: 
 --- !u!135 &1410337383
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -515,7 +514,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1642806193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -530,16 +529,15 @@ MonoBehaviour:
   ParentJoint: {fileID: 1410337381}
   ChildJoints: []
   ChildObjectJoints: []
-  ChildJointIDs: 
-  ChildLinkID: 0
-  ParentLinkID: 0
   ParentLink: {fileID: 907979596}
   ChildLink: {fileID: 0}
   IsRoot: 0
+  ChildJointIDs: 
+  ChildLinkID: 0
+  ParentLinkID: 0
   RotateAxis: {x: 0, y: 0, z: 0}
   AxisRotation: 0
   LocalVelocity: 0
-  Name: 
 --- !u!135 &1642806194
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -641,7 +639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!54 &1767081375
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -739,16 +737,15 @@ MonoBehaviour:
   ChildJoints:
   - {fileID: 1410337381}
   ChildObjectJoints: []
-  ChildJointIDs: 
-  ChildLinkID: 0
-  ParentLinkID: 0
   ParentLink: {fileID: 0}
   ChildLink: {fileID: 1999929413}
   IsRoot: 0
+  ChildJointIDs: 
+  ChildLinkID: 0
+  ParentLinkID: 0
   RotateAxis: {x: 0, y: 0, z: 1}
   AxisRotation: 0
   LocalVelocity: 0
-  Name: 
 --- !u!1 &1999929413
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,7 +765,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!54 &1999929414
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -876,6 +873,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2033128420}
   - component: {fileID: 2033128421}
+  - component: {fileID: 2033128419}
   m_Layer: 0
   m_Name: RobotTester
   m_TagString: Untagged
@@ -883,6 +881,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &2033128419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2033128418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa48ba9fa507a4e4bb16c6b8016f7053, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootObject: {fileID: 1767081374}
+  secondObject: {fileID: 0}
 --- !u!4 &2033128420
 Transform:
   m_ObjectHideFlags: 0
@@ -902,7 +913,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2033128418}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e267902c19c4454099067750db093d4, type: 3}
   m_Name: 

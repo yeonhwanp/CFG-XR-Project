@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //NOTE: Want to set objects as inactive as we spawn them because... it would look weird otherwise.
-//NOTE: Spawning one object seems to work! Let's try childrening then... Rotating!
 
 /// <summary>
-/// Class to construct the data from the protobuf
+/// Class to help construct robot from data received
 /// </summary>
 public class ConstructionManager : MonoBehaviour {
 
-    // Main overarching method to generate the entire robot itself
+    /// <summary>
+    /// Create the robot by:
+    /// 1. Recreating all of the ObjectJoints/Links
+    /// 2. Setting the transforms 
+    /// </summary>
     public static void GenerateRobot(RobotStructure structure)
     {
         Dictionary<int, GameObject> jointDict = new Dictionary<int, GameObject>();
@@ -33,7 +36,9 @@ public class ConstructionManager : MonoBehaviour {
 
     }
 
-    // Method to make each joint
+    /// <summary>
+    /// Method to recreate a joint
+    /// </summary>
     public static GameObject GenerateJoint(JointStorage jointConfig)
     {
         // Creating actual joint
@@ -54,7 +59,9 @@ public class ConstructionManager : MonoBehaviour {
         return newJoint;
     }
 
-    // Method to make each link
+    /// <summary>
+    /// Method to recreate a link
+    /// </summary>
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
         GameObject newLink = GenerateShape(linkConfig.shape);
@@ -70,6 +77,9 @@ public class ConstructionManager : MonoBehaviour {
         return newLink;
     }
 
+    /// <summary>
+    /// Used to help GenerateLink (which object should it be?)
+    /// </summary>
     public static GameObject GenerateShape(ObjectSpecs specs)
     {
         switch (specs.Type)
@@ -82,7 +92,9 @@ public class ConstructionManager : MonoBehaviour {
         }
     }
 
-    // Method to set the transforms and relationship properties. Wait I think we good.
+    /// <summary>
+    /// Sets all of the transforms.
+    /// </summary>
     public static void SetTransforms(GameObject root, Dictionary<int, GameObject> jointDict, Dictionary<int, GameObject> linkDict)
     {
         ObjectJoint rootJoint = root.GetComponent<ObjectJoint>();
