@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Remove Colliders --> not important
+// TODO: Add Rigidbody to everything --> not important
+// TODO: Create a "root" joint --> Pretty important but not important to function (i think?)
+// TODO: Create a robot with four legs --> Goal (so pretty important)
+
 public class CreateTestRobot : MonoBehaviour {
 
     public PositionList testList = new PositionList();
@@ -28,14 +33,29 @@ public class CreateTestRobot : MonoBehaviour {
         LinkStorage linkStorage1 = MakeMethods.MakeLink(twoPos, twoRot, defaultSpecs);
         testStructure.LinkDict.Add(1, linkStorage1);
 
+        // Creating Joint 2
+        Vector3 threePos = new Vector3(0, 2, 0);
+        Quaternion threeRot = new Quaternion(0, 0, 0, 0);
+        Vector3 threeAxis = new Vector3(0, 0, 1);
+        float threeRotation = 0;
+        JointStorage jointStorage2 = MakeMethods.MakeJoint(threePos, threeRot, threeAxis, threeRotation);
+        testStructure.JointDict.Add(2, jointStorage2);
+
+        // Creating Link 2 (NOT COMPLETE)
+        Vector3 fourPos = new Vector3(0, 3, 0);
+        Quaternion fourRot = new Quaternion();
+        ObjectSpecs Spec2 = MakeMethods.MakeShape("cube", 1, 1, 3);
+        LinkStorage linkStorage2 = MakeMethods.MakeLink(fourPos, fourRot, Spec2);
+        testStructure.LinkDict.Add(2, linkStorage2);
+
         // Childrening
         jointStorage1.ChildrenLink = 1;
+        jointStorage1.ChildrenJoints.Add(2);
+
+        jointStorage2.ParentLink = 1;
+        jointStorage2.ChildrenLink = 2;
 
         ConstructionManager.GenerateRobot(testStructure);
-
-        ObjectJoint tester = GameObject.Find("Sphere").GetComponent<ObjectJoint>();
-        if (tester.ChildJoints == null)
-            Debug.Log("WHERE IS IT GOING WRONG");
 
         testList.CreateList(GameObject.Find("Sphere"), testList.PList);
 	}
@@ -50,6 +70,7 @@ public class CreateTestRobot : MonoBehaviour {
         {
             Debug.Log(testList.PList);
             testList.PList[0].Rotation = 30;
+            testList.PList[1].Rotation = 40;
             ObjectJoint.GetJoints(GameObject.Find("Sphere").GetComponent<ObjectJoint>().ChildObjectJoints, GameObject.Find("Sphere"));
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
             Debug.Log("hello?");
