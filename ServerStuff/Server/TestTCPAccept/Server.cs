@@ -188,8 +188,8 @@ namespace Servers
             Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
-            receivedList.TestStorage.PList[0].Rotation = 30;
-            receivedList.TestStorage.PList[1].Rotation = 50;
+            //receivedList.TestStorage.PList[0].Rotation = 30;
+            //receivedList.TestStorage.PList[1].Rotation = 50;
             byte[] toSend = DataSerializer<StorageProto<PositionList>>.SerializeData(receivedList);
             SendBack(RemoteIPEndPoint.Address, toSend, replyPort);
             Console.WriteLine("Data sent!");

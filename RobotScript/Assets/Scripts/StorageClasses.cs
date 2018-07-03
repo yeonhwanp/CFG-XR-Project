@@ -8,6 +8,7 @@ using ProtoBuf;
 /// </summary>
 
 [ProtoInclude (500, typeof(PositionList))]
+[ProtoInclude (501, typeof(RobotStructure))]
 [ProtoContract]
 public class StorageProto<T>
 {
@@ -99,9 +100,10 @@ public class ObjectSpecs
 public class MakeMethods : MonoBehaviour
 {
     // Returns a new JointStorage
-    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, JointStorage ParentJoint=null, List<int> Children = null, int child = 0, int parent = 0)
+    public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, bool isRoot = false, JointStorage ParentJoint=null, List<int> Children = null, int child = 0, int parent = 0)
     {
         JointStorage newJointStorage = new JointStorage();
+        // Question is... Do we need to store this information? For now... but I'll ask about it
         newJointStorage.xLoc = Position.x;
         newJointStorage.yLoc = Position.y;
         newJointStorage.zLoc = Position.z;
@@ -124,6 +126,11 @@ public class MakeMethods : MonoBehaviour
         }
         newJointStorage.ChildrenLink = child;
         newJointStorage.ParentLink = parent;
+
+        if (isRoot)
+        {
+            // Store the 6 DOF
+        }
 
         return newJointStorage;
     }
