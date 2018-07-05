@@ -33,7 +33,8 @@ public class ConstructionManager : MonoBehaviour {
             linkDict.Add(links.Key, GeneratedLink);
         }
 
-        SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict);
+        if (jointDict.ContainsKey(structure.RootJointID))
+            SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict);
 
     }
 

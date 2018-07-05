@@ -94,13 +94,14 @@ public class CreateTestRobot : MonoBehaviour {
 
     private void Update()
     {
-        //// Configuring the robot with server test
-        //if (Input.GetKeyDown(KeyCode.A))
-        //{
-        //    StorageProto<RobotStructure> test = ClientUDP<RobotStructure>.UDPSend("127.0.0.1", testerRobot);
-        //    ConstructionManager.GenerateRobot(test.StoredObject);
-        //    Debug.Log("done " + test.StoredObject.rootJointID);
-        //}
+        // Configuring the robot with server test
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            RobotStructure test = ClientUDP.UDPSend("127.0.0.1", testerRobot);
+            Debug.Log("asdhklfjdsf");
+            ConstructionManager.GenerateRobot(test);
+            Debug.Log("done " + test.RootJointID);
+        }
 
         //// Moving the thing
         //if (Input.GetKeyDown(KeyCode.Space))

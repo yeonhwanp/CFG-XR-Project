@@ -12,7 +12,7 @@ using Google.Protobuf;
 public class ClientUDP
 {
     // ATM just sends data over UDP (but not working because protobuf not workng)
-    public static PositionList UDPSend(string ipAddress, PositionList sendObject)
+    public static RobotStructure UDPSend(string ipAddress, RobotStructure sendObject)
     {
         const int listenPort = 9999;
         const int sendPort = 8888;
@@ -42,7 +42,7 @@ public class ClientUDP
             tempStream.Position = 0;
 
             // Deserializing
-            PositionList receivedList = PositionList.Parser.ParseFrom(tempStream);
+            RobotStructure receivedList = RobotStructure.Parser.ParseFrom(tempStream);
 
             // Closing and returning
             thisSocket.Close();

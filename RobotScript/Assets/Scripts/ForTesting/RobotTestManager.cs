@@ -7,6 +7,7 @@ using Google.Protobuf;
 /// Testing sending joint positions
 /// </summary>
 
+#if end
 public class RobotTestManager : MonoBehaviour {
 
     public GameObject rootObject;
@@ -33,3 +34,5 @@ public class RobotTestManager : MonoBehaviour {
         }
     }
 }
+
+#endif

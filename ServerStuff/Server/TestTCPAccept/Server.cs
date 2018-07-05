@@ -186,20 +186,17 @@ namespace Servers
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
 
             // Receiving data 
-            PositionList receivedList;
+            RobotStructure receivedList;
             using (MemoryStream ms = new MemoryStream())
             {
                 ms.Write(received, 0, received.Length);
                 ms.Position = 0;
-                receivedList = PositionList.Parser.ParseFrom(ms);
-                receivedList.PList[0].Rotation = 30;
+                receivedList = RobotStructure.Parser.ParseFrom(ms);
+                receivedList.RootJointID = 5000;
             }
 
             Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
-
-            // Testing changes
-            receivedList.PList[0].Rotation = 30;
 
             // Sending data back
             using (MemoryStream ms = new MemoryStream())
@@ -208,6 +205,7 @@ namespace Servers
                 Socket tempSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 IPEndPoint replyEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), replyPort);
 
+                ms.Position = 0;
                 tempSocket.SendTo(receivedList.ToByteArray(), replyEndPoint);
                 tempSocket.Close();
             }
