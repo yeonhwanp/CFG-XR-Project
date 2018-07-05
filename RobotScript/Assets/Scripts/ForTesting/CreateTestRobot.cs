@@ -92,16 +92,18 @@ public class CreateTestRobot : MonoBehaviour {
         jointStorage4.ParentLink = 1;
         jointStorage5.ParentLink = 1;
 
-        //ConstructionManager.GenerateRobot(testStructure); // creates the robot
+        //ConstructionManager.GenerateRobot(testStructure); // creates the robot from local data
         PositionList.CreateList(GameObject.Find("Sphere"), PositionList.PList);
 	}
 
     private void Update()
     {
-        // Configuring the robot
+        // Configuring the robot with server test
         if (Input.GetKeyDown(KeyCode.A))
         {
             StorageProto<RobotStructure> test = ClientUDP<RobotStructure>.UDPSend("127.0.0.1", testerRobot);
+            ConstructionManager.GenerateRobot(test.StoredObject);
+            Debug.Log("done " + test.StoredObject.rootJointID);
         }
 
         // Moving the thing

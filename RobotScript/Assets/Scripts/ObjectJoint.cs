@@ -8,8 +8,6 @@ using ProtoBuf;
 /// Uh... correlation with RobotLink kind of jank.
 /// </summary>
 
-    // NOTE: FOUND SOMETHING OUT TODAY... CAN'T INITIALIZE EMPTY LISTS OUTSIDE OF A FUNCTION???
-
 public class ObjectJoint : MonoBehaviour
 {
 
