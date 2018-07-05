@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using ProtoBuf;
-
+#if end
 /// <summary>
 /// <T> So we can store anything and unwarp generically.
 /// </summary>
@@ -167,3 +166,5 @@ public class PositionStorage : PositionList
 }
 
 #endregion
+
+#endif

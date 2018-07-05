@@ -7,7 +7,8 @@ using System.Net.Sockets;
 using System.IO;
 using System.Threading;
 using System.Net;
-using ProtoBuf;
+using System.Runtime.Serialization.Formatters.Binary;
+using Google.Protobuf;
 
 // Notes: Abstract the protobuf method to <T>
 // Notes: Two separate streams for UDP and TCP.
@@ -183,15 +184,37 @@ namespace Servers
 
             // Currently only PositionList, can change later.
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
-            StorageProto<RobotStructure> receivedList = Decoder<RobotStructure>.DecodeInfo(received);
+
+            // Testing area
+            PositionList receivedList;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ms.Write(received, 0, received.Length);
+                ms.Position = 0;
+                receivedList = PositionList.Parser.ParseFrom(ms);
+                receivedList.PList[0].Rotation = 30;
+            }
+            // Testing area
 
             Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
-            //receivedList.TestStorage.PList[0].Rotation = 30;
-            //receivedList.TestStorage.PList[1].Rotation = 50;
-            byte[] toSend = DataSerializer<StorageProto<RobotStructure>>.SerializeData(receivedList);
-            SendBack(RemoteIPEndPoint.Address, toSend, replyPort);
+            receivedList.PList[0].Rotation = 30;
+
+            // Testing area
+            using (MemoryStream ms = new MemoryStream())
+            {
+                receivedList.WriteTo(ms);
+                Socket tempSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                IPEndPoint replyEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), replyPort);
+
+                tempSocket.SendTo(receivedList.ToByteArray(), replyEndPoint);
+                tempSocket.Close();
+            }
+            // Testing area
+
+            //byte[] toSend = DataSerializer.SerializeData(receivedList);
+            //SendBack(RemoteIPEndPoint.Address, testarray, replyPort);
             Console.WriteLine("Data sent!");
             StartBoth.ListeningMessage();
             StartBoth._UDPlistening = false;
@@ -212,26 +235,26 @@ namespace Servers
     }
 }
 
-
+#if end
 /// <summary>
 /// Returns the deserialized information 
 /// </summary>
-class Decoder<T>
+class Decoder
 {
-    public static StorageProto<T> DecodeInfo(byte[] data)
+    public static PositionList DecodeInfo(byte[] data)
     {
         using (MemoryStream tempStream = new MemoryStream(data))
         {
-            StorageProto<T> receivedList = Serializer.Deserialize<StorageProto<T>>(tempStream);
+            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
 
             return receivedList;
         }
     }
 }
 
-class DataSerializer<T>
+class DataSerializer
 {
-    public static byte[] SerializeData(T data)
+    public static byte[] SerializeData(PositionList data)
     {
         using (var sendStream = new MemoryStream())
         {
@@ -242,3 +265,4 @@ class DataSerializer<T>
     }
 
 }
+#endif

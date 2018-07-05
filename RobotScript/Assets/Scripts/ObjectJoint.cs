@@ -47,7 +47,7 @@ public class ObjectJoint : MonoBehaviour
     // Sets all of the positions of the joints given the new joint position list
     public static void SetJoints(PositionList newJoints, GameObject rootObject)
     {
-        List<PositionStorage> newPositions = newJoints.PList;
+        IList<PositionStorage> newPositions = newJoints.PList;
         List<ObjectJoint> allJoints = rootObject.GetComponent<ObjectJoint>().ChildObjectJoints;
 
         int counter = 0;
@@ -96,6 +96,28 @@ public class ObjectJoint : MonoBehaviour
     private void Start()
     {
         IsRoot = ParentJoint == null ? true : false;
+    }
+}
+
+/// <summary>
+/// I've been confused by this multiple times so I'm going to add a comment here
+/// This class holds a method that fills in PositionStorage.PList.
+/// </summary>
+public static class PositionListCreator
+{
+    public static void CreateList(GameObject rootJoint, IList<PositionStorage> defaultList = null, bool isRoot = true)
+    {
+        List<GameObject> children = rootJoint.GetComponent<ObjectJoint>().ChildJoints;
+        ObjectJoint thisJoint = rootJoint.GetComponent<ObjectJoint>();
+        PositionStorage newStorage = new PositionStorage();
+        newStorage.Rotation = thisJoint.AxisRotation;
+
+        defaultList.Add(newStorage);
+
+        foreach (GameObject joint in children)
+        {
+            CreateList(joint, defaultList, false);
+        }
     }
 }
 

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message PositionList {
+	repeated PositionStorage PList = 1;
+}
+
+message PositionStorage {
+	float Rotation = 1;
+	float Velocity = 2;
+}

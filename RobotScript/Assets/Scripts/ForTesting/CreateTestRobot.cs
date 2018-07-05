@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if end
 // TODO: Remove Colliders --> not important
 // TODO: Add Rigidbody to everything --> not important
 // TODO: Create a "root" joint --> Pretty important but not important to function (i think?)
@@ -118,3 +119,5 @@ public class CreateTestRobot : MonoBehaviour {
         }
     }
 }
+
+#endif
