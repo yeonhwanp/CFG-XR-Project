@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+// This is for joint positions (for now)
 message PositionList {
 	repeated PositionStorage PList = 1;
 }
@@ -7,4 +8,35 @@ message PositionList {
 message PositionStorage {
 	float Rotation = 1;
 	float Velocity = 2;
+}
+
+// This is for robot configuration (for now)
+message RobotStructure {
+	int32 rootJointID = 1;
+	map<int32, JointStorage> JointDict = 2;
+	map<int32, LinkStorage> linkDict = 3;
+}
+
+message JointStorage {
+	repeated float PositionParams = 1;
+	repeated float RotationParams = 2;
+	repeated float AxisParams = 3;
+	repeated int32 ChildrenJoints = 4;
+	int32 ChildrenLink = 5;
+	int32 ParentLink = 6;
+	JointStorage Parent = 7;
+}
+
+message LinkStorage {
+	repeated float PositionParams = 1;
+	repeated float RotationParams = 2;
+	repeated float CenterofMassParams = 3;
+	repeated float ITParams = 4;
+	float mass = 5;
+	ObjectSpecs shape = 6;
+}
+
+message ObjectSpecs {
+	string Type = 1;
+	repeated float ScaleParams = 2;
 }

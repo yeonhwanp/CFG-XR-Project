@@ -7,13 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System;
-using ProtoBuf;
 using Google.Protobuf;
-using System.Runtime.Serialization.Formatters.Binary;
-
-/// <summary>
-/// I dont think we can send/receive multiple at a time... Will have to see about that. Worst case scenario, implement Async.
-/// </summary>
 
 public class ClientUDP
 {
@@ -31,14 +25,11 @@ public class ClientUDP
 
         // Sending Data
         Debug.Log("Sending data...");
-        //byte[] sendBytes = Sender.SerializeData(sendObject);
-
         using (MemoryStream ms = new MemoryStream())
         {
             sendObject.WriteTo(ms);
             thisSocket.SendTo(ms.ToArray(), theEndPoint);
         }
-
         Debug.Log("Data sent!");
 
         // Receiving new Data then returning it.
@@ -46,9 +37,14 @@ public class ClientUDP
 
         using (MemoryStream tempStream = new MemoryStream(receivedBytes))
         {
+            // Writing the data received to the stream
             tempStream.Write(receivedBytes, 0, receivedBytes.Length);
             tempStream.Position = 0;
+
+            // Deserializing
             PositionList receivedList = PositionList.Parser.ParseFrom(tempStream);
+
+            // Closing and returning
             thisSocket.Close();
             listener.Close();
             return receivedList;
@@ -87,29 +83,3 @@ public class ClientTCP
         client.Close();
     }
 }
-
-/// <summary>
-/// Serializes data
-/// </summary>
-class Sender
-{
-    public static byte[] SerializeData<T>(T arg)
-    {
-        try
-        {
-            using (var testStream = new MemoryStream())
-            {
-                Serializer.Serialize(testStream, arg);
-                byte[] returning = testStream.ToArray();
-                return returning;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-            byte[] sendError = Encoding.ASCII.GetBytes(e.ToString());
-            return sendError;
-        }
-    }
-}
-

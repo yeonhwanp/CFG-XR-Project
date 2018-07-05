@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Google.Protobuf;
 
+/// <summary>
+/// Testing sending joint positions
+/// </summary>
+
 public class RobotTestManager : MonoBehaviour {
 
     public GameObject rootObject;

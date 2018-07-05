@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if end
+
 //NOTE: Want to set objects as inactive as we spawn them because... it would look weird otherwise.
 
 /// <summary>
@@ -33,7 +33,7 @@ public class ConstructionManager : MonoBehaviour {
             linkDict.Add(links.Key, GeneratedLink);
         }
 
-        SetTransforms(jointDict[structure.rootJointID], jointDict, linkDict);
+        SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict);
 
     }
 
@@ -46,11 +46,11 @@ public class ConstructionManager : MonoBehaviour {
         GameObject newJoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         ObjectJoint newObjectJoint = newJoint.AddComponent<ObjectJoint>();
         // Putting into right position
-        newJoint.transform.position = new Vector3(jointConfig.xLoc, jointConfig.yLoc, jointConfig.zLoc);
-        newJoint.transform.rotation = new Quaternion(jointConfig.xRot, jointConfig.yRot, jointConfig.zRot, jointConfig.wRot);
+        newJoint.transform.position = new Vector3(jointConfig.PositionParams[0], jointConfig.PositionParams[1], jointConfig.PositionParams[2]);
+        newJoint.transform.rotation = new Quaternion(jointConfig.RotationParams[0], jointConfig.RotationParams[1], jointConfig.RotationParams[2], jointConfig.RotationParams[3]);
         // Setting ObjectJoint Configs
-        newObjectJoint.RotateAxis = new Vector3(jointConfig.xAxisPos, jointConfig.yAxisPos, jointConfig.zAxisPos);
-        newObjectJoint.AxisRotation = jointConfig.RotatePosition;
+        newObjectJoint.RotateAxis = new Vector3(jointConfig.AxisParams[0], jointConfig.AxisParams[1], jointConfig.AxisParams[2]);
+        newObjectJoint.AxisRotation = jointConfig.AxisParams[3];
         newObjectJoint.ChildJointIDs = jointConfig.ChildrenJoints;
         newObjectJoint.ChildLinkID = jointConfig.ChildrenLink;
         newObjectJoint.ParentLinkID = jointConfig.ParentLink;
@@ -65,11 +65,11 @@ public class ConstructionManager : MonoBehaviour {
     /// </summary>
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
-        GameObject newLink = GenerateShape(linkConfig.shape);
+        GameObject newLink = GenerateShape(linkConfig.Shape);
 
-        newLink.transform.localScale = new Vector3(linkConfig.shape.xScale, linkConfig.shape.yScale, linkConfig.shape.zScale);
-        newLink.transform.position = new Vector3(linkConfig.xLoc, linkConfig.yLoc, linkConfig.zLoc);
-        newLink.transform.rotation = new Quaternion(linkConfig.xRot, linkConfig.yRot, linkConfig.zRot, linkConfig.wRot);
+        newLink.transform.localScale = new Vector3(linkConfig.Shape.ScaleParams[0], linkConfig.Shape.ScaleParams[1], linkConfig.Shape.ScaleParams[2]);
+        newLink.transform.position = new Vector3(linkConfig.PositionParams[0], linkConfig.PositionParams[1], linkConfig.PositionParams[2]);
+        newLink.transform.rotation = new Quaternion(linkConfig.RotationParams[0], linkConfig.RotationParams[1], linkConfig.RotationParams[2], linkConfig.RotationParams[3]);
 
         // There should be code here to set COM and inertiatensors, but will leave that for later.
         // Also will do more stuff with this link component... For now it's just... uh... kind of useless
@@ -130,5 +130,3 @@ public class ConstructionManager : MonoBehaviour {
         }
     }
 }
-
-#endif

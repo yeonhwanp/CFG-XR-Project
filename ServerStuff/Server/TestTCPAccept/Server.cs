@@ -185,7 +185,7 @@ namespace Servers
             // Currently only PositionList, can change later.
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
 
-            // Testing area
+            // Receiving data 
             PositionList receivedList;
             using (MemoryStream ms = new MemoryStream())
             {
@@ -194,14 +194,14 @@ namespace Servers
                 receivedList = PositionList.Parser.ParseFrom(ms);
                 receivedList.PList[0].Rotation = 30;
             }
-            // Testing area
 
             Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
             Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
+            // Testing changes
             receivedList.PList[0].Rotation = 30;
 
-            // Testing area
+            // Sending data back
             using (MemoryStream ms = new MemoryStream())
             {
                 receivedList.WriteTo(ms);
@@ -211,10 +211,7 @@ namespace Servers
                 tempSocket.SendTo(receivedList.ToByteArray(), replyEndPoint);
                 tempSocket.Close();
             }
-            // Testing area
 
-            //byte[] toSend = DataSerializer.SerializeData(receivedList);
-            //SendBack(RemoteIPEndPoint.Address, testarray, replyPort);
             Console.WriteLine("Data sent!");
             StartBoth.ListeningMessage();
             StartBoth._UDPlistening = false;
