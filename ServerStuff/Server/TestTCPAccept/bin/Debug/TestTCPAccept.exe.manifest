@@ -42,26 +42,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="protobuf-net.dll" size="273408">
-      <assemblyIdentity name="protobuf-net" version="2.3.13.0" publicKeyToken="257B51D87D2E4D67" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Google.Protobuf.dll" size="294400">
+      <assemblyIdentity name="Google.Protobuf" version="3.5.1.0" publicKeyToken="A7D26565BAC4D604" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>eymBuXs77f6gjxsdHgxm22PdsoFl6wNKE8wbYvywm3I=</dsig:DigestValue>
+        <dsig:DigestValue>Q0MnnUxsH0HEOV1eS9X1+kA8Amv+xr9lY56AA2rjnm4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TestTCPAccept.exe" size="11232">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TestTCPAccept.exe" size="29664">
       <assemblyIdentity name="TestTCPAccept" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>TYobp174Iqb/iOhP8ncw1pBKpwYBzow81mxdQsof7fg=</dsig:DigestValue>
+        <dsig:DigestValue>kmQuvhGg4XH/3pJQfSpDC/pjmpJDnZ8kMvG+dclmTdY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

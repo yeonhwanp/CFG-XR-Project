@@ -20,7 +20,7 @@ public class ObjectJoint : MonoBehaviour
     public bool IsRoot;
 
     // Useful when creating from script
-    public List<int> ChildJointIDs = new List<int>(); 
+    public IList<int> ChildJointIDs = new List<int>(); 
     public int ChildLinkID; 
     public int ParentLinkID; 
 
@@ -31,7 +31,8 @@ public class ObjectJoint : MonoBehaviour
     // Velocity (Not doing anything with this yet)
     public float LocalVelocity = 0.0f;
 
-    // Creates the list of all of the joints --> stored in the root joint
+    // Creates the list of all of the joints --> stored in the root joint (Should only be run on initialization because you don't want to "add" again)
+    // Unless we want to create a new dictionary every time? But that seems redundant and not that useful...
     public static void GetJoints(List<ObjectJoint> defaultList, GameObject initialObject)
     {
         ObjectJoint theJoint = initialObject.GetComponent<ObjectJoint>();
@@ -47,7 +48,7 @@ public class ObjectJoint : MonoBehaviour
     // Sets all of the positions of the joints given the new joint position list
     public static void SetJoints(PositionList newJoints, GameObject rootObject)
     {
-        List<PositionStorage> newPositions = newJoints.PList;
+        IList<PositionStorage> newPositions = newJoints.PList;
         List<ObjectJoint> allJoints = rootObject.GetComponent<ObjectJoint>().ChildObjectJoints;
 
         int counter = 0;
@@ -66,19 +67,23 @@ public class ObjectJoint : MonoBehaviour
         }
     }
 
-    // Run once at start to set all of the properties
+    // Run once at start to set all of the properties --> scales are also taken care of here
     public static void SetParents(GameObject Root)
     {
         ObjectJoint rootJoint = Root.GetComponent<ObjectJoint>();
 
         if (rootJoint.ChildLink != null)
         {
+            Vector3 originalScale = rootJoint.ChildLink.transform.localScale;
             rootJoint.ChildLink.transform.parent = rootJoint.transform;
+            rootJoint.ChildLink.transform.localScale = originalScale;
         }
 
         foreach (GameObject joint in rootJoint.ChildJoints)
         {
+            Vector3 originalScale = joint.transform.localScale;
             joint.transform.parent = rootJoint.transform;
+            joint.transform.localScale = originalScale;
         }
 
         if (rootJoint.ParentLink != null)
@@ -98,5 +103,8 @@ public class ObjectJoint : MonoBehaviour
         IsRoot = ParentJoint == null ? true : false;
     }
 }
+
+
+
 
 

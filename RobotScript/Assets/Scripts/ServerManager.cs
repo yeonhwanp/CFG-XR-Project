@@ -7,44 +7,59 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System;
-using ProtoBuf;
+using Google.Protobuf;
 
-/// <summary>
-/// I dont think we can send/receive multiple at a time... Will have to see about that. Worst case scenario, implement Async.
-/// </summary>
-
-public class ClientUDP<T>
+public class ClientUDP<T> where T: IMessage<T>, new()
 {
-    // ATM just sends data over UDP (but not working because protobuf not workng)
-    public static StorageProto<T> UDPSend(string ipAddress, StorageProto<T> sendObject)
+    public static T UDPSend(int sendPort, T sendObject)
     {
-        const int listenPort = 9999;
-        const int sendPort = 8888;
+        int listenPort = 0;
+        T received;
 
-        Debug.Log("Doing...");
-        UdpClient listener = new UdpClient(listenPort);
-        IPAddress target = IPAddress.Parse(ipAddress);
-        Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        IPAddress target = IPAddress.Parse("127.0.0.1");
         IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
+        Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        // Sending Data
+        if (sendPort == 8888)
+        {
+            listenPort = 9999;
+        }
+        else if (sendPort == 7777)
+        {
+            listenPort = 6666;
+        }
+
+        UdpClient listener = new UdpClient(listenPort);
+
         Debug.Log("Sending data...");
-        byte[] sendBytes = Sender.SerializeData(sendObject);
-        thisSocket.SendTo(sendBytes, theEndPoint);
+        using (MemoryStream ms = new MemoryStream())
+        {
+            sendObject.WriteTo(ms);
+            thisSocket.SendTo(ms.ToArray(), theEndPoint);
+        }
         Debug.Log("Data sent!");
-
-        // Receiving new Data then returning it.
         byte[] receivedBytes = listener.Receive(ref theEndPoint);
+
+        // Writing received data
         using (MemoryStream tempStream = new MemoryStream(receivedBytes))
         {
-            StorageProto<T> receivedList = Serializer.Deserialize<StorageProto<T>>(tempStream);
+            // Writing the data received to the stream
+            tempStream.Write(receivedBytes, 0, receivedBytes.Length);
+            tempStream.Position = 0;
+
+            // Deserializing
+            MessageParser<T> parser = new MessageParser<T>(() => new T());
+            received = parser.ParseFrom(tempStream);
+
+            // Closing and returning
             thisSocket.Close();
             listener.Close();
-            return receivedList;
+            return received;
         }
     }
 }
 
+#if end
 public class ClientTCP
 {
     private const int port = 15000;
@@ -76,29 +91,4 @@ public class ClientTCP
         client.Close();
     }
 }
-
-/// <summary>
-/// Serializes data
-/// </summary>
-class Sender
-{
-    public static byte[] SerializeData<T>(T arg)
-    {
-        try
-        {
-            using (var testStream = new MemoryStream())
-            {
-                Serializer.Serialize(testStream, arg);
-                byte[] returning = testStream.ToArray();
-                return returning;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-            byte[] sendError = Encoding.ASCII.GetBytes(e.ToString());
-            return sendError;
-        }
-    }
-}
-
+#endif
