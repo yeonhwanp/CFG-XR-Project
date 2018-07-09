@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using Google.Protobuf;
 
 
 // TODO: Remove Colliders --> not important
@@ -18,20 +20,20 @@ using UnityEngine;
 public class CreateTestRobot : MonoBehaviour {
 
     // For sending configuration over
-    public RobotStructure testerRobot = new RobotStructure();
+    public RobotStructure testStructure = new RobotStructure();
     public PositionList testList = new PositionList();
 
     // Use this for initialization
     void Start ()
     {
         // Creating the structure
-        RobotStructure testStructure = new RobotStructure();
+
         testStructure.RootJointID = 1;
 
         // Creating RootJoint
         Vector3 onePos = new Vector3(0, 5, 0);
         Quaternion oneRot = new Quaternion(0, 0, 0, 0);
-        Vector3 Axis = new Vector3(1, 0, 0);
+        Vector3 Axis = new Vector3(0, 0, 1);
         float Rotation = 0;
         JointStorage jointStorage1 = MakeMethods.MakeJoint(onePos, oneRot, Axis, Rotation, isRoot: true);
         testStructure.JointDict.Add(1, jointStorage1);
@@ -88,8 +90,7 @@ public class CreateTestRobot : MonoBehaviour {
         jointStorage4.ParentLink = 1;
         jointStorage5.ParentLink = 1;
 
-        ConstructionManager.GenerateRobot(testStructure); // creates the robot from local data
-        PositionListCreator.CreateList(GameObject.Find("Sphere"), testList.PList);
+        //ConstructionManager.GenerateRobot(testStructure); // creates the robot from local data
 	}
 
     private void Update()
@@ -97,22 +98,17 @@ public class CreateTestRobot : MonoBehaviour {
         // Configuring the robot with server test
         if (Input.GetKeyDown(KeyCode.A))
         {
-            RobotStructure test = ClientUDP.UDPSend("127.0.0.1", testerRobot);
-            Debug.Log("asdhklfjdsf");
+            RobotStructure test = ClientUDP<RobotStructure>.UDPSend(8888, testStructure);
             ConstructionManager.GenerateRobot(test);
-            Debug.Log("done " + test.RootJointID);
+            ObjectJoint.GetJoints(GameObject.Find("Sphere").GetComponent<ObjectJoint>().ChildObjectJoints, GameObject.Find("Sphere"));
         }
 
-        //// Moving the thing
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    testerPosition.StoredObject = PositionList;
-        //    StorageProto<PositionList> test = ClientUDP<PositionList>.UDPSend("127.0.0.1", testerPosition);
-        //    PositionList newList = test.StoredObject;
-
-        //    ObjectJoint.GetJoints(GameObject.Find("Sphere").GetComponent<ObjectJoint>().ChildObjectJoints, GameObject.Find("Sphere"));
-        //    ObjectJoint.SetJoints(newList, GameObject.Find("Sphere"));
-        //}
+        // Moving the thing
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PositionListCreator.CreateList(GameObject.Find("Sphere"), testList.PList);
+            PositionList newList = ClientUDP<PositionList>.UDPSend(7777, testList);
+            ObjectJoint.SetJoints(newList, GameObject.Find("Sphere"));
+        }
     }
 }
-

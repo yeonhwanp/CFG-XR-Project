@@ -9,21 +9,28 @@ using System.Text;
 using System;
 using Google.Protobuf;
 
-public class ClientUDP
+public class ClientUDP<T> where T: IMessage<T>, new()
 {
-    // ATM just sends data over UDP (but not working because protobuf not workng)
-    public static RobotStructure UDPSend(string ipAddress, RobotStructure sendObject)
+    public static T UDPSend(int sendPort, T sendObject)
     {
-        const int listenPort = 9999;
-        const int sendPort = 8888;
+        int listenPort = 0;
+        T received;
 
-        Debug.Log("Doing...");
-        UdpClient listener = new UdpClient(listenPort);
-        IPAddress target = IPAddress.Parse(ipAddress);
-        Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        IPAddress target = IPAddress.Parse("127.0.0.1");
         IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
+        Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        // Sending Data
+        if (sendPort == 8888)
+        {
+            listenPort = 9999;
+        }
+        else if (sendPort == 7777)
+        {
+            listenPort = 6666;
+        }
+
+        UdpClient listener = new UdpClient(listenPort);
+
         Debug.Log("Sending data...");
         using (MemoryStream ms = new MemoryStream())
         {
@@ -31,10 +38,9 @@ public class ClientUDP
             thisSocket.SendTo(ms.ToArray(), theEndPoint);
         }
         Debug.Log("Data sent!");
-
-        // Receiving new Data then returning it.
         byte[] receivedBytes = listener.Receive(ref theEndPoint);
 
+        // Writing received data
         using (MemoryStream tempStream = new MemoryStream(receivedBytes))
         {
             // Writing the data received to the stream
@@ -42,16 +48,18 @@ public class ClientUDP
             tempStream.Position = 0;
 
             // Deserializing
-            RobotStructure receivedList = RobotStructure.Parser.ParseFrom(tempStream);
+            MessageParser<T> parser = new MessageParser<T>(() => new T());
+            received = parser.ParseFrom(tempStream);
 
             // Closing and returning
             thisSocket.Close();
             listener.Close();
-            return receivedList;
+            return received;
         }
     }
 }
 
+#if end
 public class ClientTCP
 {
     private const int port = 15000;
@@ -83,3 +91,4 @@ public class ClientTCP
         client.Close();
     }
 }
+#endif

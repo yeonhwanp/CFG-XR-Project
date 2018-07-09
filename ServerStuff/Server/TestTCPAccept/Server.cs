@@ -25,45 +25,64 @@ namespace Servers
 
         // Ports to be used
         private const int TCPInPort = 15000;
-        private const int UDPInPort = 8888;
-        private const int UDPOutPort = 9999;
+        private const int UDPStructureInPort = 8888;
+        private const int UDPStructureOutPort = 9999;
+        private const int UDPPositionInPort = 7777;
+        private const int UDPPositionOutPort = 6666;
 
+        #region TCP stuff
         // TCP network stuff 
-        static IPAddress local = IPAddress.Parse("127.0.0.1");
-        static IPEndPoint TCPEndPoint = new IPEndPoint(local, TCPInPort);
-        static Socket TCPlistener = new Socket(local.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        //static IPAddress local = IPAddress.Parse("127.0.0.1");
+        //static IPEndPoint TCPEndPoint = new IPEndPoint(local, TCPInPort);
+        //static Socket TCPlistener = new Socket(local.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        #endregion
 
         // UDP network stuff
-        public static UdpClient UDPlistener = new UdpClient(UDPInPort);
+        public static UdpClient UDPStructureListener = new UdpClient(UDPStructureInPort);
+        public static UdpClient UDPPositionListener = new UdpClient(UDPPositionInPort);
 
         public static bool _TCPlistening = false;
-        public static bool _UDPlistening = false;
+        public static bool _Structurelistening = false;
+        public static bool _Positionlistening = false;
 
-        
+
         public static void StartListening()
         {
 
             // Doing some stuff at start
-            TCPlistener.Bind(TCPEndPoint);
+            //TCPlistener.Bind(TCPEndPoint);
             Console.WriteLine("Waiting for connections...");
 
             while (true)
             {
                 try
                 {
-                    // Don't know what this code is for but it was there before
-                    TCPlistener.Listen(100);
 
-                    // Only activate the listeners if they're not already launched. If they are, just skips right over.
-                    if (!_TCPlistening)
+                    #region TCP stuff
+                    //// Don't know what this code is for but it was there before
+                    //TCPlistener.Listen(100);
+
+                    //// Only activate the listeners if they're not already launched. If they are, just skips right over.
+                    //if (!_TCPlistening)
+                    //{
+                    //    _TCPlistening = true;
+                    //    TCPlistener.BeginAccept(new AsyncCallback(TCPAsyncListener.AcceptCallBack), TCPlistener);
+                    //}   
+                    #endregion
+
+                    // Start the individual servers if they're not listening on different threads
+
+                    if (!_Structurelistening)
                     {
-                        _TCPlistening = true;
-                        TCPlistener.BeginAccept(new AsyncCallback(TCPAsyncListener.AcceptCallBack), TCPlistener);
-                    }   
-                    if (!_UDPlistening)
+                        _Structurelistening = true;
+
+                        UDPStructureListener.BeginReceive(new AsyncCallback(UDPAsyncListener<RobotStructure>.ReadCallBack), UDPStructureListener);
+                    }
+
+                    if (!_Positionlistening)
                     {
-                        _UDPlistening = true;
-                        UDPlistener.BeginReceive(new AsyncCallback(UDPAsyncListener.ReadCallBack), UDPlistener);
+                        _Positionlistening = true;
+                        UDPPositionListener.BeginReceive(new AsyncCallback(UDPAsyncListener<PositionList>.ReadCallBack), UDPPositionListener);
                     }
                 }
 
@@ -83,6 +102,8 @@ namespace Servers
             Console.WriteLine("Waiting for Connection...");
         }
     }
+
+#if end
 
     /// <summary>
     /// Object for helping the TCPlistener.
@@ -162,14 +183,21 @@ namespace Servers
         }
     }
 
+#endif 
     /// <summary>
-    /// A class to represent all of the work done through a UDP connection.
-    /// UDPAsyncListener Port: 8888
+    /// A class to handle all of the UDP connections.
     /// </summary>
-    public class UDPAsyncListener
+
+    // But the question is... am i even using <T>? Am I doing this right?
+
+    public class UDPAsyncListener<T> where T : IMessage<T>, new()
     {
-        private const int listenPort = 8888;
-        private const int replyPort = 9999;
+
+        private static int listenPort;
+        private static int replyPort;
+        private static RobotStructure receivedStructure;
+        private static PositionList receivedList;
+
 
         /// <summary>
         /// Goes here after receiving a signal
@@ -178,86 +206,75 @@ namespace Servers
         {
             UdpClient client = (UdpClient)res.AsyncState;
             IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
-
             Console.WriteLine("----------------------");
             Console.WriteLine("UDP Connection made. Receiving data...");
 
-            // Currently only PositionList, can change later.
             byte[] received = client.EndReceive(res, ref RemoteIPEndPoint);
+            listenPort = ((IPEndPoint)client.Client.LocalEndPoint).Port;
+            Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
+            Console.WriteLine("Sending back changed position for debugging/testing purposes...");
 
-            // Receiving data 
-            RobotStructure receivedList;
             using (MemoryStream ms = new MemoryStream())
             {
                 ms.Write(received, 0, received.Length);
                 ms.Position = 0;
-                receivedList = RobotStructure.Parser.ParseFrom(ms);
-                receivedList.RootJointID = 5000;
+
+                if (listenPort == 8888)
+                {
+                    replyPort = 9999;
+                    MessageParser<RobotStructure> parser = new MessageParser<RobotStructure>(() => new RobotStructure());
+                    receivedStructure = parser.ParseFrom(ms);
+                    receivedStructure.RootJointID = 1;
+                    ms.Position = 0;
+                    SendBackStructure(receivedStructure);
+                }
+
+                else if (listenPort == 7777)
+                {
+                    replyPort = 6666;
+                    MessageParser<PositionList> parser = new MessageParser<PositionList>(() => new PositionList());
+                    receivedList = parser.ParseFrom(ms);
+                    receivedList.PList[0].Rotation = 30;
+                    ms.Position = 0;
+                    SendBackPositions(receivedList);
+                }
+
             }
+        }
 
-            Console.WriteLine("Data received from: {0} at Port: {1}", RemoteIPEndPoint.Address.ToString(), listenPort.ToString());
-            Console.WriteLine("Sending back changed position for debugging/testing purposes...");
-
-            // Sending data back
+        public static void SendBackStructure(RobotStructure received)
+        {
             using (MemoryStream ms = new MemoryStream())
             {
-                receivedList.WriteTo(ms);
+                received.WriteTo(ms);
                 Socket tempSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 IPEndPoint replyEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), replyPort);
-
                 ms.Position = 0;
-                tempSocket.SendTo(receivedList.ToByteArray(), replyEndPoint);
+                tempSocket.SendTo(received.ToByteArray(), replyEndPoint);
                 tempSocket.Close();
             }
 
             Console.WriteLine("Data sent!");
             StartBoth.ListeningMessage();
-            StartBoth._UDPlistening = false;
+            StartBoth._Structurelistening = false;
         }
 
-        /// <summary>
-        /// Sends back the data provided a sendback request.
-        /// </summary>
-        public static void SendBack(IPAddress otherIP, byte[] data, int replyPort)
+        public static void SendBackPositions(PositionList received)
         {
-            Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint replyEndPoint = new IPEndPoint(otherIP, replyPort);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                received.WriteTo(ms);
+                Socket tempSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                IPEndPoint replyEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), replyPort);
+                ms.Position = 0;
+                tempSocket.SendTo(received.ToByteArray(), replyEndPoint);
+                tempSocket.Close();
+            }
 
-            thisSocket.SendTo(data, replyEndPoint);
-            Console.WriteLine("Data sent back.");
-            Console.WriteLine();
+            Console.WriteLine("Data sent!");
+            StartBoth.ListeningMessage();
+            StartBoth._Positionlistening = false;
         }
     }
 }
 
-#if end
-/// <summary>
-/// Returns the deserialized information 
-/// </summary>
-class Decoder
-{
-    public static PositionList DecodeInfo(byte[] data)
-    {
-        using (MemoryStream tempStream = new MemoryStream(data))
-        {
-            PositionList receivedList = Serializer.Deserialize<PositionList>(tempStream);
-
-            return receivedList;
-        }
-    }
-}
-
-class DataSerializer
-{
-    public static byte[] SerializeData(PositionList data)
-    {
-        using (var sendStream = new MemoryStream())
-        {
-            Serializer.Serialize(sendStream, data);
-            byte[] returning = sendStream.ToArray();
-            return returning;
-        }
-    }
-
-}
-#endif

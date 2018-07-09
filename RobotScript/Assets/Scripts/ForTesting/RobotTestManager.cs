@@ -7,7 +7,6 @@ using Google.Protobuf;
 /// Testing sending joint positions
 /// </summary>
 
-#if end
 public class RobotTestManager : MonoBehaviour {
 
     public GameObject rootObject;
@@ -26,13 +25,12 @@ public class RobotTestManager : MonoBehaviour {
         //For testing purposes-- > sends joint information then gets updated joint information, updates the information.
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PositionList newList = ClientUDP.UDPSend("127.0.0.1", testList);
+            testList.PList[0].Rotation = 30;
+            testList.PList[1].Rotation = 60;
             ObjectJoint.GetJoints(rootObject.GetComponent<ObjectJoint>().ChildObjectJoints, rootObject);
-            Debug.Log(newList.PList[0].Rotation);
-            ObjectJoint.SetJoints(newList, rootObject);
+            ObjectJoint.SetJoints(testList, rootObject);
             Debug.Log("Complete!");
         }
     }
 }
 
-#endif

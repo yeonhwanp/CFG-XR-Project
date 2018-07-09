@@ -35,6 +35,8 @@ public class ConstructionManager : MonoBehaviour {
 
         if (jointDict.ContainsKey(structure.RootJointID))
             SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict);
+        else
+            Debug.Log("RootJoint not found.");
 
     }
 
@@ -58,11 +60,16 @@ public class ConstructionManager : MonoBehaviour {
         newObjectJoint.ChildJoints = new List<GameObject>();
         newObjectJoint.ChildObjectJoints = new List<ObjectJoint>();
 
+        Rigidbody newRigid = newJoint.AddComponent<Rigidbody>();
+        newRigid.isKinematic = true;
+        newRigid.useGravity = false;
+        Destroy(newJoint.GetComponent<Collider>());
+
         return newJoint;
     }
 
     /// <summary>
-    /// Method to recreate a link
+    /// Method to recreate a link 
     /// </summary>
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
@@ -75,6 +82,11 @@ public class ConstructionManager : MonoBehaviour {
         // There should be code here to set COM and inertiatensors, but will leave that for later.
         // Also will do more stuff with this link component... For now it's just... uh... kind of useless
         RobotLink newRobotLink = newLink.AddComponent<RobotLink>();
+
+        Rigidbody newRigid = newLink.AddComponent<Rigidbody>();
+        newRigid.isKinematic = true;
+        newRigid.useGravity = false;
+        Destroy(newLink.GetComponent<Collider>());
 
         return newLink;
     }
