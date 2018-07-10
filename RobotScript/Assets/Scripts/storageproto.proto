@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+// NOTE: Add features: Fixed or not fixed (root), add revolute joint for the world or 6DOF (if it's not fixed)
+
 // This is for joint positions (for now)
 message PositionList {
 	repeated PositionStorage PList = 1;
@@ -18,9 +20,9 @@ message RobotStructure {
 }
 
 message JointStorage {
-	repeated float PositionParams = 1;
-	repeated float RotationParams = 2;
-	repeated float AxisParams = 3;
+	repeated float PositionParams = 1; //Make a vec3d message
+	repeated float RotationParams = 2; //Make a vec3d message
+	repeated float AxisParams = 3; //Make a vec3d message
 	repeated int32 ChildrenJoints = 4;
 	int32 ChildrenLink = 5;
 	int32 ParentLink = 6;
@@ -28,8 +30,8 @@ message JointStorage {
 }
 
 message LinkStorage {
-	repeated float PositionParams = 1;
-	repeated float RotationParams = 2;
+	repeated float PositionParams = 1; //Make a vec3d message
+	repeated float RotationParams = 2; //Make a vec3d message
 	repeated float CenterofMassParams = 3;
 	repeated float ITParams = 4;
 	float mass = 5;
@@ -37,6 +39,12 @@ message LinkStorage {
 }
 
 message ObjectSpecs {
-	string Type = 1;
-	repeated float ScaleParams = 2;
+	string Type = 1; //enum
+	repeated float ScaleParams = 2; //Add some documentation saying prarameters for each supported type
+}
+
+message Vector3d{
+	float x = 1;
+	float y = 2;
+	float z = 3;
 }
