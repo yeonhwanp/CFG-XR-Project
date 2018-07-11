@@ -34,7 +34,7 @@ public class ConstructionManager : MonoBehaviour {
         }
 
         if (jointDict.ContainsKey(structure.RootJointID))
-            SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict);
+            SetTransforms(jointDict[structure.RootJointID], jointDict, linkDict, true);
         else
             Debug.Log("RootJoint not found.");
 
@@ -58,7 +58,6 @@ public class ConstructionManager : MonoBehaviour {
         newObjectJoint.ChildLinkID = jointConfig.ChildrenLink;
         newObjectJoint.ParentLinkID = jointConfig.ParentLink;
         newObjectJoint.ChildJoints = new List<GameObject>();
-        newObjectJoint.ChildObjectJoints = new List<ObjectJoint>();
 
         Rigidbody newRigid = newJoint.AddComponent<Rigidbody>();
         newRigid.isKinematic = true;
@@ -107,15 +106,24 @@ public class ConstructionManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets all of the transforms.
+    /// Sets all of the transforms. (Used a different method to fix the thing)
     /// </summary>
-    public static void SetTransforms(GameObject root, Dictionary<int, GameObject> jointDict, Dictionary<int, GameObject> linkDict)
+    public static void SetTransforms(GameObject root, Dictionary<int, GameObject> jointDict, Dictionary<int, GameObject> linkDict, bool _isRoot=false)
     {
+        // Setting up the reference dict here, should only be run in the beginning.
+        if (_isRoot)
+        {
+            foreach (KeyValuePair<int, GameObject> pair in jointDict)
+            {
+                root.GetComponent<ObjectJoint>().ReferenceDict.Add(pair.Key, pair.Value);
+            }
+        }
+
         ObjectJoint rootJoint = root.GetComponent<ObjectJoint>();
 
         if (rootJoint.ChildLinkID != 0)
         {
-             
+
             rootJoint.ChildLink = linkDict[rootJoint.ChildLinkID];
             rootJoint.ChildLink.transform.parent = rootJoint.transform;
         }
@@ -131,8 +139,11 @@ public class ConstructionManager : MonoBehaviour {
 
         if (rootJoint.ParentLinkID != 0)
         {
+            GameObject ScaleProtection = new GameObject();
+            ScaleProtection.name = "ScaleProtection";
             rootJoint.ParentLink = linkDict[rootJoint.ParentLinkID];
-            rootJoint.transform.parent = rootJoint.ParentLink.transform;
+            ScaleProtection.transform.parent = rootJoint.ParentLink.transform;
+            rootJoint.transform.parent = ScaleProtection.transform;
         }
 
         foreach (int ID in rootJoint.ChildJointIDs)

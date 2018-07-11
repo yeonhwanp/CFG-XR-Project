@@ -4,7 +4,7 @@ syntax = "proto3";
 
 // This is for joint positions (for now)
 message PositionList {
-	repeated PositionStorage PList = 1;
+	map<int32, PositionStorage> PList = 1;
 }
 
 message PositionStorage {

@@ -22,33 +22,37 @@ public static partial class StorageprotoReflection {
   static StorageprotoReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "ChJTdG9yYWdlcHJvdG8ucHJvdG8iLwoMUG9zaXRpb25MaXN0Eh8KBVBMaXN0",
-          "GAEgAygLMhAuUG9zaXRpb25TdG9yYWdlIjUKD1Bvc2l0aW9uU3RvcmFnZRIQ",
-          "CghSb3RhdGlvbhgBIAEoAhIQCghWZWxvY2l0eRgCIAEoAiKJAgoOUm9ib3RT",
-          "dHJ1Y3R1cmUSEwoLcm9vdEpvaW50SUQYASABKAUSMQoJSm9pbnREaWN0GAIg",
-          "AygLMh4uUm9ib3RTdHJ1Y3R1cmUuSm9pbnREaWN0RW50cnkSLwoIbGlua0Rp",
-          "Y3QYAyADKAsyHS5Sb2JvdFN0cnVjdHVyZS5MaW5rRGljdEVudHJ5Gj8KDkpv",
-          "aW50RGljdEVudHJ5EgsKA2tleRgBIAEoBRIcCgV2YWx1ZRgCIAEoCzINLkpv",
-          "aW50U3RvcmFnZToCOAEaPQoNTGlua0RpY3RFbnRyeRILCgNrZXkYASABKAUS",
-          "GwoFdmFsdWUYAiABKAsyDC5MaW5rU3RvcmFnZToCOAEiswEKDEpvaW50U3Rv",
-          "cmFnZRIWCg5Qb3NpdGlvblBhcmFtcxgBIAMoAhIWCg5Sb3RhdGlvblBhcmFt",
-          "cxgCIAMoAhISCgpBeGlzUGFyYW1zGAMgAygCEhYKDkNoaWxkcmVuSm9pbnRz",
-          "GAQgAygFEhQKDENoaWxkcmVuTGluaxgFIAEoBRISCgpQYXJlbnRMaW5rGAYg",
-          "ASgFEh0KBlBhcmVudBgHIAEoCzINLkpvaW50U3RvcmFnZSKWAQoLTGlua1N0",
-          "b3JhZ2USFgoOUG9zaXRpb25QYXJhbXMYASADKAISFgoOUm90YXRpb25QYXJh",
-          "bXMYAiADKAISGgoSQ2VudGVyb2ZNYXNzUGFyYW1zGAMgAygCEhAKCElUUGFy",
-          "YW1zGAQgAygCEgwKBG1hc3MYBSABKAISGwoFc2hhcGUYBiABKAsyDC5PYmpl",
-          "Y3RTcGVjcyIwCgtPYmplY3RTcGVjcxIMCgRUeXBlGAEgASgJEhMKC1NjYWxl",
-          "UGFyYW1zGAIgAygCYgZwcm90bzM="));
+          "ChJTdG9yYWdlcHJvdG8ucHJvdG8idwoMUG9zaXRpb25MaXN0EicKBVBMaXN0",
+          "GAEgAygLMhguUG9zaXRpb25MaXN0LlBMaXN0RW50cnkaPgoKUExpc3RFbnRy",
+          "eRILCgNrZXkYASABKAUSHwoFdmFsdWUYAiABKAsyEC5Qb3NpdGlvblN0b3Jh",
+          "Z2U6AjgBIjUKD1Bvc2l0aW9uU3RvcmFnZRIQCghSb3RhdGlvbhgBIAEoAhIQ",
+          "CghWZWxvY2l0eRgCIAEoAiKJAgoOUm9ib3RTdHJ1Y3R1cmUSEwoLcm9vdEpv",
+          "aW50SUQYASABKAUSMQoJSm9pbnREaWN0GAIgAygLMh4uUm9ib3RTdHJ1Y3R1",
+          "cmUuSm9pbnREaWN0RW50cnkSLwoIbGlua0RpY3QYAyADKAsyHS5Sb2JvdFN0",
+          "cnVjdHVyZS5MaW5rRGljdEVudHJ5Gj8KDkpvaW50RGljdEVudHJ5EgsKA2tl",
+          "eRgBIAEoBRIcCgV2YWx1ZRgCIAEoCzINLkpvaW50U3RvcmFnZToCOAEaPQoN",
+          "TGlua0RpY3RFbnRyeRILCgNrZXkYASABKAUSGwoFdmFsdWUYAiABKAsyDC5M",
+          "aW5rU3RvcmFnZToCOAEiswEKDEpvaW50U3RvcmFnZRIWCg5Qb3NpdGlvblBh",
+          "cmFtcxgBIAMoAhIWCg5Sb3RhdGlvblBhcmFtcxgCIAMoAhISCgpBeGlzUGFy",
+          "YW1zGAMgAygCEhYKDkNoaWxkcmVuSm9pbnRzGAQgAygFEhQKDENoaWxkcmVu",
+          "TGluaxgFIAEoBRISCgpQYXJlbnRMaW5rGAYgASgFEh0KBlBhcmVudBgHIAEo",
+          "CzINLkpvaW50U3RvcmFnZSKWAQoLTGlua1N0b3JhZ2USFgoOUG9zaXRpb25Q",
+          "YXJhbXMYASADKAISFgoOUm90YXRpb25QYXJhbXMYAiADKAISGgoSQ2VudGVy",
+          "b2ZNYXNzUGFyYW1zGAMgAygCEhAKCElUUGFyYW1zGAQgAygCEgwKBG1hc3MY",
+          "BSABKAISGwoFc2hhcGUYBiABKAsyDC5PYmplY3RTcGVjcyIwCgtPYmplY3RT",
+          "cGVjcxIMCgRUeXBlGAEgASgJEhMKC1NjYWxlUGFyYW1zGAIgAygCIisKCFZl",
+          "Y3RvcjNkEgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgCYgZwcm90",
+          "bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::PositionList), global::PositionList.Parser, new[]{ "PList" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::PositionList), global::PositionList.Parser, new[]{ "PList" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
           new pbr::GeneratedClrTypeInfo(typeof(global::PositionStorage), global::PositionStorage.Parser, new[]{ "Rotation", "Velocity" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::RobotStructure), global::RobotStructure.Parser, new[]{ "RootJointID", "JointDict", "LinkDict" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
           new pbr::GeneratedClrTypeInfo(typeof(global::JointStorage), global::JointStorage.Parser, new[]{ "PositionParams", "RotationParams", "AxisParams", "ChildrenJoints", "ChildrenLink", "ParentLink", "Parent" }, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::LinkStorage), global::LinkStorage.Parser, new[]{ "PositionParams", "RotationParams", "CenterofMassParams", "ITParams", "Mass", "Shape" }, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ObjectSpecs), global::ObjectSpecs.Parser, new[]{ "Type", "ScaleParams" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::ObjectSpecs), global::ObjectSpecs.Parser, new[]{ "Type", "ScaleParams" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Vector3d), global::Vector3d.Parser, new[]{ "X", "Y", "Z" }, null, null, null)
         }));
   }
   #endregion
@@ -94,11 +98,11 @@ public sealed partial class PositionList : pb::IMessage<PositionList> {
 
   /// <summary>Field number for the "PList" field.</summary>
   public const int PListFieldNumber = 1;
-  private static readonly pb::FieldCodec<global::PositionStorage> _repeated_pList_codec
-      = pb::FieldCodec.ForMessage(10, global::PositionStorage.Parser);
-  private readonly pbc::RepeatedField<global::PositionStorage> pList_ = new pbc::RepeatedField<global::PositionStorage>();
+  private static readonly pbc::MapField<int, global::PositionStorage>.Codec _map_pList_codec
+      = new pbc::MapField<int, global::PositionStorage>.Codec(pb::FieldCodec.ForInt32(8), pb::FieldCodec.ForMessage(18, global::PositionStorage.Parser), 10);
+  private readonly pbc::MapField<int, global::PositionStorage> pList_ = new pbc::MapField<int, global::PositionStorage>();
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  public pbc::RepeatedField<global::PositionStorage> PList {
+  public pbc::MapField<int, global::PositionStorage> PList {
     get { return pList_; }
   }
 
@@ -115,14 +119,14 @@ public sealed partial class PositionList : pb::IMessage<PositionList> {
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if(!pList_.Equals(other.pList_)) return false;
+    if (!PList.Equals(other.PList)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public override int GetHashCode() {
     int hash = 1;
-    hash ^= pList_.GetHashCode();
+    hash ^= PList.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -136,7 +140,7 @@ public sealed partial class PositionList : pb::IMessage<PositionList> {
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public void WriteTo(pb::CodedOutputStream output) {
-    pList_.WriteTo(output, _repeated_pList_codec);
+    pList_.WriteTo(output, _map_pList_codec);
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -145,7 +149,7 @@ public sealed partial class PositionList : pb::IMessage<PositionList> {
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public int CalculateSize() {
     int size = 0;
-    size += pList_.CalculateSize(_repeated_pList_codec);
+    size += pList_.CalculateSize(_map_pList_codec);
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
     }
@@ -170,7 +174,7 @@ public sealed partial class PositionList : pb::IMessage<PositionList> {
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          pList_.AddEntriesFrom(input, _repeated_pList_codec);
+          pList_.AddEntriesFrom(input, _map_pList_codec);
           break;
         }
       }
@@ -553,6 +557,9 @@ public sealed partial class JointStorage : pb::IMessage<JointStorage> {
   private static readonly pb::FieldCodec<float> _repeated_positionParams_codec
       = pb::FieldCodec.ForFloat(10);
   private readonly pbc::RepeatedField<float> positionParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Make a vec3d message
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> PositionParams {
     get { return positionParams_; }
@@ -563,6 +570,9 @@ public sealed partial class JointStorage : pb::IMessage<JointStorage> {
   private static readonly pb::FieldCodec<float> _repeated_rotationParams_codec
       = pb::FieldCodec.ForFloat(18);
   private readonly pbc::RepeatedField<float> rotationParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Make a vec3d message
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> RotationParams {
     get { return rotationParams_; }
@@ -573,6 +583,9 @@ public sealed partial class JointStorage : pb::IMessage<JointStorage> {
   private static readonly pb::FieldCodec<float> _repeated_axisParams_codec
       = pb::FieldCodec.ForFloat(26);
   private readonly pbc::RepeatedField<float> axisParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Make a vec3d message
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> AxisParams {
     get { return axisParams_; }
@@ -827,6 +840,9 @@ public sealed partial class LinkStorage : pb::IMessage<LinkStorage> {
   private static readonly pb::FieldCodec<float> _repeated_positionParams_codec
       = pb::FieldCodec.ForFloat(10);
   private readonly pbc::RepeatedField<float> positionParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Make a vec3d message
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> PositionParams {
     get { return positionParams_; }
@@ -837,6 +853,9 @@ public sealed partial class LinkStorage : pb::IMessage<LinkStorage> {
   private static readonly pb::FieldCodec<float> _repeated_rotationParams_codec
       = pb::FieldCodec.ForFloat(18);
   private readonly pbc::RepeatedField<float> rotationParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Make a vec3d message
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> RotationParams {
     get { return rotationParams_; }
@@ -1068,6 +1087,9 @@ public sealed partial class ObjectSpecs : pb::IMessage<ObjectSpecs> {
   /// <summary>Field number for the "Type" field.</summary>
   public const int TypeFieldNumber = 1;
   private string type_ = "";
+  /// <summary>
+  ///enum
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public string Type {
     get { return type_; }
@@ -1081,6 +1103,9 @@ public sealed partial class ObjectSpecs : pb::IMessage<ObjectSpecs> {
   private static readonly pb::FieldCodec<float> _repeated_scaleParams_codec
       = pb::FieldCodec.ForFloat(18);
   private readonly pbc::RepeatedField<float> scaleParams_ = new pbc::RepeatedField<float>();
+  /// <summary>
+  ///Add some documentation saying prarameters for each supported type
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   public pbc::RepeatedField<float> ScaleParams {
     get { return scaleParams_; }
@@ -1172,6 +1197,191 @@ public sealed partial class ObjectSpecs : pb::IMessage<ObjectSpecs> {
         case 18:
         case 21: {
           scaleParams_.AddEntriesFrom(input, _repeated_scaleParams_codec);
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+public sealed partial class Vector3d : pb::IMessage<Vector3d> {
+  private static readonly pb::MessageParser<Vector3d> _parser = new pb::MessageParser<Vector3d>(() => new Vector3d());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pb::MessageParser<Vector3d> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::StorageprotoReflection.Descriptor.MessageTypes[6]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Vector3d() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Vector3d(Vector3d other) : this() {
+    x_ = other.x_;
+    y_ = other.y_;
+    z_ = other.z_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public Vector3d Clone() {
+    return new Vector3d(this);
+  }
+
+  /// <summary>Field number for the "x" field.</summary>
+  public const int XFieldNumber = 1;
+  private float x_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public float X {
+    get { return x_; }
+    set {
+      x_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "y" field.</summary>
+  public const int YFieldNumber = 2;
+  private float y_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public float Y {
+    get { return y_; }
+    set {
+      y_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "z" field.</summary>
+  public const int ZFieldNumber = 3;
+  private float z_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public float Z {
+    get { return z_; }
+    set {
+      z_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override bool Equals(object other) {
+    return Equals(other as Vector3d);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public bool Equals(Vector3d other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(X, other.X)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Y, other.Y)) return false;
+    if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Z, other.Z)) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (X != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(X);
+    if (Y != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Y);
+    if (Z != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Z);
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void WriteTo(pb::CodedOutputStream output) {
+    if (X != 0F) {
+      output.WriteRawTag(13);
+      output.WriteFloat(X);
+    }
+    if (Y != 0F) {
+      output.WriteRawTag(21);
+      output.WriteFloat(Y);
+    }
+    if (Z != 0F) {
+      output.WriteRawTag(29);
+      output.WriteFloat(Z);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public int CalculateSize() {
+    int size = 0;
+    if (X != 0F) {
+      size += 1 + 4;
+    }
+    if (Y != 0F) {
+      size += 1 + 4;
+    }
+    if (Z != 0F) {
+      size += 1 + 4;
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(Vector3d other) {
+    if (other == null) {
+      return;
+    }
+    if (other.X != 0F) {
+      X = other.X;
+    }
+    if (other.Y != 0F) {
+      Y = other.Y;
+    }
+    if (other.Z != 0F) {
+      Z = other.Z;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  public void MergeFrom(pb::CodedInputStream input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 13: {
+          X = input.ReadFloat();
+          break;
+        }
+        case 21: {
+          Y = input.ReadFloat();
+          break;
+        }
+        case 29: {
+          Z = input.ReadFloat();
           break;
         }
       }

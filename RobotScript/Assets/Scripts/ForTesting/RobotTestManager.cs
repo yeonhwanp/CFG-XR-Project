@@ -6,6 +6,10 @@ using Google.Protobuf;
 /// <summary>
 /// Testing sending joint positions
 /// </summary>
+/// 
+
+
+#if end
 
 public class RobotTestManager : MonoBehaviour {
 
@@ -16,7 +20,7 @@ public class RobotTestManager : MonoBehaviour {
 	void Start ()
     {
         PositionListCreator.CreateList(rootObject, testList.PList);
-        ObjectJoint.SetParents(rootObject);
+        //ObjectJoint.SetParents(rootObject);
 	}
 
     private void Update()
@@ -34,3 +38,4 @@ public class RobotTestManager : MonoBehaviour {
     }
 }
 
+#endif

@@ -171,7 +171,7 @@ public class CreateTestRobot : MonoBehaviour {
 
         // Moving robot a little up just for presentation
         GameObject root = GameObject.Find("Sphere");
-        ObjectJoint.GetJoints(root.GetComponent<ObjectJoint>().ChildObjectJoints, GameObject.Find("Sphere"));
+        PositionListCreator.CreateDict(root, testList.PList);
         root.transform.Translate(Vector3.up);
     }
 
@@ -182,19 +182,14 @@ public class CreateTestRobot : MonoBehaviour {
         // 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PositionListCreator.CreateList(GameObject.Find("Sphere"), testList.PList);
-            testList.PList[1].Rotation = 30;
             testList.PList[2].Rotation = 30;
-            testList.PList[3].Rotation = 30;
-            testList.PList[4].Rotation = 30;
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            PositionListCreator.CreateList(GameObject.Find("Sphere"), testList.PList);
             testList.PList[0].Rotation = -30;
-            ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
+            //ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 
 

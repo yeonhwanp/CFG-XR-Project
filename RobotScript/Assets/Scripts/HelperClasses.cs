@@ -68,18 +68,15 @@ public class MakeMethods : MonoBehaviour
 // Lets make this a dictionary... It's kind of annoying to guess the stuff. But for now, I'll leave it?
 public static class PositionListCreator
 {
-    public static void CreateList(GameObject rootJoint, IList<PositionStorage> defaultList = null, bool isRoot = true)
+    public static void CreateDict(GameObject rootJoint, IDictionary<int, PositionStorage> defaultDict)
     {
-        List<GameObject> children = rootJoint.GetComponent<ObjectJoint>().ChildJoints;
-        ObjectJoint thisJoint = rootJoint.GetComponent<ObjectJoint>();
-        PositionStorage newStorage = new PositionStorage();
-        newStorage.Rotation = thisJoint.AxisRotation;
-
-        defaultList.Add(newStorage);
-
-        foreach (GameObject joint in children)
+        ObjectJoint JointObject = rootJoint.GetComponent<ObjectJoint>();
+        foreach(KeyValuePair<int, GameObject> pair in JointObject.ReferenceDict)
         {
-            CreateList(joint, defaultList, false);
+            PositionStorage newStorage = new PositionStorage();
+            newStorage.Rotation = pair.Value.GetComponent<ObjectJoint>().AxisRotation;
+            newStorage.Velocity = pair.Value.GetComponent<ObjectJoint>().LocalVelocity;
+            defaultDict[pair.Key] = newStorage;
         }
     }
 }
