@@ -98,7 +98,7 @@ public class CreateTestRobot : MonoBehaviour {
         // Creating Knee Joints (need to switch axis rotation)
         Vector3 kneeOnePos = new Vector3(2, 1, 2);
         Quaternion defaultKneeRotation = new Quaternion(0, 0, 0, 0);
-        Vector3 kneeRotationAxis = new Vector3(0, 0, 0);
+        Vector3 kneeRotationAxis = new Vector3(0, 0, 1);
         float defaultKneeRotationAmount = 0;
         JointStorage kneeOneStorage = MakeMethods.MakeJoint(kneeOnePos, defaultKneeRotation, kneeRotationAxis, defaultKneeRotationAmount);
         testStructure.JointDict.Add(6, kneeOneStorage);
@@ -177,19 +177,48 @@ public class CreateTestRobot : MonoBehaviour {
 
     private void Update()
     {
-        // Lets just somehow make it look like it's moving...
-        // Will have to move the first joints up, then move the second joints in
-        // 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // This is for first movement in the sequence
+        if (Input.GetKeyDown(KeyCode.A))
+            {
+                testList.PList[4].Rotation = -45;
+                testList.PList[5].Rotation = -45;
+                testList.PList[8].Rotation = 90;
+                testList.PList[9].Rotation = 90;
+                ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
+            }
+
+        // This is for the second movement in the sequence (repeate this and 3)
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            testList.PList[2].Rotation = 30;
+            testList.PList[4].Rotation = 45;
+            testList.PList[5].Rotation = 45;
+            testList.PList[8].Rotation = -90;
+            testList.PList[9].Rotation = -90;
+
+            testList.PList[2].Rotation = -45;
+            testList.PList[3].Rotation = -45;
+            testList.PList[6].Rotation = 90;
+            testList.PList[7].Rotation = 90;
+                 
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+        // Third movement in the sequence
+        if (Input.GetKeyDown(KeyCode.D))
         {
-            testList.PList[0].Rotation = -30;
-            //ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
+            testList.PList[4].Rotation = -45;
+            testList.PList[5].Rotation = -45;
+            testList.PList[8].Rotation = 90;
+            testList.PList[9].Rotation = 90;
+
+            testList.PList[2].Rotation = 45;
+            testList.PList[3].Rotation = 45;
+            testList.PList[6].Rotation = -90;
+            testList.PList[7].Rotation = -90;
+
+            GameObject root = GameObject.Find("Sphere");
+            root.transform.Translate(Vector3.left * Time.deltaTime * 100);
+            ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 
 
