@@ -19,18 +19,20 @@ public class Meshing : MonoBehaviour
     #endregion
 
     #region Unity Methods
-    private void Start()
-    {
-        MeshList testList = new MeshList();
-    }
-
     private void Update()
     {
         // First, grab all of the meshes into a new MeshList. Next, send them over via UDP.
         // Seems as if meshes don't change if nothing happens... but what happens when something does happen?
         // How do we know if the environment changed or not? Is there a way? We can check transform.childcount... but is that the best way?
-        UpdateMeshMaterial();
+        // Also if this works, then how do we priority queue the stuff in case of a bigger room?
+        MeshList testList = new MeshList();
+        UpdateMeshMaterial(testList);
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Sending testList with list length: " + testList.Meshes.Count);
+            ClientUDP<MeshList>.UDPSend(1234, testList);
+        }
     }
     #endregion
 
@@ -50,7 +52,7 @@ public class Meshing : MonoBehaviour
     /// visible & active = ground material
     /// visible & inactive = meshing off material
     /// invisible = black mesh
-    private void UpdateMeshMaterial()
+    private void UpdateMeshMaterial(MeshList testList)
     {
         // Loop over all the child mesh nodes created by MLSpatialMapper script
         // Aka just looping through all of them. Cool.
@@ -71,18 +73,24 @@ public class Meshing : MonoBehaviour
     {
         MeshProto newMeshProto = new MeshProto();
 
-        foreach (int triangle in meshObject.GetComponent<Mesh>().triangles)
-        {
-            newMeshProto.Triangles.Add(triangle);
-        }
+        Mesh sharedMesh = meshObject.GetComponent<MeshCollider>().sharedMesh;
 
-        foreach (Vector3 vertex in meshObject.GetComponent<Mesh>().vertices)
+        // Don't know if null is a problem but... yea temp fix
+        if (sharedMesh != null)
         {
-            ProtoVector3 newVector = new ProtoVector3();
-            newVector.X = vertex.x;
-            newVector.Y = vertex.y;
-            newVector.Z = vertex.z;
-            newMeshProto.Vertices.Add(newVector);
+            foreach (int triangle in meshObject.GetComponent<MeshCollider>().sharedMesh.triangles)
+            {
+                newMeshProto.Triangles.Add(triangle);
+            }
+
+            foreach (Vector3 vertex in meshObject.GetComponent<MeshCollider>().sharedMesh.vertices)
+            {
+                ProtoVector3 newVector = new ProtoVector3();
+                newVector.X = vertex.x;
+                newVector.Y = vertex.y;
+                newVector.Z = vertex.z;
+                newMeshProto.Vertices.Add(newVector);
+            }
         }
 
         meshList.Meshes.Add(newMeshProto);

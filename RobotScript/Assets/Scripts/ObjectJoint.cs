@@ -31,17 +31,25 @@ public class ObjectJoint : MonoBehaviour
     // Velocity (Not doing anything with this yet)
     public float LocalVelocity = 0.0f;
 
-    // Creates the list of all of the joints --> stored in the root joint (Should only be run on initialization because you don't want to "add" again)
-    // Unless we want to create a new dictionary every time? But that seems redundant and not that useful...
-    public static void GetJoints(List<ObjectJoint> defaultList, GameObject initialObject)
-    {
-        ObjectJoint theJoint = initialObject.GetComponent<ObjectJoint>();
-        defaultList.Add(theJoint);
+    //// Creates the list of all of the joints --> stored in the root joint (Should only be run on initialization because you don't want to "add" again)
+    //// Unless we want to create a new dictionary every time? But that seems redundant and not that useful...
+    //public static void GetJoints(List<ObjectJoint> defaultList, GameObject initialObject)
+    //{
+    //    ObjectJoint theJoint = initialObject.GetComponent<ObjectJoint>();
+    //    defaultList.Add(theJoint);
 
-        foreach(GameObject childJoint in theJoint.ChildJoints)
+    //    foreach(GameObject childJoint in theJoint.ChildJoints)
+    //    {
+    //        if (childJoint != null)
+    //            GetJoints(defaultList, childJoint);
+    //    }
+    //}
+
+    public static void GetJoints(RobotStructure robotStructure, GameObject rootObject)
+    {
+        foreach(KeyValuePair<int, JointStorage> pair in robotStructure.JointDict)
         {
-            if (childJoint != null)
-                GetJoints(defaultList, childJoint);
+            rootObject.
         }
     }
 

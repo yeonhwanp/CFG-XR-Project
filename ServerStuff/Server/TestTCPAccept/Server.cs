@@ -29,6 +29,7 @@ namespace Servers
         private const int UDPStructureOutPort = 9999;
         private const int UDPPositionInPort = 7777;
         private const int UDPPositionOutPort = 6666;
+        private const int UDPMeshInPort = 1234;
 
         #region TCP stuff
         // TCP network stuff 
@@ -40,10 +41,12 @@ namespace Servers
         // UDP network stuff
         public static UdpClient UDPStructureListener = new UdpClient(UDPStructureInPort);
         public static UdpClient UDPPositionListener = new UdpClient(UDPPositionInPort);
+        public static UdpClient UDPMeshListener = new UdpClient(UDPMeshInPort);
 
         public static bool _TCPlistening = false;
         public static bool _Structurelistening = false;
         public static bool _Positionlistening = false;
+        public static bool _MeshListening = false;
 
 
         public static void StartListening()
@@ -75,7 +78,6 @@ namespace Servers
                     if (!_Structurelistening)
                     {
                         _Structurelistening = true;
-
                         UDPStructureListener.BeginReceive(new AsyncCallback(UDPAsyncListener<RobotStructure>.ReadCallBack), UDPStructureListener);
                     }
 
@@ -83,6 +85,12 @@ namespace Servers
                     {
                         _Positionlistening = true;
                         UDPPositionListener.BeginReceive(new AsyncCallback(UDPAsyncListener<PositionList>.ReadCallBack), UDPPositionListener);
+                    }
+
+                    if (!_MeshListening)
+                    {
+                        _MeshListening = true;
+                        UDPMeshListener.BeginReceive(new AsyncCallback(UDPAsyncListener<MeshList>.ReadCallBack), UDPMeshListener);
                     }
                 }
 
@@ -197,6 +205,7 @@ namespace Servers
         private static int replyPort;
         private static RobotStructure receivedStructure;
         private static PositionList receivedList;
+        private static MeshList receivedMeshes;
 
 
         /// <summary>
@@ -237,6 +246,14 @@ namespace Servers
                     receivedList.PList[0].Rotation = 30;
                     ms.Position = 0;
                     SendBackPositions(receivedList);
+                }
+
+                else if (listenPort == 1234)
+                {
+                    replyPort = 4321;
+                    MessageParser<MeshList> parser = new MessageParser<MeshList>(() => new MeshList());
+                    receivedMeshes = parser.ParseFrom(ms);
+                    Console.WriteLine("RECEIVED MESHES... LENGTH = {0}", receivedMeshes.Meshes.Count);
                 }
 
             }

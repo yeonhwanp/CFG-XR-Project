@@ -115,6 +115,7 @@ public class ConstructionManager : MonoBehaviour {
 
         if (rootJoint.ChildLinkID != 0)
         {
+             
             rootJoint.ChildLink = linkDict[rootJoint.ChildLinkID];
             rootJoint.ChildLink.transform.parent = rootJoint.transform;
         }
