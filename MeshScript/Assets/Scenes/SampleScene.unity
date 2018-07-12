@@ -295,6 +295,7 @@ MonoBehaviour:
   GroundMaterial: {fileID: 2100000, guid: 58fe3ea5f58c8cd498522037148c1783, type: 2}
   InactiveMaterial: {fileID: 2100000, guid: beea57a3d2b91834b800a37afa931f52, type: 2}
   _mapper: {fileID: 1150847993}
+  Camera: {fileID: 1687258581}
 --- !u!4 &1660614129
 Transform:
   m_ObjectHideFlags: 0
