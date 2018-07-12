@@ -5,7 +5,7 @@ message MeshList{
 }
 
 message MeshProto {
-	repeated ProtoVector3 Vertices = 1;
+	map<int32, ProtoVector3> Vertices = 1;
 	repeated int32 Triangles = 2;
 }
 

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.MagicLeap;
 using UnityEngine.Experimental.XR;
+using System.IO;
+using Google.Protobuf;
+using System.Runtime.InteropServices;
+using Priority_Queue;
 
 public class Meshing : MonoBehaviour
 {
@@ -12,28 +16,12 @@ public class Meshing : MonoBehaviour
     public Material InactiveMaterial;
     public MLSpatialMapper _mapper;
     public MeshList testList;
+    public GameObject Camera;
     #endregion
 
     #region Private Variables
     private bool _visible = true;
-    #endregion
-
-    #region Unity Methods
-    private void Update()
-    {
-        // First, grab all of the meshes into a new MeshList. Next, send them over via UDP.
-        // Seems as if meshes don't change if nothing happens... but what happens when something does happen?
-        // How do we know if the environment changed or not? Is there a way? We can check transform.childcount... but is that the best way?
-        // Also if this works, then how do we priority queue the stuff in case of a bigger room?
-        MeshList testList = new MeshList();
-        UpdateMeshMaterial(testList);
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Sending testList with list length: " + testList.Meshes.Count);
-            ClientUDP<MeshList>.UDPSend(1234, testList);
-        }
-    }
+    private float _remainingTime = 3; // use this to minimize "lag" -- will need to test (idea is to ignore unsent packets after this amount of time)
     #endregion
 
     #region Public Methods
@@ -47,52 +35,123 @@ public class Meshing : MonoBehaviour
     }
     #endregion
 
-    #region Private Methods
-    /// Switch mesh material based on whether meshing is active and mesh is visible
-    /// visible & active = ground material
-    /// visible & inactive = meshing off material
-    /// invisible = black mesh
-    private void UpdateMeshMaterial(MeshList testList)
+    #region Unity Methods
+    private void Update()
     {
-        // Loop over all the child mesh nodes created by MLSpatialMapper script
-        // Aka just looping through all of them. Cool.
-        // Going to assume that in the real verison only scans what it sees?
-        // So just loop through them, get vertices and trianges for each, put into protobuf, send over server.
-        // See what happens? How big are the files...
-        // Data structure coming later.
-        for (int i = 0; i < transform.childCount; i++)
+        // Iterate through this when sending the Meshes (pieces of info)
+        List<MeshList> listOfMeshList = new List<MeshList>();
+        MeshList sendList = new MeshList();
+
+        // Send upon keydown
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            // Get the child gameObject then add the mesh to the list
-            GameObject gameObject = transform.GetChild(i).gameObject;
-            AddMeshProto(gameObject, testList);
+            AddToList(sendList, listOfMeshList);
+            foreach (MeshList list in listOfMeshList)
+            {
+                ClientUDP<MeshList>.UDPSend(1234, list);
+            }
         }
     }
+    #endregion
 
-    // For each Mesh, creates a new MeshProto and adds it to the provided meshList
-    private void AddMeshProto(GameObject meshObject, MeshList meshList)
+    /// <summary>
+    /// Uses a priority queue to sort based on distance.
+    /// 1. Puts all of the meshes into the priority queue.
+    /// 2. Pops out based on least distance, adding to the MeshList. Once it gets too big, it gets added to listofMeshes.
+    /// 3. Above, in update, goes through the listofMeshes which should also be in order.
+    /// </summary>
+    #region Private Methods
+    private void AddToList(MeshList testList, List<MeshList> listofMeshes)
+    {
+        List<int> sentList = new List<int>();
+        SimplePriorityQueue<GameObject, float> priorityq = new SimplePriorityQueue<GameObject, float>(); 
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            priorityq.Enqueue(transform.GetChild(i).gameObject, GetDistance(transform.GetChild(i).gameObject, Camera));
+        }
+
+        int counter = 0;
+        while (priorityq.Count != 0)
+        {
+            GameObject gameObject = priorityq.Dequeue();
+
+            if (testList.Meshes.Count <= 40)
+            {
+                AddMeshProto(gameObject, testList, sentList);
+            }
+            else if (counter == transform.childCount - 1)
+            {
+                listofMeshes.Add(testList);
+                testList = new MeshList();
+            }
+            else
+            {
+                listofMeshes.Add(testList);
+                testList = new MeshList();
+            }
+
+            counter++;
+        }
+        
+        //// Loop over all the child mesh nodes created by MLSpatialMapper script
+        //for (int i = 0; i < transform.childCount; i++)
+        //{
+        //    GameObject gameObject = transform.GetChild(i).gameObject;
+
+        //    // Size limit --> could limit if it gets too big.
+        //    if (testList.Meshes.Count <= 40)
+        //    {
+        //        AddMeshProto(gameObject, testList, sentList);
+        //    }
+        //    else if (i == transform.childCount - 1)
+        //    {
+        //        listofMeshes.Add(testList);
+        //        testList = new MeshList();
+        //    }
+        //    else
+        //    {
+        //        listofMeshes.Add(testList);
+        //        testList = new MeshList();
+        //    }
+        //}
+    }
+
+    /// <summary>
+    /// Gets distance between camera and gameObject.
+    /// </summary>
+    private float GetDistance(GameObject other, GameObject Camera)
+    {
+        float distance = Mathf.Pow(Mathf.Pow(other.transform.position.x, 2) + Mathf.Pow(other.transform.position.y, 2) + Mathf.Pow(other.transform.position.z, 2), .5f);
+        return distance;
+    }
+    
+    /// <summary>
+    /// Adds a MeshProto into a MeshList for sending over.
+    /// </summary>
+    private void AddMeshProto(GameObject meshObject, MeshList meshList, List<int> confirmed)
     {
         MeshProto newMeshProto = new MeshProto();
-
         Mesh sharedMesh = meshObject.GetComponent<MeshCollider>().sharedMesh;
 
         // Don't know if null is a problem but... yea temp fix
         if (sharedMesh != null)
         {
-            foreach (int triangle in meshObject.GetComponent<MeshCollider>().sharedMesh.triangles)
+            foreach (int triangle in sharedMesh.triangles)
             {
                 newMeshProto.Triangles.Add(triangle);
-            }
+                confirmed.Add(triangle);
+                if (confirmed.Contains(triangle) == false)
+                {
+                    ProtoVector3 newVector = new ProtoVector3();
+                    newVector.X = sharedMesh.vertices[triangle].x;
+                    newVector.Y = sharedMesh.vertices[triangle].y;
+                    newVector.Z = sharedMesh.vertices[triangle].z;
+                    newMeshProto.Vertices[triangle] = (newVector);
+                }
 
-            foreach (Vector3 vertex in meshObject.GetComponent<MeshCollider>().sharedMesh.vertices)
-            {
-                ProtoVector3 newVector = new ProtoVector3();
-                newVector.X = vertex.x;
-                newVector.Y = vertex.y;
-                newVector.Z = vertex.z;
-                newMeshProto.Vertices.Add(newVector);
             }
         }
-
         meshList.Meshes.Add(newMeshProto);
     }
     #endregion
