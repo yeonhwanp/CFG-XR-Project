@@ -38,25 +38,14 @@ public class ClientUDP<T> where T : IMessage<T>, new()
 
         using (MemoryStream ms = new MemoryStream())
         {
+            // Writing to the stream 
             sendObject.WriteTo(ms);
-            byte[] sendArray = ms.ToArray();
-            int Sendlength = sendArray.Length;
-            List<byte> sendList = new List<byte>();
-
-            for (int byteCount = 0; byteCount <= Sendlength; byteCount++)
-            {
-                if (byteCount / 9999 != 1)
-                {
-                    sendList.Add(sendArray[byteCount]);
-                }
-                else
-                {
-                    thisSocket.SendTo(sendList.ToArray(), theEndPoint); 
-                    sendList = new List<byte>();
-                }
-            }
-            //thisSocket.SendTo(ms.ToArray(), theEndPoint);
+            ms.Position = 0;
+            Debug.Log("ok here: " + ms.ToArray().Length);
+            thisSocket.SendTo(ms.ToArray(), theEndPoint);
         }
+        thisSocket.Close();
+        listener.Close();
         Debug.Log("Data sent!");
     }
 }

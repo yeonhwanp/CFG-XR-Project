@@ -254,6 +254,8 @@ namespace Servers
                     MessageParser<MeshList> parser = new MessageParser<MeshList>(() => new MeshList());
                     receivedMeshes = parser.ParseFrom(ms);
                     Console.WriteLine("RECEIVED MESHES... LENGTH = {0}", receivedMeshes.Meshes.Count);
+                    StartBoth.ListeningMessage();
+                    StartBoth._MeshListening = false;
                 }
 
             }
