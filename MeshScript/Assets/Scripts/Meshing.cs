@@ -15,31 +15,11 @@ public class Meshing : MonoBehaviour
     public Material InactiveMaterial;
     public MLSpatialMapper _mapper;
     public MeshList testList;
+    public GameObject Camera;
     #endregion
 
     #region Private Variables
     private bool _visible = true;
-    #endregion
-
-    #region Unity Methods
-    private void Update()
-    {
-        // First, grab all of the meshes into a new MeshList. Next, send them over via UDP.
-        // Seems as if meshes don't change if nothing happens... but what happens when something does happen?
-        // How do we know if the environment changed or not? Is there a way? We can check transform.childcount... but is that the best way?
-        // Also if this works, then how do we priority queue the stuff in case of a bigger room?
-        List<MeshList> listOfMeshList = new List<MeshList>();
-        MeshList testList = new MeshList();
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            UpdateMeshMaterial(testList, listOfMeshList);
-            foreach (MeshList list in listOfMeshList)
-            {
-                ClientUDP<MeshList>.UDPSend(1234, list);
-            }
-        }
-    }
     #endregion
 
     #region Public Methods
@@ -53,21 +33,36 @@ public class Meshing : MonoBehaviour
     }
     #endregion
 
+    #region Unity Methods
+    private void Update()
+    {
+        // Iterate through this when sending the Meshes (pieces of info)
+        List<MeshList> listOfMeshList = new List<MeshList>();
+        MeshList sendList = new MeshList();
+
+        // Send upon keydown
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            AddToList(sendList, listOfMeshList);
+            foreach (MeshList list in listOfMeshList)
+            {
+                ClientUDP<MeshList>.UDPSend(1234, list);
+            }
+        }
+    }
+    #endregion
+
     #region Private Methods
-    /// Switch mesh material based on whether meshing is active and mesh is visible
-    /// visible & active = ground material
-    /// visible & inactive = meshing off material
-    /// invisible = black mesh
-    private void UpdateMeshMaterial(MeshList testList, List<MeshList> listofMeshes)
+    private void AddToList(MeshList testList, List<MeshList> listofMeshes)
     {
         List<int> sentList = new List<int>();
         
         // Loop over all the child mesh nodes created by MLSpatialMapper script
         for (int i = 0; i < transform.childCount; i++)
         {
-            // Get the child gameObject then add the mesh to the list
             GameObject gameObject = transform.GetChild(i).gameObject;
 
+            // Size limit --> could limit if it gets too big.
             if (testList.Meshes.Count <= 40)
             {
                 AddMeshProto(gameObject, testList, sentList);
@@ -85,7 +80,6 @@ public class Meshing : MonoBehaviour
         }
     }
 
-    // For each Mesh, creates a new MeshProto and adds it to the provided meshList
     private void AddMeshProto(GameObject meshObject, MeshList meshList, List<int> confirmed)
     {
         MeshProto newMeshProto = new MeshProto();
@@ -94,7 +88,6 @@ public class Meshing : MonoBehaviour
         List<MeshProto> protoList = new List<MeshProto>();
 
         // Don't know if null is a problem but... yea temp fix
-        // Ok, need to put the newVectors into Dictionaries so it can actually find the value
         if (sharedMesh != null)
         {
             foreach (int triangle in sharedMesh.triangles)
@@ -107,23 +100,12 @@ public class Meshing : MonoBehaviour
                     newVector.X = sharedMesh.vertices[triangle].x;
                     newVector.Y = sharedMesh.vertices[triangle].y;
                     newVector.Z = sharedMesh.vertices[triangle].z;
-                    newMeshProto.Vertices.Add(newVector);
+                    newMeshProto.Vertices[triangle] = (newVector);
                 }
 
             }
         }
         meshList.Meshes.Add(newMeshProto);
     }
-
-    //private int CheckMeshProtoSize(MeshList proto)
-    //{
-    //    using (MemoryStream ms = new MemoryStream())
-    //    {
-    //        proto.WriteTo(ms);
-    //        ms.Position = 0;
-    //        byte[] array = ms.ToArray();
-    //        return array.Length;
-    //    }
-    //}
     #endregion
 }
