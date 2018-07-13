@@ -93,28 +93,6 @@ public class Meshing : MonoBehaviour
 
             counter++;
         }
-        
-        //// Loop over all the child mesh nodes created by MLSpatialMapper script
-        //for (int i = 0; i < transform.childCount; i++)
-        //{
-        //    GameObject gameObject = transform.GetChild(i).gameObject;
-
-        //    // Size limit --> could limit if it gets too big.
-        //    if (testList.Meshes.Count <= 40)
-        //    {
-        //        AddMeshProto(gameObject, testList, sentList);
-        //    }
-        //    else if (i == transform.childCount - 1)
-        //    {
-        //        listofMeshes.Add(testList);
-        //        testList = new MeshList();
-        //    }
-        //    else
-        //    {
-        //        listofMeshes.Add(testList);
-        //        testList = new MeshList();
-        //    }
-        //}
     }
 
     /// <summary>
