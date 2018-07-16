@@ -30,7 +30,14 @@ public class RobotButtonManager : MonoBehaviour {
 
     private InteractionBehaviour _intObj;
 
+    // Region for the form stuff
     private Form window;
+    private Button button1;
+    private Button button2;
+    private Button button3;
+    private TextBox box1;
+    private TextBox box2;
+    private TextBox box3;
 
     // Just initialization here
     void Start()
@@ -91,10 +98,33 @@ public class RobotButtonManager : MonoBehaviour {
                 // Wow this actually shouldnt take too long but im really hungry
                 // rip
             {
-                targetColor = pressedColor;
+                // Initializing the window stuff
                 window = new Form();
+                button1 = new Button();
+                button2 = new Button();
+                button3 = new Button();
+                box1 = new TextBox();
+                box2 = new TextBox();
+                box3 = new TextBox();
+
+                button1.Name = "Test Button 1";
+                button1.Text = "Test Button 1";
+                button1.Location = new System.Drawing.Point(50, 60);
+                button1.Width = 100;
+
+                box1.Name = "Test Box 1";
+                box1.Text = "";
+                box1.Location = new System.Drawing.Point(50, 80);
+                box1.Width = 200;
+
+                window.Controls.Add(button1);
+                window.Controls.Add(box1);
+
                 window.ShowDialog();
                 Debug.Log("Opened window?");
+
+
+                targetColor = pressedColor;
             }
 
             // Lerp actual material color to the target color.
