@@ -94,9 +94,7 @@ public class RobotButtonManager : MonoBehaviour {
                 targetColor = suspendedColor;
             }
 
-            // We can also check the depressed-or-not-depressed state of InteractionButton objects
-            // and assign them a unique color in that case. 
-            if (_intObj is InteractionButton && (_intObj as InteractionButton).isPressed) 
+            if (_intObj is InteractionButton && (_intObj as InteractionButton).isPressed)
             {
                 if (!_isPushed)
                 {
@@ -105,41 +103,32 @@ public class RobotButtonManager : MonoBehaviour {
                     // Initializing the window stuff
                     window = new Form();
                     button1 = new Button();
-                    button2 = new Button();
-                    button3 = new Button();
+                    //button2 = new Button();
+                    //button3 = new Button();
                     box1 = new TextBox();
                     box2 = new TextBox();
                     box3 = new TextBox();
 
                     button1.Name = "Test Button 1";
-                    button1.Text = "Robot X Position";
-                    button1.Location = new System.Drawing.Point(160, 50);
+                    button1.Text = "Submit";
+                    button1.Location = new System.Drawing.Point(100, 200);
                     button1.Width = 100;
-
-                    button2.Name = "Test Button 2";
-                    button2.Text = "Robot Y Position";
-                    button2.Location = new System.Drawing.Point(160, 100);
-                    button2.Width = 100;
-
-                    button3.Name = "Test Button 3";
-                    button3.Text = "Robot Z Position";
-                    button3.Location = new System.Drawing.Point(160, 150);
-                    button3.Width = 100;
+                    button1.Click += Button1_Click;
 
                     box1.Name = "Test Box 1";
                     box1.Text = "";
                     box1.Location = new System.Drawing.Point(50, 50);
-                    box1.Width = 100;
+                    box1.Width = 200;
 
                     box2.Name = "Text Box 2";
                     box2.Text = "";
                     box2.Location = new System.Drawing.Point(50, 100);
-                    box2.Width = 100;
+                    box2.Width = 200;
 
                     box3.Name = "Text Box 3";
                     box3.Text = "";
                     box3.Location = new System.Drawing.Point(50, 150);
-                    box3.Width = 100;
+                    box3.Width = 200;
 
                     window.Controls.Add(button1);
                     window.Controls.Add(box1);
@@ -151,11 +140,11 @@ public class RobotButtonManager : MonoBehaviour {
                     window.ShowDialog();
                     Debug.Log("Opened window?");
 
-
                     targetColor = pressedColor;
                 }
             }
 
+            // For the cooldown
             if (_intObj is InteractionButton && !(_intObj as InteractionButton).isPressed)
             {
                 _isPushed = false;
@@ -166,4 +155,10 @@ public class RobotButtonManager : MonoBehaviour {
         }
     }
 
+    // What to do after data submission
+    private void Button1_Click(object sender, System.EventArgs e)
+    {
+        Debug.Log(box1.Text + box2.Text + box3.Text);
+        window.Close();
+    }
 }
