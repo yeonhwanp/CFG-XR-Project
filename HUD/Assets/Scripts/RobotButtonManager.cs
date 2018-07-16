@@ -39,6 +39,8 @@ public class RobotButtonManager : MonoBehaviour {
     private TextBox box2;
     private TextBox box3;
 
+    private bool _isPushed = false;
+
     // Just initialization here
     void Start()
     {
@@ -94,37 +96,69 @@ public class RobotButtonManager : MonoBehaviour {
 
             // We can also check the depressed-or-not-depressed state of InteractionButton objects
             // and assign them a unique color in that case. 
-            if (_intObj is InteractionButton && (_intObj as InteractionButton).isPressed) // Need a cooldown... How long to make it? Good question.
-                // Wow this actually shouldnt take too long but im really hungry
-                // rip
+            if (_intObj is InteractionButton && (_intObj as InteractionButton).isPressed) 
             {
-                // Initializing the window stuff
-                window = new Form();
-                button1 = new Button();
-                button2 = new Button();
-                button3 = new Button();
-                box1 = new TextBox();
-                box2 = new TextBox();
-                box3 = new TextBox();
+                if (!_isPushed)
+                {
+                    _isPushed = true;
 
-                button1.Name = "Test Button 1";
-                button1.Text = "Test Button 1";
-                button1.Location = new System.Drawing.Point(50, 60);
-                button1.Width = 100;
+                    // Initializing the window stuff
+                    window = new Form();
+                    button1 = new Button();
+                    button2 = new Button();
+                    button3 = new Button();
+                    box1 = new TextBox();
+                    box2 = new TextBox();
+                    box3 = new TextBox();
 
-                box1.Name = "Test Box 1";
-                box1.Text = "";
-                box1.Location = new System.Drawing.Point(50, 80);
-                box1.Width = 200;
+                    button1.Name = "Test Button 1";
+                    button1.Text = "Robot X Position";
+                    button1.Location = new System.Drawing.Point(160, 50);
+                    button1.Width = 100;
 
-                window.Controls.Add(button1);
-                window.Controls.Add(box1);
+                    button2.Name = "Test Button 2";
+                    button2.Text = "Robot Y Position";
+                    button2.Location = new System.Drawing.Point(160, 100);
+                    button2.Width = 100;
 
-                window.ShowDialog();
-                Debug.Log("Opened window?");
+                    button3.Name = "Test Button 3";
+                    button3.Text = "Robot Z Position";
+                    button3.Location = new System.Drawing.Point(160, 150);
+                    button3.Width = 100;
+
+                    box1.Name = "Test Box 1";
+                    box1.Text = "";
+                    box1.Location = new System.Drawing.Point(50, 50);
+                    box1.Width = 100;
+
+                    box2.Name = "Text Box 2";
+                    box2.Text = "";
+                    box2.Location = new System.Drawing.Point(50, 100);
+                    box2.Width = 100;
+
+                    box3.Name = "Text Box 3";
+                    box3.Text = "";
+                    box3.Location = new System.Drawing.Point(50, 150);
+                    box3.Width = 100;
+
+                    window.Controls.Add(button1);
+                    window.Controls.Add(box1);
+                    window.Controls.Add(button2);
+                    window.Controls.Add(box2);
+                    window.Controls.Add(button3);
+                    window.Controls.Add(box3);
+
+                    window.ShowDialog();
+                    Debug.Log("Opened window?");
 
 
-                targetColor = pressedColor;
+                    targetColor = pressedColor;
+                }
+            }
+
+            if (_intObj is InteractionButton && !(_intObj as InteractionButton).isPressed)
+            {
+                _isPushed = false;
             }
 
             // Lerp actual material color to the target color.
