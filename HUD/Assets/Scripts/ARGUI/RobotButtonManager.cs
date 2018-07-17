@@ -43,6 +43,13 @@ public class RobotButtonManager : MonoBehaviour {
     private TextBox box2;
     private TextBox box3;
     private TextBox box4;
+    private Label label1;
+    private Label label2;
+    private Label label3;
+    private Label label4;
+
+    private int _defaultEntry = 110;
+    private int _defaultLabel = 10;
 
     private bool _isPushed = false;
 
@@ -109,6 +116,13 @@ public class RobotButtonManager : MonoBehaviour {
         box2 = new TextBox();
         box3 = new TextBox();
         box4 = new TextBox();
+        label1 = new Label();
+        label2 = new Label();
+        label3 = new Label();
+        label4 = new Label();
+
+        window.Text = "Joint Configuration";
+        window.Size = new System.Drawing.Size(400, 400);
 
         button1.Name = "Test Button 1";
         button1.Text = "Submit";
@@ -118,23 +132,35 @@ public class RobotButtonManager : MonoBehaviour {
 
         box1.Name = "Test Box 1";
         box1.Text = "";
-        box1.Location = new System.Drawing.Point(50, 50);
+        box1.Location = new System.Drawing.Point(_defaultEntry, 50);
         box1.Width = 200;
 
         box2.Name = "Text Box 2";
         box2.Text = "";
-        box2.Location = new System.Drawing.Point(50, 100);
+        box2.Location = new System.Drawing.Point(_defaultEntry, 100);
         box2.Width = 200;
 
         box3.Name = "Text Box 3";
         box3.Text = "";
-        box3.Location = new System.Drawing.Point(50, 150);
+        box3.Location = new System.Drawing.Point(_defaultEntry, 150);
         box3.Width = 200;
 
         box4.Name = "Text Box 4";
         box4.Text = "";
-        box4.Location = new System.Drawing.Point(50, 200);
+        box4.Location = new System.Drawing.Point(_defaultEntry, 200);
         box4.Width = 200;
+
+        label1.Text = "Transform X Pos:";
+        label1.Location = new System.Drawing.Point(_defaultLabel, 50);
+
+        label2.Text = "Transform Y Pos:";
+        label2.Location = new System.Drawing.Point(_defaultLabel, 100);
+
+        label3.Text = "Transform Z Pos:";
+        label3.Location = new System.Drawing.Point(_defaultLabel, 150);
+
+        label4.Text = "Joint Name";
+        label4.Location = new System.Drawing.Point(_defaultLabel, 200);
 
         window.Controls.Add(button1);
         window.Controls.Add(box1);
@@ -143,6 +169,10 @@ public class RobotButtonManager : MonoBehaviour {
         window.Controls.Add(button3);
         window.Controls.Add(box3);
         window.Controls.Add(box4);
+        window.Controls.Add(label1);
+        window.Controls.Add(label2);
+        window.Controls.Add(label3);
+        window.Controls.Add(label4);
 
         window.ShowDialog();
     }
@@ -156,6 +186,9 @@ public class RobotButtonManager : MonoBehaviour {
         box3 = new TextBox();
         box4 = new TextBox();
 
+        window.Text = "Link Configuration";
+        window.Size = new System.Drawing.Size(400, 400);
+
         button1.Name = "Test Button 1";
         button1.Text = "Submit";
         button1.Location = new System.Drawing.Point(100, 250);
@@ -164,22 +197,22 @@ public class RobotButtonManager : MonoBehaviour {
 
         box1.Name = "Test Box 1";
         box1.Text = "";
-        box1.Location = new System.Drawing.Point(50, 50);
+        box1.Location = new System.Drawing.Point(_defaultEntry, 50);
         box1.Width = 200;
 
         box2.Name = "Text Box 2";
         box2.Text = "";
-        box2.Location = new System.Drawing.Point(50, 100);
+        box2.Location = new System.Drawing.Point(_defaultEntry, 100);
         box2.Width = 200;
 
         box3.Name = "Text Box 3";
         box3.Text = "";
-        box3.Location = new System.Drawing.Point(50, 150);
+        box3.Location = new System.Drawing.Point(_defaultEntry, 150);
         box3.Width = 200;
 
         box4.Name = "Text Box 4";
         box4.Text = "";
-        box4.Location = new System.Drawing.Point(50, 200);
+        box4.Location = new System.Drawing.Point(_defaultEntry, 200);
         box4.Width = 200;
 
         window.Controls.Add(button1);
