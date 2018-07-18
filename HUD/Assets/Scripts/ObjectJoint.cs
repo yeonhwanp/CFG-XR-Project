@@ -10,7 +10,6 @@ using ProtoBuf;
 
 public class ObjectJoint : MonoBehaviour
 {
-
     // Objects attached
     public GameObject ParentJoint = null;
     public List<GameObject> ChildJoints = new List<GameObject>();
@@ -49,6 +48,23 @@ public class ObjectJoint : MonoBehaviour
     {
         IsRoot = ParentJoint == null ? true : false;
     }
+
+    #region TO BE USED FOR GUI
+
+    public static GameObject SpawnJoint()
+    {
+        Vector3 SpawnPosition = new Vector3(0.05f, 0f, -5.8f);
+
+        GameObject newJoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        newJoint.transform.position = SpawnPosition;
+        ObjectJoint JointComponent = newJoint.AddComponent<ObjectJoint>();
+        JointComponent.IsRoot = true;
+
+        return newJoint;
+        // Also need to set the rotation axis somehow?
+    }
+
+    #endregion
 }
 
 
