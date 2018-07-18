@@ -9,6 +9,7 @@ using UnityEngine;
 public class RobotLink : MonoBehaviour
 {
 
+
     #region Public Variables
 
     // General Properties of the GameObject
@@ -30,4 +31,19 @@ public class RobotLink : MonoBehaviour
         inertiaTensor = thisObjectRB.inertiaTensor;
         mass = thisObjectRB.mass;
     }
+
+    #region TO BE USED FOR GUI
+
+    public static GameObject SpawnLink()
+    {
+        Vector3 SpawnPosition = new Vector3(0.05f, 0f, -5.8f);
+
+        GameObject newLink = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        newLink.transform.position = SpawnPosition;
+        RobotLink LinkComponent = newLink.AddComponent<RobotLink>();
+
+        return newLink;
+    }
+
+    #endregion
 }
