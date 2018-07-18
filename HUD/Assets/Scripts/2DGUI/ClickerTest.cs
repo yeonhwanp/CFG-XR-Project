@@ -7,13 +7,16 @@ using UnityEngine;
 /// </summary>
 public class ClickerTest : MonoBehaviour {
 
-    float distance = 3;
+    // Is there a way to dynamically set this?
+    float distance = 5;
+
+    GameObject selected;
     GameObject ButtonManager;
 
-    // TEST
+    // For scaling
     float sizingFactor = 0.02f;
     private float startSize;
-    private float startX;
+    private float startNum;
 
     private void OnMouseDown()
     {
@@ -29,55 +32,97 @@ public class ClickerTest : MonoBehaviour {
 
     private void Update()
     {
+        selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;
+
         // For the selection color
         if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected != gameObject)
         {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         }
 
-        //for resizing
+        // For scaling
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.ScaleButton)
         {
-            // Setting the values on buttondown
-            if (Input.GetMouseButtonDown(0))
-            {
-                Vector3 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-                startX = position.x;
-                position = Camera.main.ScreenToWorldPoint(position);
-                startSize = gameObject.transform.localScale.z;
-            }
+            ChangeXScale();
+            ChangeYScale();
+            ChangeZScale();
+        }
+    }
 
-            // Doing the actual stuff
-            if (Input.GetMouseButton(0))
-            {
-                Vector3 size = gameObject.transform.localScale;
-                size.x = startSize + (Input.mousePosition.x - startX) * sizingFactor;
-                gameObject.transform.localScale = size;
-            }
+    #region Scaling
+    private void ChangeXScale()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+            startNum = mousePosition.x;
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            startSize = selected.transform.localScale.x;
         }
 
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 startScale = selected.transform.localScale;
 
-        //if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.ScaleButton)
-        //{
-        //    float startSize;
+            // Necessary so it doesnt rever to original.
+            if (Input.mousePosition.x - startNum != 0)
+            {
+                startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
+                selected.transform.localScale = startScale;
+            }
 
-        //    if (Input.GetMouseButtonDown(0))
-        //    {
-        //        Vector3 mouseOriginal = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-        //        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(mouseOriginal);
-        //        startSize = gameObject.transform.localScale.x;
-        //    }
-
-        //    if (Input.GetMouseButton(0))
-        //    {
-        //        Vector3 originalSize = gameObject.transform.localScale;
-        //        float newX = originalSize.x + (Input.mousePosition.x - startX) * sizingFactor;
-        //        Vector3 newSize = new Vector3(newX, originalSize.y, originalSize.z);
-        //        transform.localScale = newSize;
-        //    }
-
-        //}
+        }
     }
+
+    private void ChangeYScale()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+            startNum = mousePosition.y;
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            startSize = selected.transform.localScale.y;
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            Vector3 startScale = selected.transform.localScale;
+
+            // Necessary so it doesnt rever to original.
+            if (Input.mousePosition.y - startNum != 0)
+            {
+                startScale.y = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
+                selected.transform.localScale = startScale;
+            }
+
+        }
+    }
+
+    // For now use in and out
+    private void ChangeZScale()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+            startNum = mousePosition.y;
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            startSize = selected.transform.localScale.z;
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            Vector3 startScale = gameObject.transform.localScale;
+
+            // Necessary so it doesnt rever to original.
+            if (Input.mousePosition.y - startNum != 0)
+            {
+                startScale.z = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
+                selected.transform.localScale = startScale;
+            }
+
+        }
+    }
+    #endregion
 
     private void OnMouseDrag()
     {
