@@ -9,7 +9,9 @@ using System.Text;
 using System;
 using Google.Protobuf;
 
-public class ClientUDP<T> where T : IMessage<T>, new()
+// Need to combine
+
+public class MeshClientUDP<T> where T : IMessage<T>, new()
 {
     // Unlike the robot script, I'm not going to accept messages because... I know it's possible and it's annoying to debug
     // But, will log the amount of elements the MeshList is holding so that we can verify it's the same.
