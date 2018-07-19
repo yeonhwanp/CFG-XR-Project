@@ -311,12 +311,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 129027321}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65512f47dfa174846ad42410e17b858f, type: 3}
+  m_Script: {fileID: 11500000, guid: 36007fde22ff44146870fee0c3b1f570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnSpeed: 1
-  panSpeed: 1
-  zoomSpeed: 1
+  turnSpeed: 4
+  panSpeed: 4
+  zoomSpeed: 4
 --- !u!1 &200954901
 GameObject:
   m_ObjectHideFlags: 0
