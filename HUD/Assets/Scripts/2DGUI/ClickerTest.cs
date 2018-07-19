@@ -15,8 +15,10 @@ public class ClickerTest : MonoBehaviour {
 
     // For scaling
     float sizingFactor = 0.02f;
+    float turnSpeed = 100.0f;
     private float startSize;
     private float startNum;
+    private Vector3 mouseOrigin;
 
     private void OnMouseDown()
     {
@@ -33,6 +35,7 @@ public class ClickerTest : MonoBehaviour {
     private void Update()
     {
         selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;
+        mouseOrigin = Input.mousePosition;
 
         // For the selection color
         if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected != gameObject)
@@ -131,7 +134,22 @@ public class ClickerTest : MonoBehaviour {
         {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance);
             Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            gameObject.transform.position = objPosition;
+            Vector3 newPosition = new Vector3(objPosition.x, objPosition.y, gameObject.transform.position.z);
+            gameObject.transform.position = newPosition;
+
+        }
+
+        // Rotating object
+        // Feels unnatural because the axis are slightly off (aka can be in the negative direction and such, how can we fix that?)
+        if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
+        {
+
+            float rotSpeed = 5;
+            float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+            float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
+
+            transform.RotateAround(Vector3.up, -rotX);
+            transform.RotateAround(Vector3.right, rotY);
         }
     }
 }

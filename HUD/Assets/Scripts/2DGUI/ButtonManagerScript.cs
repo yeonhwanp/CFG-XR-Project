@@ -10,6 +10,7 @@ public class ButtonManagerScript : MonoBehaviour {
     public Button MoveButton;
     public Button TransformButton;
     public Button ScaleButton;
+    public Button RotateButton;
 
     // Used to use specific modes of manipulation.
     public EnabledButton enabledButton;
@@ -18,7 +19,8 @@ public class ButtonManagerScript : MonoBehaviour {
     {
         MoveButton,
         TransformButton,
-        ScaleButton
+        ScaleButton,
+        RotateButton
     };
 
     private void Start()
@@ -28,6 +30,7 @@ public class ButtonManagerScript : MonoBehaviour {
         MoveButton.onClick.AddListener(EnableCameraMovement);
         TransformButton.onClick.AddListener(EnableTransform);
         ScaleButton.onClick.AddListener(EnableScaling);
+        RotateButton.onClick.AddListener(EnableRotation);
     }
 
     private void EnableTransform()
@@ -43,6 +46,11 @@ public class ButtonManagerScript : MonoBehaviour {
     private void EnableScaling()
     {
         enabledButton = EnabledButton.ScaleButton;
+    }
+
+    private void EnableRotation()
+    {
+        enabledButton = EnabledButton.RotateButton;
     }
 
     private void SpawnJoint()
