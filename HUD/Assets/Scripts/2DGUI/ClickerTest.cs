@@ -3,35 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This class is used for all of the clicking interface.
+/// Attached to all of the spawned GameObjects.
+/// Controls what happens to the object with click actions.
 /// </summary>
 public class ClickerTest : MonoBehaviour {
-
-    // Is there a way to dynamically set this?
-    float distance = 5;
 
     GameObject selected;
     GameObject ButtonManager;
 
-    // For scaling
+    // For scaling and rotation
     float sizingFactor = 0.02f;
     float turnSpeed = 100.0f;
     private float startSize;
     private float startNum;
     private Vector3 mouseOrigin;
 
+    // Making this object "Selected"
     private void OnMouseDown()
     {
         GameObject selectorManager = GameObject.Find("Plane");
         selectorManager.GetComponent<SelectorManagerScript>().selected = gameObject;
     }
 
+    // Every gameObject shouldn't be selected at first, assign ButtonManager.
     private void Start()
     {
         gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         ButtonManager = GameObject.Find("ButtonManager");
     }
 
+    // Check if it's selected. Also handles scaling.
     private void Update()
     {
         selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;
@@ -127,12 +128,13 @@ public class ClickerTest : MonoBehaviour {
     }
     #endregion
 
+    // Moving + Rotating Objects.
     private void OnMouseDrag()
     {
         // moving object
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
         {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance);
+            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, System.Math.Abs(gameObject.transform.position.z - Camera.main.transform.position.z));
             Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             Vector3 newPosition = new Vector3(objPosition.x, objPosition.y, gameObject.transform.position.z);
             gameObject.transform.position = newPosition;
@@ -154,6 +156,7 @@ public class ClickerTest : MonoBehaviour {
             }
 
             // Need to make this work for full rotation capabilities.
+            // Doesn't work.
             else if (Input.GetMouseButton(1))
             {
                 Debug.Log("hi?");

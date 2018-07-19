@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class to keep track of button states
+/// </summary>
 public class ButtonManagerScript : MonoBehaviour {
 
     public Button JointButton;

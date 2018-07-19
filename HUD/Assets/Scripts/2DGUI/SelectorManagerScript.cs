@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Used to manage "selecting" an object.
+/// </summary>
 public class SelectorManagerScript : MonoBehaviour {
 
-    // Should be the one that's selected. Oh wow this works perfectly, don't have to search through.
-    // Can just say "ok this is selected change the material"
-    // Cool
     public GameObject selected;
 
     private void Update()
