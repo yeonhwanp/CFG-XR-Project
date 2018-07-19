@@ -4,18 +4,9 @@ using UnityEngine;
 using System.IO;
 using Google.Protobuf;
 
-
-// TODO: Remove Colliders --> not important
-// TODO: Add Rigidbody to everything --> not important
-// TODO: Create a "root" joint --> Pretty important but not important to function (i think?)
-// TODO: Create a robot with four legs --> Goal (so pretty important)
-// TODO: Send data over protobuf... PLEASE WORK
-
-// NOTE: Do we want to merge the dictionary into one? But then... Lots of refactoring to do jeez.
-// NOTE: I see... what local position does omg ok it makes more sense now.]
-// NOTE: Defaults to local position if there is a parent.
-
-// NOTE: Unity bug... Can't scale non-uniformally -> will have shape shifting children  
+/// <summary>
+/// Class used for creating a test robot over network, as well as moving its joints.
+/// </summary>
 
 public class CreateTestRobot : MonoBehaviour {
 
@@ -175,6 +166,7 @@ public class CreateTestRobot : MonoBehaviour {
         root.transform.Translate(Vector3.up);
     }
 
+    // Make robot "move"
     private void Update()
     {
         // This is for first movement in the sequence

@@ -9,6 +9,9 @@ using System.Text;
 using System;
 using Google.Protobuf;
 
+/// <summary>
+/// Class to send over specifications and stuff.
+/// </summary>
 public class ClientUDP<T> where T: IMessage<T>, new()
 {
     public static T UDPSend(int sendPort, T sendObject)

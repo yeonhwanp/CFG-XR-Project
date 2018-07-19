@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// General helpful methods
+/// </summary>
 public class MakeMethods : MonoBehaviour
 {
     // Returns a new JointStorage
@@ -64,8 +67,6 @@ public class MakeMethods : MonoBehaviour
 /// I've been confused by this multiple times so I'm going to add a comment here
 /// This class holds a method that fills in PositionStorage.PList.
 /// </summary>
-/// 
-// Lets make this a dictionary... It's kind of annoying to guess the stuff. But for now, I'll leave it?
 public static class PositionListCreator
 {
     public static void CreateDict(GameObject rootJoint, IDictionary<int, PositionStorage> defaultDict)
