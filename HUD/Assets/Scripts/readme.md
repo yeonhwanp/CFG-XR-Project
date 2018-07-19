@@ -3,6 +3,7 @@
 **1. 2DGUI:** 
   - Currently working on the 2D interface for debugging purposes. 
   - Includes scripts that manage buttons + clicks.
+  - Code is currently somewhat messy.
 
 **2. ARGUI:**
   - To include scripts for leapmotion/magicleap UI development.
