@@ -12,6 +12,7 @@ Main Folder for what I'm working on
 
   - Used for things that utilize MagicLeap simulation.
   - Had to leave this in a different project because MagicLeap uses a newer and more experimental version of Unity. That version crashes a lot. 
+  
 **4. ServerStuff:**
 
   - Used for debugging purposes 
