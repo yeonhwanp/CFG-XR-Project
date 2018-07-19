@@ -140,16 +140,28 @@ public class ClickerTest : MonoBehaviour {
         }
 
         // Rotating object
-        // Feels unnatural because the axis are slightly off (aka can be in the negative direction and such, how can we fix that?)
+        // Can't rotate with one of the axis due to the limitations in 2D mouse -- add extra buttons?
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
         {
+            if (Input.GetMouseButton(0))
+            {
+                float rotSpeed = 5;
+                float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+                float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
 
-            float rotSpeed = 5;
-            float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
-            float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
+                transform.RotateAround(Vector3.up, -rotX);
+                transform.RotateAround(Vector3.right, rotY);
+            }
 
-            transform.RotateAround(Vector3.up, -rotX);
-            transform.RotateAround(Vector3.right, rotY);
+            // Need to make this work for full rotation capabilities.
+            else if (Input.GetMouseButton(1))
+            {
+                Debug.Log("hi?");
+                float rotSpeed = 5;
+                float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+                transform.RotateAround(Vector3.forward, rotX);
+            }
+
         }
     }
 }
