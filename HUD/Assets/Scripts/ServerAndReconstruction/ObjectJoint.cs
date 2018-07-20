@@ -64,12 +64,6 @@ public class ObjectJoint : MonoBehaviour
         // Also need to set the rotation axis somehow?
     }
 
-    // Use to add a child link.. For now this is going to be the root
-    public void AddChildLink(GameObject link)
-    {
-        
-    }
-
     #endregion
 }
 

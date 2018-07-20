@@ -11,6 +11,8 @@ public class ClickerTest : MonoBehaviour {
     GameObject selected;
     GameObject ButtonManager;
 
+    public bool IsLocked = false; // Used to tell if the object is attached to something already or not.
+
     // For scaling and rotation
     float sizingFactor = 0.02f;
     float turnSpeed = 100.0f;
@@ -134,10 +136,15 @@ public class ClickerTest : MonoBehaviour {
         // moving object
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
         {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, System.Math.Abs(gameObject.transform.position.z - Camera.main.transform.position.z));
-            Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            Vector3 newPosition = new Vector3(objPosition.x, objPosition.y, gameObject.transform.position.z);
-            gameObject.transform.position = newPosition;
+            if (!IsLocked)
+            {
+                MoveObject(gameObject);
+            }
+            else
+            {
+                GameObject root = GetRootJoint(gameObject);
+                MoveObject(root);
+            }
 
         }
 
@@ -165,6 +172,51 @@ public class ClickerTest : MonoBehaviour {
                 transform.RotateAround(Vector3.forward, rotX);
             }
 
+        }
+    }
+
+    // Method for moving the object
+    private static void MoveObject(GameObject movingObject)
+    {
+        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, System.Math.Abs(movingObject.transform.position.z - Camera.main.transform.position.z));
+        Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        Vector3 newPosition = new Vector3(objPosition.x, objPosition.y, movingObject.transform.position.z);
+        movingObject.transform.position = newPosition;
+    }
+
+    // Method for getting the rootJoint recursively (Used for moving Locked object)
+    private static GameObject GetRootJoint(GameObject thisObject)
+    {
+
+        // If it's a joint
+        if (thisObject.GetComponent<ObjectJoint>() != null)
+        {
+            if (thisObject.GetComponent<ObjectJoint>().ParentJoint != null)
+            {
+                return GetRootJoint(thisObject.GetComponent<ObjectJoint>().ParentJoint);
+            }
+            else
+            {
+                return thisObject;
+            }
+        }
+
+        // If it's a link
+        else if (thisObject.GetComponent<RobotLink>() != null)
+        {
+            if (thisObject.GetComponent<RobotLink>().ParentJoint != null)
+            {
+                return GetRootJoint(thisObject.GetComponent<RobotLink>().ParentJoint);
+            }
+            else
+            {
+                return thisObject;
+            }
+        }
+
+        else
+        {
+            return null;
         }
     }
 }
