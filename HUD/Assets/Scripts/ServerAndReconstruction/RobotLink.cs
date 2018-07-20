@@ -18,6 +18,8 @@ public class RobotLink : MonoBehaviour
     public Vector3 inertiaTensor;
     public float mass;
 
+    public GameObject ParentJoint;
+
     #endregion
 
     /// <summary>

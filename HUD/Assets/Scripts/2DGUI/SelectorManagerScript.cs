@@ -25,7 +25,7 @@ public class SelectorManagerScript : MonoBehaviour {
         {
             Material theMaterial = selected.GetComponent<Renderer>().material;
             theMaterial.SetColor("_Color", Color.gray);
-            selected = null;
+            //selected = null;
         }
     }
 }
