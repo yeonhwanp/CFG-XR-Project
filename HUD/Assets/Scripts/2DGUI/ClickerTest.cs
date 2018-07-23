@@ -37,6 +37,8 @@ public class ClickerTest : MonoBehaviour {
     // Check if it's selected. Also handles scaling.
     private void Update()
     {
+        // Scale protection (why didnt this work before???)
+        Vector3 original = transform.localScale;
         selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;
         mouseOrigin = Input.mousePosition;
 
@@ -53,6 +55,8 @@ public class ClickerTest : MonoBehaviour {
             ChangeYScale();
             ChangeZScale();
         }
+
+        transform.localScale = original;
     }
 
     #region Scaling
@@ -76,7 +80,6 @@ public class ClickerTest : MonoBehaviour {
                 startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
                 selected.transform.localScale = startScale;
             }
-
         }
     }
 
@@ -175,14 +178,14 @@ public class ClickerTest : MonoBehaviour {
         }
     }
 
-    // Method for moving the object
+    // Method for moving the object 
     private static void MoveObject(GameObject movingObject)
     {
-        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, System.Math.Abs(movingObject.transform.position.z - Camera.main.transform.position.z));
+        Vector3 screenSpace = Camera.main.WorldToScreenPoint(movingObject.transform.position);
+        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        Vector3 newPosition = new Vector3(objPosition.x, objPosition.y, movingObject.transform.position.z);
-        movingObject.transform.position = newPosition;
-    }
+        movingObject.transform.position = objPosition;
+    } 
 
     // Method for getting the rootJoint recursively (Used for moving Locked object)
     private static GameObject GetRootJoint(GameObject thisObject)
