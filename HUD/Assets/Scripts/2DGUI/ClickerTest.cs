@@ -10,6 +10,7 @@ public class ClickerTest : MonoBehaviour {
 
     GameObject selected;
     GameObject ButtonManager;
+    bool _markersSpawned = false;
 
     public bool IsLocked = false; // Used to tell if the object is attached to something already or not.
 
@@ -19,6 +20,9 @@ public class ClickerTest : MonoBehaviour {
     private float startSize;
     private float startNum;
     private Vector3 mouseOrigin;
+
+    GameObject arrowOne;
+    GameObject arrowTwo;
 
     // Making this object "Selected"
     private void OnMouseDown()
@@ -153,28 +157,59 @@ public class ClickerTest : MonoBehaviour {
 
         // Rotating object
         // Can't rotate with one of the axis due to the limitations in 2D mouse -- add extra buttons?
+        // Darn it 
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
         {
-            if (Input.GetMouseButton(0))
+
+            if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected == gameObject)
             {
-                float rotSpeed = 5;
-                float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
-                float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
 
-                transform.RotateAround(Vector3.up, -rotX);
-                transform.RotateAround(Vector3.right, rotY);
+                if (!_markersSpawned)
+                {
+                    // For the "arrows" we generate
+                    _markersSpawned = true;
+
+                    arrowOne = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    arrowOne.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
+                    arrowOne.transform.parent = gameObject.transform;
+                    Vector3 arrowOneTransform = new Vector3(0, 2f, 0);
+                    arrowOne.transform.localPosition = arrowOneTransform;
+
+                    //arrowTwo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    //arrowTwo.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
+                    //Quaternion arrowTwoRotation = Quaternion.Euler(0, 0, 90);
+                    //arrowTwo.transform.parent = gameObject.transform;
+                    //Vector3 arrowTwoTransform = new Vector3(1f, 0, 0);
+                    //arrowTwo.transform.localPosition = arrowTwoTransform;
+                    //arrowTwo.transform.localRotation = arrowTwoRotation;
+                }
+
+
+
+
+                if (Input.GetMouseButton(0))
+                {
+                    float rotSpeed = 5;
+                    float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+                    float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
+
+                    transform.RotateAround(Vector3.up, -rotX);
+                    transform.RotateAround(Vector3.right, rotY);
+                }
             }
-
-            // Need to make this work for full rotation capabilities.
-            // Doesn't work.
-            else if (Input.GetMouseButton(1))
+            else
             {
-                Debug.Log("hi?");
-                float rotSpeed = 5;
-                float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
-                transform.RotateAround(Vector3.forward, rotX);
+                Destroy(arrowOne);
+                Destroy(arrowTwo);
+                _markersSpawned = false;
             }
+        }
 
+        else
+        {
+            Destroy(arrowOne);
+            Destroy(arrowTwo);
+            _markersSpawned = false;
         }
     }
 
