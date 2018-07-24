@@ -36,6 +36,8 @@ public class ClickerTest : MonoBehaviour {
     {
         gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         ButtonManager = GameObject.Find("ButtonManager");
+
+        // Set default axis here
     }
 
     // Check if it's selected. Also handles scaling.
@@ -59,6 +61,56 @@ public class ClickerTest : MonoBehaviour {
             ChangeYScale();
             ChangeZScale();
         }
+
+        // For rotation
+        if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected == gameObject && ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
+        {
+            // For the "arrows" we generate
+            if (!_markersSpawned)
+            {
+                _markersSpawned = true;
+
+                arrowOne = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                arrowOne.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
+                arrowOne.transform.parent = gameObject.transform;
+                Vector3 arrowOneTransform = new Vector3(0, 1.4f, 0);
+                Quaternion arrowOneRotation = Quaternion.Euler(0, 0, 0);
+                arrowOne.transform.localPosition = arrowOneTransform;
+                arrowOne.transform.localRotation = arrowOneRotation;
+
+                arrowTwo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                arrowTwo.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
+                Quaternion arrowTwoRotation = Quaternion.Euler(0, 0, 90);
+                arrowTwo.transform.parent = gameObject.transform;
+                Vector3 arrowTwoTransform = new Vector3(1f, 0, 0);
+                arrowTwo.transform.localPosition = arrowTwoTransform;
+                arrowTwo.transform.localRotation = arrowTwoRotation;
+
+                Destroy(arrowOne.GetComponent<Rigidbody>());
+                Destroy(arrowOne.GetComponent<CapsuleCollider>());
+                Destroy(arrowTwo.GetComponent<Rigidbody>());
+                Destroy(arrowTwo.GetComponent<CapsuleCollider>());
+            }
+
+            if (Input.GetMouseButton(0))
+            {
+                float rotSpeed = 5;
+                float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+                float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
+
+                transform.RotateAround(Vector3.up, -rotX);
+                transform.RotateAround(Vector3.right, rotY);
+            }
+        }
+
+        else
+        {
+            Destroy(arrowOne);
+            Destroy(arrowTwo);
+            _markersSpawned = false;
+        }
+
+        // End of rotation script portion
 
         transform.localScale = original;
     }
@@ -137,10 +189,9 @@ public class ClickerTest : MonoBehaviour {
     }
     #endregion
 
-    // Moving + Rotating Objects.
+    // Moving objects. 
     private void OnMouseDrag()
     {
-        // moving object
         if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
         {
             if (!IsLocked)
@@ -152,64 +203,6 @@ public class ClickerTest : MonoBehaviour {
                 GameObject root = GetRootJoint(gameObject);
                 MoveObject(root);
             }
-
-        }
-
-        // Rotating object
-        // Can't rotate with one of the axis due to the limitations in 2D mouse -- add extra buttons?
-        // Darn it 
-        if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
-        {
-
-            if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected == gameObject)
-            {
-
-                if (!_markersSpawned)
-                {
-                    // For the "arrows" we generate
-                    _markersSpawned = true;
-
-                    arrowOne = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                    arrowOne.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
-                    arrowOne.transform.parent = gameObject.transform;
-                    Vector3 arrowOneTransform = new Vector3(0, 2f, 0);
-                    arrowOne.transform.localPosition = arrowOneTransform;
-
-                    //arrowTwo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                    //arrowTwo.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
-                    //Quaternion arrowTwoRotation = Quaternion.Euler(0, 0, 90);
-                    //arrowTwo.transform.parent = gameObject.transform;
-                    //Vector3 arrowTwoTransform = new Vector3(1f, 0, 0);
-                    //arrowTwo.transform.localPosition = arrowTwoTransform;
-                    //arrowTwo.transform.localRotation = arrowTwoRotation;
-                }
-
-
-
-
-                if (Input.GetMouseButton(0))
-                {
-                    float rotSpeed = 5;
-                    float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
-                    float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
-
-                    transform.RotateAround(Vector3.up, -rotX);
-                    transform.RotateAround(Vector3.right, rotY);
-                }
-            }
-            else
-            {
-                Destroy(arrowOne);
-                Destroy(arrowTwo);
-                _markersSpawned = false;
-            }
-        }
-
-        else
-        {
-            Destroy(arrowOne);
-            Destroy(arrowTwo);
-            _markersSpawned = false;
         }
     }
 
