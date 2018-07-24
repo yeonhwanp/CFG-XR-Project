@@ -104,6 +104,7 @@ public class ButtonManagerScript : MonoBehaviour {
 
                     // "Locking" the object
                     selected.GetComponent<ClickerTest>().IsLocked = true;
+                    closestJoint.GetComponent<ClickerTest>().IsLocked = true;
                 }
                 else
                 {
@@ -112,13 +113,14 @@ public class ButtonManagerScript : MonoBehaviour {
             }
 
             // If selected object is a joint
-            else if (selected.GetComponent<ObjectJoint>() != null && !selected.GetComponent<ClickerTest>().IsLocked)
+            else if (selected.GetComponent<ObjectJoint>() != null)
             {
                 GameObject closestLink = GetClosestLink(selected);
 
                 // If there is a link, attach it to the closest one.
                 if (closestLink != null)
                 {
+                    Debug.Log("hello");
                     ObjectJoint thisJoint = selected.GetComponent<ObjectJoint>();
 
                     // Doing ObjectJoint/RobotLink stuff
@@ -134,6 +136,7 @@ public class ButtonManagerScript : MonoBehaviour {
 
                     // "Locking" the object
                     selected.GetComponent<ClickerTest>().IsLocked = true;
+                    selected.GetComponent<ClickerTest>().IsRotationLocked = true;
                 }
                 else
                 {
@@ -150,7 +153,7 @@ public class ButtonManagerScript : MonoBehaviour {
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject GO in allObjects)
         {
-            if (GO.GetComponent<ObjectJoint>() != null && GO.activeInHierarchy)
+            if (GO.GetComponent<ObjectJoint>() != null && GO.activeInHierarchy && !GO.GetComponent<ClickerTest>().IsLocked)
             {
                 if (closest == null)
                 {
@@ -171,6 +174,7 @@ public class ButtonManagerScript : MonoBehaviour {
     // Duplicate of Joint version
     private GameObject GetClosestLink(GameObject joint)
     {
+        Debug.Log("getclose");
         GameObject closest = null;
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject GO in allObjects)
