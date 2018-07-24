@@ -15,6 +15,7 @@ using UnityEngine.UI;
 /// </summary>
 public class ButtonManagerScript : MonoBehaviour {
 
+    // Linking all of the buttons here
     public Button JointButton;
     public Button LinkButton;
     public Button MoveButton;
@@ -26,6 +27,7 @@ public class ButtonManagerScript : MonoBehaviour {
     // Used to use specific modes of manipulation.
     public EnabledButton enabledButton;
 
+    // Button states
     public enum EnabledButton
     {
         MoveButton,
@@ -34,6 +36,7 @@ public class ButtonManagerScript : MonoBehaviour {
         RotateButton
     };
 
+    // Connect buttons to the methods
     private void Start()
     {
         JointButton.onClick.AddListener(SpawnJoint);
@@ -45,6 +48,7 @@ public class ButtonManagerScript : MonoBehaviour {
         AttachButton.onClick.AddListener(Attach);
     }
 
+    #region Button Methods
     private void EnableTransform()
     {
         enabledButton = EnabledButton.TransformButton;
@@ -145,7 +149,9 @@ public class ButtonManagerScript : MonoBehaviour {
             }
         }
     }
+    #endregion
 
+    #region Other Methods
     // Getting the closest joint (returns null if no ObjectJoints)
     private GameObject GetClosestJoint(GameObject link)
     {
@@ -196,5 +202,6 @@ public class ButtonManagerScript : MonoBehaviour {
         }
         return closest;
     }
+    #endregion
 
 }

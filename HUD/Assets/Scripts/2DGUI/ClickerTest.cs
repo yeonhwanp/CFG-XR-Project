@@ -8,12 +8,17 @@ using UnityEngine;
 /// </summary>
 public class ClickerTest : MonoBehaviour {
 
+    #region Variables
+    // Shortcuts
     SelectorManagerScript SelectorManager;
     ButtonManagerScript ButtonManager;
+
+    // Booleans
     bool _markersSpawned = false;
     public bool _isScaling = false;
 
-    public bool IsLocked = false; // Used to tell if the object is attached to something already or not.
+    // For when things are connected
+    public bool IsLocked = false; 
     public bool IsRotationLocked = false;
 
     // For scaling
@@ -25,8 +30,10 @@ public class ClickerTest : MonoBehaviour {
     // Rotation arrows
     GameObject arrowOne;
     GameObject arrowTwo;
+    #endregion
 
-    // Every gameObject shouldn't be selected at first, assign ButtonManager and SelectorManager
+    #region UnityMethods
+    // Set color, initalize shortcuts
     private void Start()
     {
         gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
@@ -34,14 +41,12 @@ public class ClickerTest : MonoBehaviour {
         SelectorManager = GameObject.Find("Plane").GetComponent<SelectorManagerScript>();
     }
 
-    // Check if it's selected. Also handles scaling.
     private void Update()
     {
-        // Scale protection (why didnt this work before???)
-        Vector3 original = transform.localScale;
+        Vector3 original = transform.localScale; // Scale Protection
         mouseOrigin = Input.mousePosition;
 
-        // For the selection color
+        // Switch to defualt color if not selected
         if (SelectorManager.selected != gameObject)
         {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
@@ -64,7 +69,7 @@ public class ClickerTest : MonoBehaviour {
         // For rotation
         if (SelectorManager.selected == gameObject && ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
         {
-            // For the "arrows" we generate
+            // Managing Markers.
             if (!_markersSpawned)
             {
                 _markersSpawned = true;
@@ -99,17 +104,42 @@ public class ClickerTest : MonoBehaviour {
                 Destroy(arrowOne.GetComponent<CapsuleCollider>());
             }
 
+            // Actual rotation managed here
             if (Input.GetMouseButton(0))
             {
                 float rotSpeed = 5;
                 float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
                 float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
 
-                transform.RotateAround(Vector3.up, -rotX);
-                if (!IsRotationLocked)
+                // How rotation should be if it's a joint
+                if (gameObject.GetComponent<ObjectJoint>() != null)
                 {
-                    transform.RotateAround(Vector3.right, rotY);
+                    transform.RotateAround(Vector3.up, -rotX);
+                    if (!IsRotationLocked)
+                    {
+                        transform.RotateAround(Vector3.right, rotY);
+                    }
                 }
+
+                // How rotation should be if it's a link
+                else
+                {
+                    if (!IsLocked)
+                    {
+                        transform.RotateAround(Vector3.up, -rotX);
+                        transform.RotateAround(Vector3.right, rotY);
+                    }
+                    else
+                    {
+                        GameObject parent = gameObject.GetComponent<RobotLink>().ParentJoint;
+                        parent.transform.RotateAround(Vector3.up, -rotX);
+                        if (!parent.GetComponent<ClickerTest>().IsRotationLocked)
+                        {
+                            parent.transform.RotateAround(Vector3.right, rotY);
+                        }
+                    }
+                }
+
             }
         }
 
@@ -120,16 +150,14 @@ public class ClickerTest : MonoBehaviour {
             _markersSpawned = false;
         }
 
-        // End of rotation script portion
-
+        // Don't change scale if you don't need to.
         if (!_isScaling)
             transform.localScale = original;
     }
 
-    // Making this object "Selected"
+    // Selecting the object
     private void OnMouseDown()
     {
-        GameObject selectorManager = GameObject.Find("Plane");
         SelectorManager.selected = gameObject;
     }
 
@@ -150,8 +178,11 @@ public class ClickerTest : MonoBehaviour {
         }
     }
 
-    // CHAGNED SELECTED.TRANSFORM.LOCALSCSALE TO GAMEOBJECT.TRANSFORM.LOCALSCALE
-    // #ihatebugs
+    #endregion
+
+    // ---------------------------------------------- Start of other methods ---------------------------------------------- //
+
+    #region OtherMethods
     #region Scaling
     private void ChangeXScale()
     {
@@ -236,7 +267,7 @@ public class ClickerTest : MonoBehaviour {
         movingObject.transform.position = objPosition;
     } 
 
-    // Method for getting the rootJoint recursively (Used for moving Locked object)
+    // Method for getting the rootJoint recursively (Used for moving locked object)
     private static GameObject GetRootJoint(GameObject thisObject)
     {
 
@@ -249,7 +280,6 @@ public class ClickerTest : MonoBehaviour {
             }
             else
             {
-                Debug.Log("hello?");
                 return thisObject;
             }
         }
@@ -272,6 +302,9 @@ public class ClickerTest : MonoBehaviour {
             return null;
         }
     }
+
+    #endregion
 }
 
 // Note: Need root joint if we want to test transform.
+// Note: Also, there is a stackoverflow error in getrootjoint. Going to ignore for now.
