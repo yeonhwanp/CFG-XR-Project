@@ -8,36 +8,30 @@ using UnityEngine;
 /// </summary>
 public class ClickerTest : MonoBehaviour {
 
-    GameObject selected;
-    GameObject ButtonManager;
+    SelectorManagerScript SelectorManager;
+    ButtonManagerScript ButtonManager;
     bool _markersSpawned = false;
+    public bool _isScaling = false;
 
     public bool IsLocked = false; // Used to tell if the object is attached to something already or not.
+    public bool IsRotationLocked = false;
 
-    // For scaling and rotation
-    float sizingFactor = 0.02f;
-    float turnSpeed = 100.0f;
+    // For scaling
+    private float sizingFactor = 0.02f;
     private float startSize;
     private float startNum;
     private Vector3 mouseOrigin;
 
+    // Rotation arrows
     GameObject arrowOne;
     GameObject arrowTwo;
 
-    // Making this object "Selected"
-    private void OnMouseDown()
-    {
-        GameObject selectorManager = GameObject.Find("Plane");
-        selectorManager.GetComponent<SelectorManagerScript>().selected = gameObject;
-    }
-
-    // Every gameObject shouldn't be selected at first, assign ButtonManager.
+    // Every gameObject shouldn't be selected at first, assign ButtonManager and SelectorManager
     private void Start()
     {
         gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
-        ButtonManager = GameObject.Find("ButtonManager");
-
-        // Set default axis here
+        ButtonManager = GameObject.Find("ButtonManager").GetComponent<ButtonManagerScript>();
+        SelectorManager = GameObject.Find("Plane").GetComponent<SelectorManagerScript>();
     }
 
     // Check if it's selected. Also handles scaling.
@@ -45,25 +39,30 @@ public class ClickerTest : MonoBehaviour {
     {
         // Scale protection (why didnt this work before???)
         Vector3 original = transform.localScale;
-        selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;
         mouseOrigin = Input.mousePosition;
 
         // For the selection color
-        if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected != gameObject)
+        if (SelectorManager.selected != gameObject)
         {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         }
 
         // For scaling
-        if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.ScaleButton)
+        if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
         {
+            _isScaling = true;
             ChangeXScale();
             ChangeYScale();
             ChangeZScale();
         }
 
+        else 
+        {
+            _isScaling = false;
+        }
+
         // For rotation
-        if (GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected == gameObject && ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
+        if (SelectorManager.selected == gameObject && ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
         {
             // For the "arrows" we generate
             if (!_markersSpawned)
@@ -73,23 +72,31 @@ public class ClickerTest : MonoBehaviour {
                 arrowOne = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 arrowOne.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
                 arrowOne.transform.parent = gameObject.transform;
-                Vector3 arrowOneTransform = new Vector3(0, 1.4f, 0);
+                Vector3 arrowOneTransform = new Vector3(0, 1f, 0);
                 Quaternion arrowOneRotation = Quaternion.Euler(0, 0, 0);
                 arrowOne.transform.localPosition = arrowOneTransform;
                 arrowOne.transform.localRotation = arrowOneRotation;
 
-                arrowTwo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                arrowTwo.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
-                Quaternion arrowTwoRotation = Quaternion.Euler(0, 0, 90);
-                arrowTwo.transform.parent = gameObject.transform;
-                Vector3 arrowTwoTransform = new Vector3(1f, 0, 0);
-                arrowTwo.transform.localPosition = arrowTwoTransform;
-                arrowTwo.transform.localRotation = arrowTwoRotation;
+                if (!IsRotationLocked && gameObject.GetComponent<ObjectJoint>() != null)
+                {
+                    arrowOne.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+                }
 
+                if (!IsRotationLocked)
+                {
+                    arrowTwo = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    arrowTwo.transform.localScale = new Vector3(0.1f, 0.3f, 0.1f);
+                    Quaternion arrowTwoRotation = Quaternion.Euler(0, 0, 90);
+                    arrowTwo.transform.parent = gameObject.transform;
+                    Vector3 arrowTwoTransform = new Vector3(1f, 0, 0);
+                    arrowTwo.transform.localPosition = arrowTwoTransform;
+                    arrowTwo.transform.localRotation = arrowTwoRotation;
+
+                    Destroy(arrowTwo.GetComponent<Rigidbody>());
+                    Destroy(arrowTwo.GetComponent<CapsuleCollider>());
+                }
                 Destroy(arrowOne.GetComponent<Rigidbody>());
                 Destroy(arrowOne.GetComponent<CapsuleCollider>());
-                Destroy(arrowTwo.GetComponent<Rigidbody>());
-                Destroy(arrowTwo.GetComponent<CapsuleCollider>());
             }
 
             if (Input.GetMouseButton(0))
@@ -99,7 +106,10 @@ public class ClickerTest : MonoBehaviour {
                 float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
 
                 transform.RotateAround(Vector3.up, -rotX);
-                transform.RotateAround(Vector3.right, rotY);
+                if (!IsRotationLocked)
+                {
+                    transform.RotateAround(Vector3.right, rotY);
+                }
             }
         }
 
@@ -112,9 +122,36 @@ public class ClickerTest : MonoBehaviour {
 
         // End of rotation script portion
 
-        transform.localScale = original;
+        if (!_isScaling)
+            transform.localScale = original;
     }
 
+    // Making this object "Selected"
+    private void OnMouseDown()
+    {
+        GameObject selectorManager = GameObject.Find("Plane");
+        SelectorManager.selected = gameObject;
+    }
+
+    // Moving objects. 
+    private void OnMouseDrag()
+    {
+        if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
+        {
+            if (!IsLocked)
+            {
+                MoveObject(gameObject);
+            }
+            else
+            {
+                GameObject root = GetRootJoint(gameObject);
+                MoveObject(root);
+            }
+        }
+    }
+
+    // CHAGNED SELECTED.TRANSFORM.LOCALSCSALE TO GAMEOBJECT.TRANSFORM.LOCALSCALE
+    // #ihatebugs
     #region Scaling
     private void ChangeXScale()
     {
@@ -123,19 +160,20 @@ public class ClickerTest : MonoBehaviour {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.x;
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            startSize = selected.transform.localScale.x;
+            startSize = gameObject.transform.localScale.x;
         }
 
         if (Input.GetMouseButton(0))
         {
-            Vector3 startScale = selected.transform.localScale;
+            Vector3 startScale = gameObject.transform.localScale;
 
             // Necessary so it doesnt rever to original.
             if (Input.mousePosition.x - startNum != 0)
             {
                 startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
-                selected.transform.localScale = startScale;
+                gameObject.transform.localScale = startScale;
             }
+
         }
     }
 
@@ -146,18 +184,18 @@ public class ClickerTest : MonoBehaviour {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.y;
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            startSize = selected.transform.localScale.y;
+            startSize = gameObject.transform.localScale.y;
         }
 
         if (Input.GetMouseButton(1))
         {
-            Vector3 startScale = selected.transform.localScale;
+            Vector3 startScale = gameObject.transform.localScale;
 
             // Necessary so it doesnt rever to original.
             if (Input.mousePosition.y - startNum != 0)
             {
                 startScale.y = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                selected.transform.localScale = startScale;
+                gameObject.transform.localScale = startScale;
             }
 
         }
@@ -171,7 +209,7 @@ public class ClickerTest : MonoBehaviour {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.y;
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            startSize = selected.transform.localScale.z;
+            startSize = gameObject.transform.localScale.z;
         }
 
         if (Input.GetMouseButton(2))
@@ -182,29 +220,12 @@ public class ClickerTest : MonoBehaviour {
             if (Input.mousePosition.y - startNum != 0)
             {
                 startScale.z = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                selected.transform.localScale = startScale;
+                gameObject.transform.localScale = startScale;
             }
 
         }
     }
     #endregion
-
-    // Moving objects. 
-    private void OnMouseDrag()
-    {
-        if (ButtonManager.GetComponent<ButtonManagerScript>().enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
-        {
-            if (!IsLocked)
-            {
-                MoveObject(gameObject);
-            }
-            else
-            {
-                GameObject root = GetRootJoint(gameObject);
-                MoveObject(root);
-            }
-        }
-    }
 
     // Method for moving the object 
     private static void MoveObject(GameObject movingObject)
@@ -228,6 +249,7 @@ public class ClickerTest : MonoBehaviour {
             }
             else
             {
+                Debug.Log("hello?");
                 return thisObject;
             }
         }
@@ -251,3 +273,5 @@ public class ClickerTest : MonoBehaviour {
         }
     }
 }
+
+// Note: Need root joint if we want to test transform.
