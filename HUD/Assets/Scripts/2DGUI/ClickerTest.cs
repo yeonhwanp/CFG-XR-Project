@@ -202,7 +202,7 @@ public class ClickerTest : MonoBehaviour {
             if (Input.mousePosition.x - startNum != 0)
             {
                 startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
-                gameObject.transform.localScale = startScale;
+                oppositeScaleChildren(startScale);
             }
 
         }
@@ -226,7 +226,7 @@ public class ClickerTest : MonoBehaviour {
             if (Input.mousePosition.y - startNum != 0)
             {
                 startScale.y = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                gameObject.transform.localScale = startScale;
+                oppositeScaleChildren(startScale);
             }
 
         }
@@ -251,10 +251,35 @@ public class ClickerTest : MonoBehaviour {
             if (Input.mousePosition.y - startNum != 0)
             {
                 startScale.z = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                gameObject.transform.localScale = startScale;
+                oppositeScaleChildren(startScale);
             }
 
         }
+    }
+
+    // Scales the children in the opposite way such that they retain their "scale." 
+    // Intorduces "space" atm but doesnt seem like a scaling issue... It might scale the space around the objects just a little bit?
+    private void oppositeScaleChildren(Vector3 newScale)
+    {
+        // Get all of the children then set their scale to the opposite reciprocal
+        Transform[] childrenTransforms = GetComponentsInChildren<Transform>();
+        foreach (Transform childTransform in childrenTransforms)
+        {
+            if (childTransform != transform)
+            { 
+                childTransform.parent = null;
+                Vector3 scaleTmp = childTransform.localScale;
+                scaleTmp.x = scaleTmp.x / newScale.x;
+                scaleTmp.y = scaleTmp.y / newScale.y;
+                scaleTmp.z = scaleTmp.z / newScale.z;
+                Debug.Log(scaleTmp);
+                childTransform.parent = transform;
+                childTransform.localScale = scaleTmp;
+            }
+        }
+
+        // Set gameObject scale
+        transform.localScale = newScale;
     }
     #endregion
 
