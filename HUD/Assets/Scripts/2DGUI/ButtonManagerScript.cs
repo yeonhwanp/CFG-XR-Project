@@ -11,6 +11,7 @@ using UnityEngine.UI;
 // NOTE: Also, disbale IsRoot.
 
 /// <summary>
+/// <summary>
 /// Class to keep track of button states
 /// </summary>
 public class ButtonManagerScript : MonoBehaviour {
@@ -101,10 +102,12 @@ public class ButtonManagerScript : MonoBehaviour {
                     selected.GetComponent<RobotLink>().ParentJoint = closestJoint;
 
                     // Protecting it from scaling issues down the road
-                    GameObject ScaleProtect = new GameObject();
-                    ScaleProtect.name = "ScaleProtect";
-                    ScaleProtect.transform.parent = closestJoint.transform;
-                    selected.transform.parent = ScaleProtect.transform;
+                    //GameObject ScaleProtect = new GameObject();
+                    //ScaleProtect.name = "ScaleProtect";
+                    //ScaleProtect.transform.parent = closestJoint.transform;
+                    //selected.transform.parent = ScaleProtect.transform;
+
+                    selected.transform.parent = closestJoint.transform;
 
                     // "Locking" the object
                     selected.GetComponent<ClickerTest>().IsLocked = true;
@@ -133,13 +136,14 @@ public class ButtonManagerScript : MonoBehaviour {
                     thisJoint.ParentLink = closestLink;
 
                     // Protecting from resizing issues
-                    GameObject ScaleProtect = new GameObject();
-                    ScaleProtect.name = "ScaleProtect";
-                    ScaleProtect.transform.parent = closestLink.transform;
-                    selected.transform.parent = ScaleProtect.transform;
+                    //GameObject ScaleProtect = new GameObject();
+                    //ScaleProtect.name = "ScaleProtect";
+                    //ScaleProtect.transform.parent = closestLink.transform;
+                    //selected.transform.parent = ScaleProtect.transform;
+
+                    selected.transform.parent = closestLink.transform;
 
                     // "Locking" the object
-                    selected.GetComponent<ClickerTest>().IsLocked = true;
                     selected.GetComponent<ClickerTest>().IsRotationLocked = true;
                 }
                 else
@@ -180,7 +184,6 @@ public class ButtonManagerScript : MonoBehaviour {
     // Duplicate of Joint version
     private GameObject GetClosestLink(GameObject joint)
     {
-        Debug.Log("getclose");
         GameObject closest = null;
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject GO in allObjects)
