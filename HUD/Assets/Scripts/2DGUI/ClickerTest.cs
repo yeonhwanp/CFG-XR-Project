@@ -30,6 +30,14 @@ public class ClickerTest : MonoBehaviour {
     // Rotation arrows
     GameObject arrowOne;
     GameObject arrowTwo;
+
+    // Testing Scaling
+    Vector3 startMouse;
+    Vector3 startSizes;
+    float closestFloat = 0;
+    public bool _Snapped = false;
+    public closestAxis nearest;
+    public enum closestAxis { x, y, z };
     #endregion
 
     #region UnityMethods
@@ -56,9 +64,10 @@ public class ClickerTest : MonoBehaviour {
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
         {
             _isScaling = true;
-            ChangeXScale();
-            ChangeYScale();
-            ChangeZScale();
+            //ChangeXScale();
+            //ChangeYScale();
+            //ChangeZScale();
+            TestChangeScale();
         }
 
         else 
@@ -184,13 +193,106 @@ public class ClickerTest : MonoBehaviour {
 
     #region OtherMethods
     #region Scaling
+
+    // Somehow need to get the default axis?
+    private void TestChangeScale()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+            startMouse = new Vector3(mousePosition.x, mousePosition.y, mousePosition.z); // Where the mouse starts out
+            startSizes = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
+        }
+
+        // Want to get the default distance, make new function?
+        // Use enum for this? That way we can switch and it just works you know what I'm saying
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 startScale = gameObject.transform.localScale;
+
+            if (Input.mousePosition.x - startMouse.x != 0 || Input.mousePosition.y - startMouse.y != 0 || Input.mousePosition.z - startMouse.z != 0)
+            {
+                // To make sure that we're not trying to randomly change the scaling. Once it's snapped, it shouldn't be unsnapped.
+                if (!_Snapped)
+                {
+                    closestAxis closestVector = TestGetClosestVector(startMouse);
+                    TestScale(closestVector);
+                    _Snapped = true;
+                }
+                else
+                {
+                    TestScale(nearest);
+                }
+            }
+        }
+
+        // Unsnap
+        if (Input.GetMouseButtonUp(0))
+        {
+            _Snapped = false; // Need to reset the closestFloat every time too...
+            closestFloat = 0;
+        }
+    }
+
+    // Get closest vector to scale it on, then snap it to that one.
+    // TBH we'll have to see if this works... probably won't.
+    // Whoops, this wasn't the right way to go about it. But... It seems to be working somewhat?
+    // How about initial distance from the center? Might work. I think it would work better than what we have right now.
+    private closestAxis TestGetClosestVector(Vector3 startMouse)
+    {
+        // Mouse stuff
+        Vector3 screenSpace = Camera.main.WorldToScreenPoint(transform.position);
+        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+        Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        // Actual tests.
+        if (mouseInWorld.y - transform.position.y != 0 && System.Math.Abs(mouseInWorld.y - transform.position.y) > closestFloat)
+        {
+            float one = mouseInWorld.y - transform.position.y;
+            float two = mouseInWorld.x - transform.position.x;
+            Debug.Log("Testing " + one + " " + two);
+            closestFloat = mouseInWorld.y - transform.position.y;
+            nearest = closestAxis.y;
+        }
+
+        if (mouseInWorld.x - transform.position.x != 0 && System.Math.Abs(mouseInWorld.x - transform.position.x) > closestFloat)
+        {
+            Debug.Log("hello?");
+            closestFloat = mouseInWorld.x - transform.position.x;
+            nearest = closestAxis.x;
+        }
+
+        return nearest;
+    }
+
+    // Does actual scaling here
+    private void TestScale(closestAxis axis)
+    {
+        Vector3 startScale = transform.localScale;
+
+        switch (axis)
+        {
+            case closestAxis.x:
+                startScale.x = System.Math.Abs(startSizes.x + (Input.mousePosition.x - startMouse.x) * sizingFactor);
+                break;
+            case closestAxis.y:
+                startScale.y = System.Math.Abs(startSizes.y + (Input.mousePosition.y - startMouse.y) * sizingFactor);
+                break;
+            default:
+                break;
+        }
+
+        oppositeScaleChildren(startScale);       
+    }
+
+    #region OldScaling
+    // Deleted mouseposition = Camera.main.ScreenToWorldPoint(mousePosition)
     private void ChangeXScale()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.x;
-            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             startSize = gameObject.transform.localScale.x;
         }
 
@@ -204,7 +306,6 @@ public class ClickerTest : MonoBehaviour {
                 startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
                 oppositeScaleChildren(startScale);
             }
-
         }
     }
 
@@ -214,7 +315,6 @@ public class ClickerTest : MonoBehaviour {
         {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.y;
-            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             startSize = gameObject.transform.localScale.y;
         }
 
@@ -239,7 +339,6 @@ public class ClickerTest : MonoBehaviour {
         {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startNum = mousePosition.y;
-            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             startSize = gameObject.transform.localScale.z;
         }
 
@@ -256,6 +355,7 @@ public class ClickerTest : MonoBehaviour {
 
         }
     }
+    #endregion
 
     // Scales the children in the opposite way such that they retain their "scale." 
     // Intorduces "space" atm but doesnt seem like a scaling issue... It might scale the space around the objects just a little bit?
