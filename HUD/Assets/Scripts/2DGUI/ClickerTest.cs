@@ -34,10 +34,11 @@ public class ClickerTest : MonoBehaviour {
     // Testing Scaling
     Vector3 startMouse;
     Vector3 startSizes;
+    Vector3 startPositions;
     float closestFloat = 0;
     public bool _Snapped = false;
     public closestAxis nearest;
-    public enum closestAxis { x, y, z };
+    public enum closestAxis { xRight, xLeft, yUp, yDown};
     #endregion
 
     #region UnityMethods
@@ -64,10 +65,7 @@ public class ClickerTest : MonoBehaviour {
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
         {
             _isScaling = true;
-            //ChangeXScale();
-            //ChangeYScale();
-            //ChangeZScale();
-            TestChangeScale();
+            ChangeScale();
         }
 
         else 
@@ -194,34 +192,33 @@ public class ClickerTest : MonoBehaviour {
     #region OtherMethods
     #region Scaling
 
-    // Somehow need to get the default axis?
-    private void TestChangeScale()
+    // This method gets the starting position/sizes then applys other methods to scale the gameObject.
+    private void ChangeScale()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
             startMouse = new Vector3(mousePosition.x, mousePosition.y, mousePosition.z); // Where the mouse starts out
             startSizes = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
+            startPositions = new Vector3(transform.position.x - transform.localScale.x / 2.0f, transform.position.y - transform.localScale.y / 2.0f); // Use for moving
         }
 
-        // Want to get the default distance, make new function?
-        // Use enum for this? That way we can switch and it just works you know what I'm saying
         if (Input.GetMouseButton(0))
         {
             Vector3 startScale = gameObject.transform.localScale;
 
             if (Input.mousePosition.x - startMouse.x != 0 || Input.mousePosition.y - startMouse.y != 0 || Input.mousePosition.z - startMouse.z != 0)
             {
-                // To make sure that we're not trying to randomly change the scaling. Once it's snapped, it shouldn't be unsnapped.
-                if (!_Snapped)
+                if (!_Snapped) // To make sure that we're not trying to randomly change the scaling. Once it's snapped, it shouldn't be unsnapped.
                 {
-                    closestAxis closestVector = TestGetClosestVector(startMouse);
-                    TestScale(closestVector);
+                    closestAxis closestVector = GetClosestVector(startMouse);
+                    ScaleObject(closestVector);
                     _Snapped = true;
                 }
                 else
                 {
-                    TestScale(nearest);
+                    Debug.Log(nearest);
+                    ScaleObject(nearest);
                 }
             }
         }
@@ -229,56 +226,105 @@ public class ClickerTest : MonoBehaviour {
         // Unsnap
         if (Input.GetMouseButtonUp(0))
         {
-            _Snapped = false; // Need to reset the closestFloat every time too...
+            _Snapped = false; 
             closestFloat = 0;
         }
     }
 
-    // Get closest vector to scale it on, then snap it to that one.
-    // TBH we'll have to see if this works... probably won't.
-    // Whoops, this wasn't the right way to go about it. But... It seems to be working somewhat?
-    // How about initial distance from the center? Might work. I think it would work better than what we have right now.
-    private closestAxis TestGetClosestVector(Vector3 startMouse)
+    // Get the closest vector then return it (aka what do we think does the user want to do?)
+    // Currently trying to get it to work in the original frame of the object
+    private closestAxis GetClosestVector(Vector3 startMouse)
     {
         // Mouse stuff
         Vector3 screenSpace = Camera.main.WorldToScreenPoint(transform.position);
         Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
 
-        // Actual tests.
-        if (mouseInWorld.y - transform.position.y != 0 && System.Math.Abs(mouseInWorld.y - transform.position.y) > closestFloat)
+        Vector3 InverseVector = transform.InverseTransformPoint(mouseInWorld); // Get the position of the mouse relative to the object (shortcut I guess)
+
+        if (InverseVector.x != 0 && System.Math.Abs(InverseVector.x) > closestFloat)
         {
-            float one = mouseInWorld.y - transform.position.y;
-            float two = mouseInWorld.x - transform.position.x;
-            Debug.Log("Testing " + one + " " + two);
-            closestFloat = mouseInWorld.y - transform.position.y;
-            nearest = closestAxis.y;
+            closestFloat = System.Math.Abs(InverseVector.x);
+            
+            if (InverseVector.x > 0)
+            {
+                nearest = closestAxis.xRight;
+            }
+            else
+            {
+                nearest = closestAxis.xLeft; 
+            }
         }
 
-        if (mouseInWorld.x - transform.position.x != 0 && System.Math.Abs(mouseInWorld.x - transform.position.x) > closestFloat)
+        if (InverseVector.y != 0 && System.Math.Abs(InverseVector.y) > closestFloat)
         {
-            Debug.Log("hello?");
-            closestFloat = mouseInWorld.x - transform.position.x;
-            nearest = closestAxis.x;
+            closestFloat = System.Math.Abs(InverseVector.y);
+
+            if (InverseVector.y > 0)
+            {
+                nearest = closestAxis.yUp;
+            }
+            else
+            {
+                nearest = closestAxis.yDown;
+            }
         }
 
         return nearest;
     }
 
     // Does actual scaling here
-    private void TestScale(closestAxis axis)
+    private void ScaleObject(closestAxis axis)
     {
+        // To be edited
         Vector3 startScale = transform.localScale;
+        Vector3 startPosition = transform.position;
 
+        // Screen -> World position converison
+        Vector3 screenSpace = Camera.main.WorldToScreenPoint(transform.position);
+        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+        Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        #region old (refernce code)
+        //switch (axis) // Old
+        //{
+        //    case closestAxis.x:
+        //        startScale.x = System.Math.Abs(startSizes.x + (Input.mousePosition.x - startMouse.x) * sizingFactor);
+        //        break;
+        //    case closestAxis.y:
+        //        startScale.y = System.Math.Abs(startSizes.y + (Input.mousePosition.y - startMouse.y) * sizingFactor);
+        //        break;
+        //    default:
+        //        break;
+        //}
+        #endregion
+
+        // in progress
+        // BUG: Shifts a little bit at the beginning when scaling left or down. Not sure why this is happening?
+            // I tried fixing it... But it just doens't work. WHY???
         switch (axis)
         {
-            case closestAxis.x:
+            case closestAxis.xRight:
+                // Tbh idk how this stuff works... 
                 startScale.x = System.Math.Abs(startSizes.x + (Input.mousePosition.x - startMouse.x) * sizingFactor);
+                startPosition.x = startPositions.x + startScale.x / 2.0f;
+                transform.position = startPosition;
                 break;
-            case closestAxis.y:
+            case closestAxis.xLeft:
+                // How to move it to the left? I know that startScale is just scaling it...
+                startScale.x = System.Math.Abs(startSizes.x + (-Input.mousePosition.x + startMouse.x) * sizingFactor);
+                startPosition.x = -(startPositions.x + startScale.x / 2.0f);
+                transform.position = startPosition;
+                break;
+            case closestAxis.yUp:
                 startScale.y = System.Math.Abs(startSizes.y + (Input.mousePosition.y - startMouse.y) * sizingFactor);
+                startPosition.y = startPositions.y + startScale.y / 2.0f;
+                transform.position = startPosition;
                 break;
-            default:
+            case closestAxis.yDown:
+                startScale.y = System.Math.Abs(startSizes.y + (-Input.mousePosition.y + startMouse.y) * sizingFactor);
+                startPosition.y = -(startPositions.x + startScale.y / 2.0f);
+                transform.position = startPosition;
                 break;
         }
 
@@ -432,4 +478,3 @@ public class ClickerTest : MonoBehaviour {
 }
 
 // Note: Need root joint if we want to test transform.
-// Note: Also, there is a stackoverflow error in getrootjoint. Going to ignore for now.
