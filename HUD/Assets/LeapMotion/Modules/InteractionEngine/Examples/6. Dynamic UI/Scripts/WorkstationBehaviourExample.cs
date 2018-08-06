@@ -100,8 +100,8 @@ namespace Leap.Unity.Examples {
     void Start() {
       refreshRequiredComponents();
 
-      if (!_anchObj.tryAnchorNearestOnGraspEnd) {
-        Debug.LogWarning("WorkstationBehaviour expects its AnchorableBehaviour's tryAnchorNearestOnGraspEnd property to be enabled.", this.gameObject);
+      if (!_anchObj.tryAnchorSimpleAxisOnGraspEnd) {
+        Debug.LogWarning("WorkstationBehaviour expects its AnchorableBehaviour's tryAnchorSimpleAxisOnGraspEnd property to be enabled.", this.gameObject);
       }
     }
 
