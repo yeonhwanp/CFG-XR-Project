@@ -6,6 +6,9 @@ using UnityEngine;
 /// Attached to all of the spawned GameObjects.
 /// Controls what happens to the object with click actions.
 /// </summary>
+
+    // NOTE: Buttons stop working after a while? Wha???
+    // NOTE: Also removed _isScaling bool protection
 public class ClickerTest : MonoBehaviour {
 
     #region Variables
@@ -13,32 +16,30 @@ public class ClickerTest : MonoBehaviour {
     SelectorManagerScript SelectorManager;
     ButtonManagerScript ButtonManager;
 
-    // Booleans
-    bool _markersSpawned = false;
-    public bool _isScaling = false;
-
-    // For when things are connected
+    // Rotation Stuff
+    private bool _markersSpawned = false;
     public bool IsLocked = false; 
     public bool IsRotationLocked = false;
-
-    // For scaling
-    private float sizingFactor = 0.02f;
-    private float startSize;
-    private float startNum;
-    private Vector3 mouseOrigin;
-
-    // Rotation arrows
     GameObject arrowOne;
     GameObject arrowTwo;
 
-    // Testing Scaling
-    Vector3 startMouse;
-    Vector3 startSizes;
-    Vector3 startPositions;
-    float closestFloat = 0;
+    // For scaling
     public bool _Snapped = false;
-    public closestAxis nearest;
-    public enum closestAxis { xRight, xLeft, yUp, yDown};
+    private float sizingFactor = 0.4f;
+    private float closestFloat = 0;
+    Vector3 startMouse;
+    Vector3 initialScaling;
+    Vector3 initialScalingPositions;
+    //public SimpleAxis SimpleAxis;
+    public Axis GlobalAxis;
+    public Axis LocalAxis;
+    public enum Axis { x, y, z};
+
+    // Moving/General Mouse stuff
+    Vector3 screenSpace;
+    Vector3 mousePosition;
+    Vector3 mouseInWorld;
+
     #endregion
 
     #region UnityMethods
@@ -52,8 +53,10 @@ public class ClickerTest : MonoBehaviour {
 
     private void Update()
     {
-        Vector3 original = transform.localScale; // Scale Protection
-        mouseOrigin = Input.mousePosition;
+        // Set General Mouse Stuff
+        screenSpace = Camera.main.WorldToScreenPoint(transform.position);
+        mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+        mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
 
         // Switch to defualt color if not selected
         if (SelectorManager.selected != gameObject)
@@ -64,13 +67,7 @@ public class ClickerTest : MonoBehaviour {
         // For scaling
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
         {
-            _isScaling = true;
             ChangeScale();
-        }
-
-        else 
-        {
-            _isScaling = false;
         }
 
         // For rotation
@@ -156,10 +153,6 @@ public class ClickerTest : MonoBehaviour {
             Destroy(arrowTwo);
             _markersSpawned = false;
         }
-
-        // Don't change scale if you don't need to.
-        if (!_isScaling)
-            transform.localScale = original;
     }
 
     // Selecting the object
@@ -193,32 +186,33 @@ public class ClickerTest : MonoBehaviour {
     #region Scaling
 
     // This method gets the starting position/sizes then applys other methods to scale the gameObject.
+    // FINALLY DONE (except for a few bugs here and there but it's generally working now god bless)
     private void ChangeScale()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-            startMouse = new Vector3(mousePosition.x, mousePosition.y, mousePosition.z); // Where the mouse starts out
-            startSizes = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
-            startPositions = new Vector3(transform.position.x - transform.localScale.x / 2.0f, transform.position.y - transform.localScale.y / 2.0f); // Use for moving
+            Vector3 startMouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z); // The position of the mouse when first clicked
+            initialScaling = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
+            initialScalingPositions = new Vector3(transform.position.x - transform.localScale.x / 2.0f, transform.position.y - transform.localScale.y / 2.0f, transform.position.z - transform.localScale.z / 2.0f); // Use for moving
         }
 
         if (Input.GetMouseButton(0))
         {
-            Vector3 startScale = gameObject.transform.localScale;
-
             if (Input.mousePosition.x - startMouse.x != 0 || Input.mousePosition.y - startMouse.y != 0 || Input.mousePosition.z - startMouse.z != 0)
             {
-                if (!_Snapped) // To make sure that we're not trying to randomly change the scaling. Once it's snapped, it shouldn't be unsnapped.
+                if (!_Snapped) // To make sure we scale only one side at a time
                 {
-                    closestAxis closestVector = GetClosestVector(startMouse);
-                    ScaleObject(closestVector);
+                    SetLocalAxis(); 
+                    SetGlobalAxis();
+                    float mouseAmount = GetMouseAmount();
+                    ScaleObject(mouseAmount);
                     _Snapped = true;
                 }
                 else
                 {
-                    Debug.Log(nearest);
-                    ScaleObject(nearest);
+                    float mouseAmount = GetMouseAmount();
+                    float scaled = ScaleObject(mouseAmount);
+                    ScaleMoveObject(scaled);
                 }
             }
         }
@@ -231,177 +225,124 @@ public class ClickerTest : MonoBehaviour {
         }
     }
 
-    // Get the closest vector then return it (aka what do we think does the user want to do?)
-    // Currently trying to get it to work in the original frame of the object
-    private closestAxis GetClosestVector(Vector3 startMouse)
+    // Sets the local Axis of the object on click.
+    private void SetLocalAxis()
     {
-        // Mouse stuff
-        Vector3 screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
-        Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
-
         Vector3 InverseVector = transform.InverseTransformPoint(mouseInWorld); // Get the position of the mouse relative to the object (shortcut I guess)
 
         if (InverseVector.x != 0 && System.Math.Abs(InverseVector.x) > closestFloat)
         {
             closestFloat = System.Math.Abs(InverseVector.x);
-            
-            if (InverseVector.x > 0)
-            {
-                nearest = closestAxis.xRight;
-            }
-            else
-            {
-                nearest = closestAxis.xLeft; 
-            }
+            LocalAxis = Axis.x;
         }
 
         if (InverseVector.y != 0 && System.Math.Abs(InverseVector.y) > closestFloat)
         {
             closestFloat = System.Math.Abs(InverseVector.y);
-
-            if (InverseVector.y > 0)
-            {
-                nearest = closestAxis.yUp;
-            }
-            else
-            {
-                nearest = closestAxis.yDown;
-            }
+            LocalAxis = Axis.y;
         }
 
-        return nearest;
+        if (InverseVector.z != 0 && System.Math.Abs(InverseVector.z) > closestFloat)
+        {
+            closestFloat = System.Math.Abs(InverseVector.z);
+            LocalAxis = Axis.z;
+        }
+    }
+
+    // Sets the global axis of the object on click.
+    private void SetGlobalAxis()
+    {
+        float LargestDifference = 0;
+
+        if (System.Math.Abs(mouseInWorld.x - transform.position.x) > LargestDifference)
+        {
+            LargestDifference = System.Math.Abs(mouseInWorld.x - transform.position.x);
+            GlobalAxis = Axis.x;
+        }
+        if (System.Math.Abs(mouseInWorld.y - transform.position.y) > LargestDifference)
+        {
+            LargestDifference = System.Math.Abs(mouseInWorld.y - transform.position.y);
+            GlobalAxis = Axis.y;
+        }
+        if (System.Math.Abs(mouseInWorld.z - transform.position.z) > LargestDifference)
+        {
+            LargestDifference = System.Math.Abs(mouseInWorld.z - transform.position.z);
+            GlobalAxis = Axis.z;
+        }
+
+        Debug.Log(GlobalAxis);
+    }
+
+    // Get the scale amount
+    private float GetMouseAmount()
+    {
+        float returnValue = 0;
+
+        switch (GlobalAxis)
+        {
+            case Axis.x:
+                returnValue = mouseInWorld.x - transform.position.x;
+                break;
+            case Axis.y:
+                returnValue = mouseInWorld.y - transform.position.y;
+                break;
+            case Axis.z:
+                returnValue = mouseInWorld.z - transform.position.z;
+                break;
+        }
+
+        return returnValue;
     }
 
     // Does actual scaling here
-    private void ScaleObject(closestAxis axis)
+    private float ScaleObject(float scaleAmount)
     {
         // To be edited
-        Vector3 startScale = transform.localScale;
-        Vector3 startPosition = transform.position;
+        Vector3 EditScale = transform.localScale;
+        float returnScale = 0;
 
-        // Screen -> World position converison
-        Vector3 screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
-        Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
-
-        #region old (refernce code)
-        //switch (axis) // Old
-        //{
-        //    case closestAxis.x:
-        //        startScale.x = System.Math.Abs(startSizes.x + (Input.mousePosition.x - startMouse.x) * sizingFactor);
-        //        break;
-        //    case closestAxis.y:
-        //        startScale.y = System.Math.Abs(startSizes.y + (Input.mousePosition.y - startMouse.y) * sizingFactor);
-        //        break;
-        //    default:
-        //        break;
-        //}
-        #endregion
-
-        // in progress
-        // BUG: Shifts a little bit at the beginning when scaling left or down. Not sure why this is happening?
-            // I tried fixing it... But it just doens't work. WHY???
-        switch (axis)
+        // Might want to make it abs scale (not negative scale)
+        switch (LocalAxis)
         {
-            case closestAxis.xRight:
+            case Axis.x:
                 // Tbh idk how this stuff works... 
-                startScale.x = System.Math.Abs(startSizes.x + (Input.mousePosition.x - startMouse.x) * sizingFactor);
-                startPosition.x = startPositions.x + startScale.x / 2.0f;
-                transform.position = startPosition;
+                returnScale = initialScaling.x + (scaleAmount) * sizingFactor;
+                EditScale.x = returnScale;
                 break;
-            case closestAxis.xLeft:
-                // How to move it to the left? I know that startScale is just scaling it...
-                startScale.x = System.Math.Abs(startSizes.x + (-Input.mousePosition.x + startMouse.x) * sizingFactor);
-                startPosition.x = -(startPositions.x + startScale.x / 2.0f);
-                transform.position = startPosition;
+            case Axis.y:
+                returnScale = initialScaling.y + (scaleAmount) * sizingFactor;
+                EditScale.y = returnScale;
                 break;
-            case closestAxis.yUp:
-                startScale.y = System.Math.Abs(startSizes.y + (Input.mousePosition.y - startMouse.y) * sizingFactor);
-                startPosition.y = startPositions.y + startScale.y / 2.0f;
-                transform.position = startPosition;
-                break;
-            case closestAxis.yDown:
-                startScale.y = System.Math.Abs(startSizes.y + (-Input.mousePosition.y + startMouse.y) * sizingFactor);
-                startPosition.y = -(startPositions.x + startScale.y / 2.0f);
-                transform.position = startPosition;
+            case Axis.z:
+                returnScale = initialScaling.z + (scaleAmount) * sizingFactor;
+                EditScale.z = returnScale;
                 break;
         }
 
-        oppositeScaleChildren(startScale);       
+        oppositeScaleChildren(EditScale);
+
+        return returnScale;
     }
 
-    #region OldScaling
-    // Deleted mouseposition = Camera.main.ScreenToWorldPoint(mousePosition)
-    private void ChangeXScale()
+    private void ScaleMoveObject(float scaleAmount)
     {
-        if (Input.GetMouseButtonDown(0))
+        Vector3 EditPosition = transform.position;
+
+        switch (GlobalAxis)
         {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-            startNum = mousePosition.x;
-            startSize = gameObject.transform.localScale.x;
+            case Axis.x:
+                EditPosition.x = initialScalingPositions.x + scaleAmount / 2.0f; 
+                break;
+            case Axis.y:
+                EditPosition.y = initialScalingPositions.y + scaleAmount / 2.0f;
+                break;
+            case Axis.z:
+                EditPosition.z = initialScalingPositions.z + scaleAmount / 2.0f;
+                break;
         }
 
-        if (Input.GetMouseButton(0))
-        {
-            Vector3 startScale = gameObject.transform.localScale;
-
-            // Necessary so it doesnt rever to original.
-            if (Input.mousePosition.x - startNum != 0)
-            {
-                startScale.x = System.Math.Abs(startSize + (Input.mousePosition.x - startNum) * sizingFactor);
-                oppositeScaleChildren(startScale);
-            }
-        }
+        transform.position = EditPosition;
     }
-
-    private void ChangeYScale()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-            startNum = mousePosition.y;
-            startSize = gameObject.transform.localScale.y;
-        }
-
-        if (Input.GetMouseButton(1))
-        {
-            Vector3 startScale = gameObject.transform.localScale;
-
-            // Necessary so it doesnt rever to original.
-            if (Input.mousePosition.y - startNum != 0)
-            {
-                startScale.y = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                oppositeScaleChildren(startScale);
-            }
-
-        }
-    }
-
-    // For now use in and out
-    private void ChangeZScale()
-    {
-        if (Input.GetMouseButtonDown(2))
-        {
-            Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-            startNum = mousePosition.y;
-            startSize = gameObject.transform.localScale.z;
-        }
-
-        if (Input.GetMouseButton(2))
-        {
-            Vector3 startScale = gameObject.transform.localScale;
-
-            // Necessary so it doesnt rever to original.
-            if (Input.mousePosition.y - startNum != 0)
-            {
-                startScale.z = System.Math.Abs(startSize + (Input.mousePosition.y - startNum) * sizingFactor);
-                oppositeScaleChildren(startScale);
-            }
-
-        }
-    }
-    #endregion
 
     // Scales the children in the opposite way such that they retain their "scale." 
     // Intorduces "space" atm but doesnt seem like a scaling issue... It might scale the space around the objects just a little bit?
@@ -430,12 +371,9 @@ public class ClickerTest : MonoBehaviour {
     #endregion
 
     // Method for moving the object 
-    private static void MoveObject(GameObject movingObject)
+    private void MoveObject(GameObject movingObject)
     {
-        Vector3 screenSpace = Camera.main.WorldToScreenPoint(movingObject.transform.position);
-        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
-        Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        movingObject.transform.position = objPosition;
+        movingObject.transform.position = mouseInWorld;
     } 
 
     // Method for getting the rootJoint recursively (Used for moving locked object)

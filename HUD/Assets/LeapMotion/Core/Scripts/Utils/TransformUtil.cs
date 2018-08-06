@@ -22,18 +22,18 @@ namespace Leap.Unity {
     }
 
     public static void SetLocalX(this Transform transform, float localX) {
-      transform.setLocalAxis(localX, 0);
+      transform.setSimpleAxis(localX, 0);
     }
 
     public static void SetLocalY(this Transform transform, float localY) {
-      transform.setLocalAxis(localY, 1);
+      transform.setSimpleAxis(localY, 1);
     }
 
     public static void SetLocalZ(this Transform transform, float localZ) {
-      transform.setLocalAxis(localZ, 2);
+      transform.setSimpleAxis(localZ, 2);
     }
 
-    private static void setLocalAxis(this Transform transform, float value, int axis) {
+    private static void setSimpleAxis(this Transform transform, float value, int axis) {
       Vector3 local = transform.localPosition;
       local[axis] = value;
       transform.localPosition = local;

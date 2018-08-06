@@ -196,14 +196,14 @@ namespace Leap.Unity.Interaction {
     public bool detachWhenGrasped = true;
 
     [Tooltip("Should the AnchorableBehaviour automatically try to anchor itself when a grasp ends? If useTrajectory is enabled, "
-           + "this object will automatically attempt to attach to the nearest valid anchor that is in the direction of its trajectory, "
-           + "otherwise it will simply attempt to attach to its nearest valid anchor.")]
+           + "this object will automatically attempt to attach to the SimpleAxis valid anchor that is in the direction of its trajectory, "
+           + "otherwise it will simply attempt to attach to its SimpleAxis valid anchor.")]
     [SerializeField]
-    [OnEditorChange("tryAnchorNearestOnGraspEnd")]
-    private bool _tryAnchorNearestOnGraspEnd = true;
-    public bool tryAnchorNearestOnGraspEnd {
+    [OnEditorChange("tryAnchorSimpleAxisOnGraspEnd")]
+    private bool _tryAnchorSimpleAxisOnGraspEnd = true;
+    public bool tryAnchorSimpleAxisOnGraspEnd {
       get {
-        return _tryAnchorNearestOnGraspEnd;
+        return _tryAnchorSimpleAxisOnGraspEnd;
       }
       set {
         if (interactionBehaviour != null) {
@@ -211,8 +211,8 @@ namespace Leap.Unity.Interaction {
           interactionBehaviour.OnGraspEnd -= tryToAnchorOnGraspEnd;
         }
 
-        _tryAnchorNearestOnGraspEnd = value;
-        if (interactionBehaviour != null && _tryAnchorNearestOnGraspEnd) {
+        _tryAnchorSimpleAxisOnGraspEnd = value;
+        if (interactionBehaviour != null && _tryAnchorSimpleAxisOnGraspEnd) {
           interactionBehaviour.OnGraspEnd += tryToAnchorOnGraspEnd;
         }
       }
@@ -301,7 +301,7 @@ namespace Leap.Unity.Interaction {
       if (interactionBehaviour != null) {
         interactionBehaviour.OnGraspBegin += detachAnchorOnGraspBegin;
 
-        if (_tryAnchorNearestOnGraspEnd) {
+        if (_tryAnchorSimpleAxisOnGraspEnd) {
           interactionBehaviour.OnGraspEnd += tryToAnchorOnGraspEnd;
         }
       }
@@ -411,7 +411,7 @@ namespace Leap.Unity.Interaction {
     /// based on its current configuration. If useTrajectory is enabled, the object will
     /// consider anchor proximity as well as its own trajectory towards a particular anchor,
     /// and may return null if the object is moving away from all of its possible anchors.
-    /// Otherwise, the object will simply return the nearest valid anchor, or null if there
+    /// Otherwise, the object will simply return the SimpleAxis valid anchor, or null if there
     /// is no valid anchor nearby.
     ///
     /// This method is called every Update() automatically by anchorable objects, and its
@@ -419,8 +419,8 @@ namespace Leap.Unity.Interaction {
     /// </summary>
     public Anchor FindPreferredAnchor() {
       if (!useTrajectory) {
-        // Simply try to attach to the nearest valid anchor.
-        return GetNearestValidAnchor();
+        // Simply try to attach to the SimpleAxis valid anchor.
+        return GetSimpleAxisValidAnchor();
       }
       else {
         // Pick the nearby valid anchor with the highest score, based on proximity and trajectory.
@@ -480,7 +480,7 @@ namespace Leap.Unity.Interaction {
     }
 
     /// <summary>
-    /// Returns the nearest valid anchor to this Anchorable object. If this anchorable object has its
+    /// Returns the SimpleAxis valid anchor to this Anchorable object. If this anchorable object has its
     /// anchorGroup property set, all anchors within that AnchorGroup are valid to be this object's
     /// anchor. If there is no valid anchor within range, returns null. By default, this method will
     /// only return anchors that are within the max anchor range of this object and that have space for
@@ -489,7 +489,7 @@ namespace Leap.Unity.Interaction {
     /// Warning: This method checks squared-distance for all anchors in the scene if this AnchorableBehaviour
     /// has no AnchorGroup.
     /// </summary>
-    public Anchor GetNearestValidAnchor(bool requireWithinRange = true,
+    public Anchor GetSimpleAxisValidAnchor(bool requireWithinRange = true,
                                         bool requireAnchorHasSpace = true,
                                         bool requireAnchorActiveAndEnabled = true) {
       HashSet<Anchor> anchorsToCheck;
@@ -548,11 +548,11 @@ namespace Leap.Unity.Interaction {
     }
 
     /// <summary>
-    /// Attempts to find and attach this anchorable object to the nearest valid anchor, or the
+    /// Attempts to find and attach this anchorable object to the SimpleAxis valid anchor, or the
     /// most optimal nearby anchor based on proximity and the object's trajectory if useTrajectory
     /// is enabled.
     /// </summary>
-    public bool TryAttachToNearestAnchor() {
+    public bool TryAttachToSimpleAxisAnchor() {
       Anchor preferredAnchor = FindPreferredAnchor();
 
       if (preferredAnchor != null) {
@@ -796,7 +796,7 @@ namespace Leap.Unity.Interaction {
     }
 
     private void tryToAnchorOnGraspEnd() {
-      TryAttachToNearestAnchor();
+      TryAttachToSimpleAxisAnchor();
 
       OnPostTryAnchorOnGraspEnd();
     }
