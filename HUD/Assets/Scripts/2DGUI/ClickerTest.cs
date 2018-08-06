@@ -8,7 +8,11 @@ using UnityEngine;
 /// </summary>
 
     // NOTE: Buttons stop working after a while? Wha???
-    // NOTE: Also removed _isScaling bool protection
+    // BUG: Moving while scaling not working with children
+        // I think it's because we scale it and weird stuff Im gonna try something
+        // Meh tried to fix it but we'll see
+        // I think it's just more math -- but not that big of a problem.
+    // BUG: If you scale an object thats a child by the y (bigger) then hold transform on the child it'll zoom to you??? Confused. After these two bugs, should be good to conitnue.
 public class ClickerTest : MonoBehaviour {
 
     #region Variables
@@ -30,7 +34,6 @@ public class ClickerTest : MonoBehaviour {
     Vector3 startMouse;
     Vector3 initialScaling;
     Vector3 initialScalingPositions;
-    //public SimpleAxis SimpleAxis;
     public Axis GlobalAxis;
     public Axis LocalAxis;
     public enum Axis { x, y, z};
@@ -55,8 +58,12 @@ public class ClickerTest : MonoBehaviour {
     {
         // Set General Mouse Stuff
         screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-        mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+        float test = transform.position.z;
+        mousePosition = new Vector3(-Input.mousePosition.x, -Input.mousePosition.y, test);
         mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
+        mouseInWorld.z = test;
+
+        Debug.Log(test);
 
         // Switch to defualt color if not selected
         if (SelectorManager.selected != gameObject)
@@ -64,11 +71,11 @@ public class ClickerTest : MonoBehaviour {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         }
 
-        // For scaling
-        if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
-        {
-            ChangeScale();
-        }
+        ////For scaling
+        //if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
+        //{
+        //    ChangeScale();
+        //}
 
         // For rotation
         if (SelectorManager.selected == gameObject && ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
@@ -159,9 +166,16 @@ public class ClickerTest : MonoBehaviour {
     private void OnMouseDown()
     {
         SelectorManager.selected = gameObject;
+
+        if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
+        {
+            startMouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z); // The position of the mouse when first clicked
+            initialScaling = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
+            initialScalingPositions = new Vector3(transform.position.x - transform.localScale.x / 2.0f, transform.position.y - transform.localScale.y / 2.0f, transform.position.z - transform.localScale.z / 2.0f); // Use for moving
+        }
     }
 
-    // Moving objects. 
+    //Moving objects.
     private void OnMouseDrag()
     {
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
@@ -176,6 +190,33 @@ public class ClickerTest : MonoBehaviour {
                 MoveObject(root);
             }
         }
+
+        if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
+        {
+            if (Input.mousePosition.x - startMouse.x != 0 || Input.mousePosition.y - startMouse.y != 0 || Input.mousePosition.z - startMouse.z != 0)
+            {
+                if (!_Snapped) // To make sure we scale only one side at a time
+                {
+                    SetLocalAxis();
+                    SetGlobalAxis();
+                    float mouseAmount = GetMouseAmount();
+                    ScaleObject(mouseAmount);
+                    _Snapped = true;
+                }
+                else
+                {
+                    float mouseAmount = GetMouseAmount();
+                    float scaled = ScaleObject(mouseAmount);
+                    ScaleMoveObject(scaled);
+                }
+            }
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        _Snapped = false;
+        closestFloat = 0;
     }
 
     #endregion
@@ -186,12 +227,12 @@ public class ClickerTest : MonoBehaviour {
     #region Scaling
 
     // This method gets the starting position/sizes then applys other methods to scale the gameObject.
-    // FINALLY DONE (except for a few bugs here and there but it's generally working now god bless)
+    // Bug: still scaling after transform and stuff... ?
     private void ChangeScale()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 startMouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z); // The position of the mouse when first clicked
+            startMouse = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z); // The position of the mouse when first clicked
             initialScaling = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z); // Scaling before changes
             initialScalingPositions = new Vector3(transform.position.x - transform.localScale.x / 2.0f, transform.position.y - transform.localScale.y / 2.0f, transform.position.z - transform.localScale.z / 2.0f); // Use for moving
         }
@@ -331,13 +372,13 @@ public class ClickerTest : MonoBehaviour {
         switch (GlobalAxis)
         {
             case Axis.x:
-                EditPosition.x = initialScalingPositions.x + scaleAmount / 2.0f; 
+                EditPosition.x = initialScalingPositions.x + transform.localScale.x / 2.0f; 
                 break;
             case Axis.y:
-                EditPosition.y = initialScalingPositions.y + scaleAmount / 2.0f;
+                EditPosition.y = initialScalingPositions.y + transform.localScale.y / 2.0f;
                 break;
             case Axis.z:
-                EditPosition.z = initialScalingPositions.z + scaleAmount / 2.0f;
+                EditPosition.z = initialScalingPositions.z + transform.localScale.z / 2.0f;
                 break;
         }
 
@@ -359,7 +400,6 @@ public class ClickerTest : MonoBehaviour {
                 scaleTmp.x = scaleTmp.x / newScale.x;
                 scaleTmp.y = scaleTmp.y / newScale.y;
                 scaleTmp.z = scaleTmp.z / newScale.z;
-                Debug.Log(scaleTmp);
                 childTransform.parent = transform;
                 childTransform.localScale = scaleTmp;
             }
