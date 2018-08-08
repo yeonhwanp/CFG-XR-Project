@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// Attached to all of the spawned GameObjects.
@@ -56,26 +57,15 @@ public class ClickerTest : MonoBehaviour {
 
     private void Update()
     {
-        // Set General Mouse Stuff
         screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-        float test = transform.position.z;
-        mousePosition = new Vector3(-Input.mousePosition.x, -Input.mousePosition.y, test);
+        mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
-        mouseInWorld.z = test;
-
-        Debug.Log(test);
 
         // Switch to defualt color if not selected
         if (SelectorManager.selected != gameObject)
         {
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
         }
-
-        ////For scaling
-        //if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
-        //{
-        //    ChangeScale();
-        //}
 
         // For rotation
         if (SelectorManager.selected == gameObject && ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.RotateButton)
@@ -180,13 +170,20 @@ public class ClickerTest : MonoBehaviour {
     {
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
         {
-            if (!IsLocked)
+            if (!IsLocked && !IsRotationLocked)
             {
                 MoveObject(gameObject);
             }
             else
             {
-                GameObject root = GetRootJoint(gameObject);
+                Debug.Log("hello");
+                
+                GameObject root = GetRootJoint(gameObject); 
+
+                screenSpace = Camera.main.WorldToScreenPoint(root.transform.position); // We need to get the root WorldToScreenPoint because we're moving the root.
+                mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+                mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
+
                 MoveObject(root);
             }
         }
@@ -310,8 +307,6 @@ public class ClickerTest : MonoBehaviour {
             LargestDifference = System.Math.Abs(mouseInWorld.z - transform.position.z);
             GlobalAxis = Axis.z;
         }
-
-        Debug.Log(GlobalAxis);
     }
 
     // Get the scale amount
