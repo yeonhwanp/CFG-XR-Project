@@ -155,8 +155,6 @@ public class ClickerTest : MonoBehaviour {
     // Selecting the object
     private void OnMouseDown()
     {
-        //screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-
         SelectorManager.selected = gameObject;
 
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.ScaleButton && SelectorManager.selected == gameObject)
@@ -172,19 +170,17 @@ public class ClickerTest : MonoBehaviour {
     {
         if (ButtonManager.enabledButton == ButtonManagerScript.EnabledButton.TransformButton)
         {
-            if (!IsLocked)
+            if (!IsLocked && !IsRotationLocked)
             {
-                screenSpace = Camera.main.WorldToScreenPoint(transform.position);
-                mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
-                mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
-
                 MoveObject(gameObject);
             }
             else
             {
-                GameObject root = GetRootJoint(gameObject); // Moving the root gets troublesome because screenSpace is dependent on the 
+                Debug.Log("hello");
+                
+                GameObject root = GetRootJoint(gameObject); 
 
-                screenSpace = Camera.main.WorldToScreenPoint(root.transform.position);
+                screenSpace = Camera.main.WorldToScreenPoint(root.transform.position); // We need to get the root WorldToScreenPoint because we're moving the root.
                 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
                 mouseInWorld = Camera.main.ScreenToWorldPoint(mousePosition);
 
