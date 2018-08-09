@@ -31,7 +31,7 @@ namespace Leap.Unity.Examples {
 
     private HashSet<TransformHandle> _transformHandles = new HashSet<TransformHandle>();
 
-    private enum ToolState { Idle, Translating, Rotating }
+    private enum ToolState { Idle, Translating, Rotating, Scaling }
     private ToolState _toolState = ToolState.Idle;
     private HashSet<TransformHandle> _activeHandles = new HashSet<TransformHandle>();
 
@@ -48,7 +48,7 @@ namespace Leap.Unity.Examples {
 
       // PhysicsCallbacks is useful for creating explicit pre-physics and post-physics
       // behaviour.
-      PhysicsCallbacks.OnPostPhysics += onPostPhysics;
+      PhysicsCallbacks.OnPostPhysics += onPostPhysics; // Delegate (omg I still have to learn how these work lol)
     }
 
     void Update() {
@@ -56,6 +56,7 @@ namespace Leap.Unity.Examples {
       updateHandles();
     }
 
+    // Assuming I'll have to edit code here
     #region Handle Movement / Rotation
 
     /// <summary>
@@ -75,35 +76,87 @@ namespace Leap.Unity.Examples {
     }
 
     private void onPostPhysics() {
-      // Hooked up via PhysicsCallbacks in Start(), this method will run after
-      // FixedUpdate and after PhysX has run. We take the opportunity to immediately
-      // manipulate the target object's and this object's transforms using the
-      // accumulated information about movement and rotation from the Transform Handles.
+            // Hooked up via PhysicsCallbacks in Start(), this method will run after
+            // FixedUpdate and after PhysX has run. We take the opportunity to immediately
+            // manipulate the target object's and this object's transforms using the
+            // accumulated information about movement and rotation from the Transform Handles.
 
-      // Apply accumulated movement and rotation to target object.
-      target.transform.rotation = _rotateBuffer * target.transform.rotation;
-      this.transform.rotation = target.transform.rotation;
+            // Apply accumulated movement and rotation to target object.
 
-      // Match this transform with the target object's (this will move child
-      // TransformHandles' transforms).
-      target.transform.position += _moveBuffer;
-      this.transform.position = target.transform.position;
+            // Can we do the stuff here? Aka conditionals?
 
-      // Explicitly sync TransformHandles' rigidbodies with their transforms,
-      // which moved along with this object's transform because they are children of it.
-      foreach (var handle in _transformHandles) {
-        handle.syncRigidbodyWithTransform();
-      }
+            if (_activeHandles.Count == 2)
+            {
+                float xCount = 0;
+                float yCount = 0;
+                float zCount = 0;
+                // If the two opposite sides are in, then scale.
+                foreach (TransformHandle handle in _activeHandles)
+                {
+                    if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
+                    {
+                        xCount += 1;
+                    }
+                    if (handle.name == "Translate Pos Y" || handle.name == "Translate Neg Y")
+                    {
+                        yCount += 1;
+                    }
+                    if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
+                    {
+                        zCount += 1;
+                    }
+                }
 
-      // Reset movement and rotation buffers.
-      _moveBuffer = Vector3.zero;
-      _rotateBuffer = Quaternion.identity;
-    }
+                // Do scaling + enum here
+                if (xCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+                if (yCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+                if (zCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+            }
+
+            switch (_toolState)
+            {
+                case ToolState.Rotating:
+                    target.transform.rotation = _rotateBuffer * target.transform.rotation;
+                    this.transform.rotation = target.transform.rotation;
+                    break;
+                case ToolState.Translating:
+                    target.transform.position += _moveBuffer; // Just adding stuff, not a delegate. Lit.
+                    this.transform.position = target.transform.position;
+                    break;
+            }
+
+              // Explicitly sync TransformHandles' rigidbodies with their transforms,
+              // which moved along with this object's transform because they are children of it.
+              foreach (var handle in _transformHandles) {
+                handle.syncRigidbodyWithTransform();
+              }
+
+              // Reset movement and rotation buffers.
+              _moveBuffer = Vector3.zero;
+              _rotateBuffer = Quaternion.identity;
+
+            foreach (TransformHandle handle in _activeHandles)
+            {
+                Debug.Log(handle.name);
+            }
+            // Problem: Doesn't seem to but too accurate... But at the same time we kind of need a mount atm LOL
+            }
 
     #endregion
 
+    // No need to edit this (I think?)
     #region Handle Visibility
-
+    
+    // Literally just handles visibility. Maybe we should add a scaling enum? Yea... So it doesnt move. I guess?
     private void updateHandles() {
       switch (_toolState) {
         case ToolState.Idle:
@@ -138,7 +191,8 @@ namespace Leap.Unity.Examples {
           }
           break;
 
-        case ToolState.Translating:
+        case ToolState.Translating: 
+          // ***************** How about if we make others not visible and only axis visible? ************************
           // While translating, show all translation handles except the other handle
           // on the same axis, and hide rotation handles.
           foreach (var handle in _transformHandles) {
@@ -147,7 +201,7 @@ namespace Leap.Unity.Examples {
 
               if (!_activeHandles.Contains(translateHandle)
                   && _activeTranslationAxes.Contains(translateHandle.axis)) {
-                handle.EnsureHidden();
+                handle.EnsureVisible();
               }
               else {
                 handle.EnsureVisible();
