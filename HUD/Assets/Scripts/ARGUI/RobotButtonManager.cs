@@ -13,10 +13,6 @@ public class RobotButtonManager : MonoBehaviour {
     [Tooltip("If enabled, the object will lerp to its hoverColor when a hand is nearby.")]
     public bool useHover = true;
 
-    // What...
-    [Tooltip("If enabled, the object will use its primaryHoverColor when the primary hover of an InteractionHand.")]
-    public bool usePrimaryHover = false;
-
     [Header("InteractionBehaviour Colors")]
     public Color defaultColor = Color.Lerp(Color.black, Color.white, 0.1F);
     public Color suspendedColor = Color.red;
@@ -29,7 +25,9 @@ public class RobotButtonManager : MonoBehaviour {
 
     // -------------------------------------------------- My Code ------------------------------------------------ //
     [Tooltip("Choose between Link and Joint button.")]
-    public int JointLinkChoice = 0;
+    public ButtonType ButtonChoice;
+
+    public enum ButtonType { SpawnJoint, SpawnLink, Attach };
 
     private Material _material;
     private InteractionBehaviour _intObj;
@@ -75,31 +73,53 @@ public class RobotButtonManager : MonoBehaviour {
                 if (!_isPushed)
                 {
                     _isPushed = true;
-                    if (JointLinkChoice == 0) 
+
+                    switch (ButtonChoice)
                     {
-                        GameObject newLink = RobotLink.SpawnLink();
-                        newLink.AddComponent<ClickerTest>();
-                        newLink.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-                        newLink.transform.position = new Vector3(.008f, -0.171f, 0.633f);
+                        case ButtonType.SpawnLink:
+                            GameObject newLink = RobotLink.SpawnLink();
+                            newLink.AddComponent<ClickerTest>();
+                            newLink.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                            newLink.transform.position = new Vector3(.008f, -0.171f, 0.633f);
+                            break;
+                        case ButtonType.SpawnJoint:
+                            GameObject newJoint = ObjectJoint.SpawnJoint();
+                            newJoint.AddComponent<ClickerTest>();
+                            newJoint.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                            break;
+                        case ButtonType.Attach:
+                            Debug.Log("Attach function not implemented yet!");
+                            break;
                     }
-                    if (JointLinkChoice == 1) 
-                    {
-                        GameObject newJoint = ObjectJoint.SpawnJoint();
-                        newJoint.AddComponent<ClickerTest>();
-                        newJoint.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-                        newJoint.transform.position = new Vector3(.008f, -0.171f, 0.633f);
-                    }
+
                     targetColor = pressedColor;
-                    if (JointLinkChoice == 2)
-                    {
-                        ButtonStateManager ButtonStateManager = GameObject.Find("Plane").GetComponent<ButtonStateManager>();
-                        ButtonStateManager.Selected = ButtonStateManager.ButtonState.Select;
-                    }
-                    if (JointLinkChoice == 3)
-                    {
-                        ButtonStateManager ButtonStateManager = GameObject.Find("Plane").GetComponent<ButtonStateManager>();
-                        ButtonStateManager.Selected = ButtonStateManager.ButtonState.None;
-                    }
+
+
+                    //if (ButtonChoice == ButtonType.SpawnLink) 
+                    //{
+                    //    GameObject newLink = RobotLink.SpawnLink();
+                    //    newLink.AddComponent<ClickerTest>();
+                    //    newLink.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                    //    newLink.transform.position = new Vector3(.008f, -0.171f, 0.633f);
+                    //}
+                    //if (ButtonChoice == ButtonType.SpawnJoint) 
+                    //{
+                    //    GameObject newJoint = ObjectJoint.SpawnJoint();
+                    //    newJoint.AddComponent<ClickerTest>();
+                    //    newJoint.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                    //    newJoint.transform.position = new Vector3(.008f, -0.171f, 0.633f);
+                    //}
+                    //targetColor = pressedColor;
+                    //if (ButtonChoice == ButtonType.Select)
+                    //{
+                    //    ButtonStateManager ButtonStateManager = GameObject.Find("Plane").GetComponent<ButtonStateManager>();
+                    //    ButtonStateManager.Selected = ButtonStateManager.ButtonState.Select;
+                    //}
+                    //if (ButtonChoice == ButtonType.Deselect)
+                    //{
+                    //    ButtonStateManager ButtonStateManager = GameObject.Find("Plane").GetComponent<ButtonStateManager>();
+                    //    ButtonStateManager.Selected = ButtonStateManager.ButtonState.None;
+                    //}
                 }
             }
 
