@@ -31,7 +31,7 @@ namespace Leap.Unity.Examples {
 
     private HashSet<TransformHandle> _transformHandles = new HashSet<TransformHandle>();
 
-    private enum ToolState { Idle, Translating, Rotating }
+    private enum ToolState { Idle, Translating, Rotating, Scaling }
     private ToolState _toolState = ToolState.Idle;
     private HashSet<TransformHandle> _activeHandles = new HashSet<TransformHandle>();
 
@@ -85,6 +85,43 @@ namespace Leap.Unity.Examples {
 
             // Can we do the stuff here? Aka conditionals?
 
+            if (_activeHandles.Count == 2)
+            {
+                float xCount = 0;
+                float yCount = 0;
+                float zCount = 0;
+                // If the two opposite sides are in, then scale.
+                foreach (TransformHandle handle in _activeHandles)
+                {
+                    if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
+                    {
+                        xCount += 1;
+                    }
+                    if (handle.name == "Translate Pos Y" || handle.name == "Translate Neg Y")
+                    {
+                        yCount += 1;
+                    }
+                    if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
+                    {
+                        zCount += 1;
+                    }
+                }
+
+                // Do scaling + enum here
+                if (xCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+                if (yCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+                if (zCount == 2)
+                {
+                    _toolState = ToolState.Scaling;
+                }
+            }
+
             switch (_toolState)
             {
                 case ToolState.Rotating:
@@ -106,6 +143,12 @@ namespace Leap.Unity.Examples {
               // Reset movement and rotation buffers.
               _moveBuffer = Vector3.zero;
               _rotateBuffer = Quaternion.identity;
+
+            foreach (TransformHandle handle in _activeHandles)
+            {
+                Debug.Log(handle.name);
+            }
+            // Problem: Doesn't seem to but too accurate... But at the same time we kind of need a mount atm LOL
             }
 
     #endregion
@@ -158,7 +201,7 @@ namespace Leap.Unity.Examples {
 
               if (!_activeHandles.Contains(translateHandle)
                   && _activeTranslationAxes.Contains(translateHandle.axis)) {
-                handle.EnsureHidden();
+                handle.EnsureVisible();
               }
               else {
                 handle.EnsureVisible();
