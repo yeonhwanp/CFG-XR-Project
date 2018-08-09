@@ -26,6 +26,10 @@ namespace Leap.Unity.Examples {
     [Tooltip("The target object to be moved by this tool.")]
     public Transform target;
 
+    // Stuff to make hands work
+    List<Hand> hands;
+    Controller controller;
+
     private Vector3    _moveBuffer = Vector3.zero;
     private Quaternion _rotateBuffer = Quaternion.identity;
 
@@ -38,6 +42,8 @@ namespace Leap.Unity.Examples {
     private HashSet<TranslationAxis> _activeTranslationAxes = new HashSet<TranslationAxis>();
 
     void Start() {
+      controller = new Controller();
+
       if (interactionManager == null) {
         interactionManager = InteractionManager.instance;
       }
@@ -52,6 +58,10 @@ namespace Leap.Unity.Examples {
     }
 
     void Update() {
+        // Hand stuff
+        Frame frame = controller.Frame();
+        hands = frame.Hands;
+
       // Enable or disable handles based on hand proximity and tool state.
       updateHandles();
     }
@@ -83,7 +93,7 @@ namespace Leap.Unity.Examples {
 
             // Apply accumulated movement and rotation to target object.
 
-            // Can we do the stuff here? Aka conditionals?
+            // Can we do the stuff here? Aka conditionals? YES!
 
             if (_activeHandles.Count == 2)
             {
