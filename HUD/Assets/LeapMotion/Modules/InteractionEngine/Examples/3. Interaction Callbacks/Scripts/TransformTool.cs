@@ -7,129 +7,192 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-﻿using Leap.Unity.Interaction;
+using Leap.Unity.Interaction;
 using Leap.Unity.Query;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Leap.Unity.Examples {
+namespace Leap.Unity.Examples
+{
 
-  [AddComponentMenu("")]
-  public class TransformTool : MonoBehaviour {
+    [AddComponentMenu("")]
+    public class TransformTool : MonoBehaviour
+    {
+        #region LeapMotion Stuff
+        [Tooltip("The scene's InteractionManager, used to get InteractionControllers and "
+               + "manage handle state.")]
+        public InteractionManager interactionManager;
 
-    [Tooltip("The scene's InteractionManager, used to get InteractionControllers and "
-           + "manage handle state.")]
-    public InteractionManager interactionManager;
+        [Tooltip("The target object to be moved by this tool.")]
+        public Transform target;
 
-    [Tooltip("The target object to be moved by this tool.")]
-    public Transform target;
+        private Vector3 _moveBuffer = Vector3.zero;
+        private Quaternion _rotateBuffer = Quaternion.identity;
 
-    // Stuff to make hands work
-    List<Hand> hands;
-    Controller controller;
+        private HashSet<TransformHandle> _transformHandles = new HashSet<TransformHandle>();
 
-    private Vector3    _moveBuffer = Vector3.zero;
-    private Quaternion _rotateBuffer = Quaternion.identity;
+        public enum ToolState { Idle, Translating, Rotating, Scaling }
+        public ToolState _toolState = ToolState.Idle;
+        private HashSet<TransformHandle> _activeHandles = new HashSet<TransformHandle>();
 
-    private HashSet<TransformHandle> _transformHandles = new HashSet<TransformHandle>();
+        private HashSet<TranslationAxis> _activeTranslationAxes = new HashSet<TranslationAxis>();
+        #endregion
 
-    private enum ToolState { Idle, Translating, Rotating, Scaling }
-    private ToolState _toolState = ToolState.Idle;
-    private HashSet<TransformHandle> _activeHandles = new HashSet<TransformHandle>();
+        // My Stuff: Hand stuff
+        public enum ScaleAxis { x, y, z };
+        public ScaleAxis ChosenAxis;
+        public List<Hand> hands;
 
-    private HashSet<TranslationAxis> _activeTranslationAxes = new HashSet<TranslationAxis>();
+        private Controller controller;
+        private float scaleDistance;
+        private float initialHandDistance;
+        private Vector3 initialScaling;
+        private bool initialScaled = false;
 
-    void Start() {
-      controller = new Controller();
+        void Start()
+        {
+            controller = new Controller();
 
-      if (interactionManager == null) {
-        interactionManager = InteractionManager.instance;
-      }
+            if (interactionManager == null)
+            {
+                interactionManager = InteractionManager.instance;
+            }
 
-      foreach (var handle in GetComponentsInChildren<TransformHandle>()) {
-        _transformHandles.Add(handle);
-      }
+            foreach (var handle in GetComponentsInChildren<TransformHandle>())
+            {
+                _transformHandles.Add(handle);
+            }
 
-      // PhysicsCallbacks is useful for creating explicit pre-physics and post-physics
-      // behaviour.
-      PhysicsCallbacks.OnPostPhysics += onPostPhysics; // Delegate (omg I still have to learn how these work lol)
-    }
+            // PhysicsCallbacks is useful for creating explicit pre-physics and post-physics
+            // behaviour.
+            PhysicsCallbacks.OnPostPhysics += onPostPhysics; // Delegate (omg I still have to learn how these work lol)
+        }
 
-    void Update() {
-        // Hand stuff
-        Frame frame = controller.Frame();
-        hands = frame.Hands;
+        void Update()
+        {
+            // Hand stuff
+            Frame frame = controller.Frame();
+            hands = frame.Hands;
 
-      // Enable or disable handles based on hand proximity and tool state.
-      updateHandles();
-    }
+            // Enable or disable handles based on hand proximity and tool state.
+            updateHandles();
 
-    // Assuming I'll have to edit code here
-    #region Handle Movement / Rotation
+            // Scaling stuff
+            if (_toolState == ToolState.Scaling)
+            {
+                Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
+                Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
 
-    /// <summary>
-    /// Transform handles call this method to notify the tool that they were used
-    /// to move the target object.
-    /// </summary>
-    public void NotifyHandleMovement(Vector3 deltaPosition) {
-      _moveBuffer += deltaPosition;
-    }
+                scaleDistance = Vector3.Distance(leftPosition, rightPosition); 
 
-    /// <summary>
-    /// Transform handles call this method to notify the tool that they were used
-    /// to rotate the target object.
-    /// </summary>
-    public void NotifyHandleRotation(Quaternion deltaRotation) {
-      _rotateBuffer = deltaRotation * _rotateBuffer;
-    }
+                Vector3 EditScale = target.transform.localScale;
 
-    private void onPostPhysics() {
+                switch (ChosenAxis)
+                {
+                    case ScaleAxis.x:
+                        EditScale.x = initialScaling.x + (scaleDistance - initialHandDistance);
+                        break;
+                    case ScaleAxis.y:
+                        EditScale.y = initialScaling.y + (scaleDistance - initialHandDistance);
+                        break;
+                    case ScaleAxis.z:
+                        EditScale.z = initialScaling.z + (scaleDistance - initialHandDistance);
+                        break;
+                }
+
+                target.transform.localScale = EditScale;
+            }
+        }
+
+        // Assuming I'll have to edit code here
+        #region Handle Movement / Rotation
+
+        /// <summary>
+        /// Transform handles call this method to notify the tool that they were used
+        /// to move the target object.
+        /// </summary>
+        public void NotifyHandleMovement(Vector3 deltaPosition)
+        {
+            _moveBuffer += deltaPosition;
+        }
+
+        /// <summary>
+        /// Transform handles call this method to notify the tool that they were used
+        /// to rotate the target object.
+        /// </summary>
+        public void NotifyHandleRotation(Quaternion deltaRotation)
+        {
+            _rotateBuffer = deltaRotation * _rotateBuffer;
+        }
+
+        private void onPostPhysics()
+        {
             // Hooked up via PhysicsCallbacks in Start(), this method will run after
             // FixedUpdate and after PhysX has run. We take the opportunity to immediately
             // manipulate the target object's and this object's transforms using the
             // accumulated information about movement and rotation from the Transform Handles.
 
             // Apply accumulated movement and rotation to target object.
-
-            // Can we do the stuff here? Aka conditionals? YES!
-
+    
+            // Checking to make sure that we actually want to scale, then setting ChosenAxis.
             if (_activeHandles.Count == 2)
             {
                 float xCount = 0;
                 float yCount = 0;
                 float zCount = 0;
-                // If the two opposite sides are in, then scale.
+
                 foreach (TransformHandle handle in _activeHandles)
                 {
                     if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
                     {
                         xCount += 1;
+                        if (xCount == 2)
+                        {
+                            ChosenAxis = ScaleAxis.x;
+                            _toolState = ToolState.Scaling;
+                        }
                     }
                     if (handle.name == "Translate Pos Y" || handle.name == "Translate Neg Y")
                     {
                         yCount += 1;
+
+                        if (yCount == 2)
+                        {
+                            ChosenAxis = ScaleAxis.y;
+                            _toolState = ToolState.Scaling;
+                        }
                     }
                     if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
                     {
                         zCount += 1;
+                        if (zCount == 2)
+                        {
+                            ChosenAxis = ScaleAxis.z;
+                            _toolState = ToolState.Scaling;
+                        }
                     }
                 }
 
-                // Do scaling + enum here
-                if (xCount == 2)
+                if (xCount == 2 || yCount == 2 || zCount == 2)
                 {
-                    _toolState = ToolState.Scaling;
+                    if (!initialScaled)
+                    {
+                        Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
+                        Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
+
+                        initialScaling = target.transform.localScale; 
+                        initialHandDistance = Vector3.Distance(leftPosition, rightPosition);
+                        initialScaled = true;
+                    }
                 }
-                if (yCount == 2)
-                {
-                    _toolState = ToolState.Scaling;
-                }
-                if (zCount == 2)
-                {
-                    _toolState = ToolState.Scaling;
-                }
+            }
+
+            // Resetting the initialscale if we're done scaling/not scaling.
+            if (_activeHandles.Count != 2)
+            {
+                initialScaled = false;
             }
 
             switch (_toolState)
@@ -139,165 +202,199 @@ namespace Leap.Unity.Examples {
                     this.transform.rotation = target.transform.rotation;
                     break;
                 case ToolState.Translating:
-                    target.transform.position += _moveBuffer; // Just adding stuff, not a delegate. Lit.
+                    target.transform.position += _moveBuffer; 
                     this.transform.position = target.transform.position;
+                    break;
+                case ToolState.Scaling: 
                     break;
             }
 
-              // Explicitly sync TransformHandles' rigidbodies with their transforms,
-              // which moved along with this object's transform because they are children of it.
-              foreach (var handle in _transformHandles) {
-                handle.syncRigidbodyWithTransform();
-              }
-
-              // Reset movement and rotation buffers.
-              _moveBuffer = Vector3.zero;
-              _rotateBuffer = Quaternion.identity;
-
-            foreach (TransformHandle handle in _activeHandles)
+            // Explicitly sync TransformHandles' rigidbodies with their transforms,
+            // which moved along with this object's transform because they are children of it.
+            foreach (var handle in _transformHandles)
             {
-                Debug.Log(handle.name);
-            }
-            // Problem: Doesn't seem to but too accurate... But at the same time we kind of need a mount atm LOL
+                handle.syncRigidbodyWithTransform();
             }
 
-    #endregion
+            // Reset movement and rotation buffers.
+            _moveBuffer = Vector3.zero;
+            _rotateBuffer = Quaternion.identity;
+        }
 
-    // No need to edit this (I think?)
-    #region Handle Visibility
-    
-    // Literally just handles visibility. Maybe we should add a scaling enum? Yea... So it doesnt move. I guess?
-    private void updateHandles() {
-      switch (_toolState) {
-        case ToolState.Idle:
-          // Find the closest handle to any InteractionHand.
-          TransformHandle closestHandleToAnyHand = null;
-          float closestHandleDist = float.PositiveInfinity;
-          foreach (var intController in interactionManager.interactionControllers
-                                                          .Query()
-                                                          .Where(controller => controller.isTracked)) {
-            if (!intController.isPrimaryHovering) continue;
-            TransformHandle testHandle = intController.primaryHoveredObject
-                                                      .gameObject
-                                                      .GetComponent<TransformHandle>();
+        #endregion
 
-            if (testHandle == null || !_transformHandles.Contains(testHandle)) continue;
+        // No need to edit this (I think?)
+        #region Handle Visibility
 
-            float testDist = intController.primaryHoverDistance;
-            if (testDist < closestHandleDist) {
-              closestHandleToAnyHand = testHandle;
-              closestHandleDist = testDist;
-            }
-          }
+        // Literally just handles visibility. Maybe we should add a scaling enum? Yea... So it doesnt move. I guess?
+        private void updateHandles()
+        {
+            switch (_toolState)
+            {
+                case ToolState.Idle:
+                    // Find the closest handle to any InteractionHand.
+                    TransformHandle closestHandleToAnyHand = null;
+                    float closestHandleDist = float.PositiveInfinity;
+                    foreach (var intController in interactionManager.interactionControllers
+                                                                    .Query()
+                                                                    .Where(controller => controller.isTracked))
+                    {
+                        if (!intController.isPrimaryHovering) continue;
+                        TransformHandle testHandle = intController.primaryHoveredObject
+                                                                  .gameObject
+                                                                  .GetComponent<TransformHandle>();
 
-          // While idle, only show the closest handle to any hand, hide other handles.
-          foreach (var handle in _transformHandles) {
-            if (closestHandleToAnyHand != null && handle == closestHandleToAnyHand) {
-              handle.EnsureVisible();
-            }
-            else {
-              handle.EnsureHidden();
-            }
-          }
-          break;
+                        if (testHandle == null || !_transformHandles.Contains(testHandle)) continue;
 
-        case ToolState.Translating: 
-          // ***************** How about if we make others not visible and only axis visible? ************************
-          // While translating, show all translation handles except the other handle
-          // on the same axis, and hide rotation handles.
-          foreach (var handle in _transformHandles) {
-            if (handle is TransformTranslationHandle) {
-              var translateHandle = handle as TransformTranslationHandle;
+                        float testDist = intController.primaryHoverDistance;
+                        if (testDist < closestHandleDist)
+                        {
+                            closestHandleToAnyHand = testHandle;
+                            closestHandleDist = testDist;
+                        }
+                    }
 
-              if (!_activeHandles.Contains(translateHandle)
-                  && _activeTranslationAxes.Contains(translateHandle.axis)) {
-                handle.EnsureVisible();
-              }
-              else {
-                handle.EnsureVisible();
-              }
-            }
-            else {
-              handle.EnsureHidden();
-            }
-          }
-          break;
+                    // While idle, only show the closest handle to any hand, hide other handles.
+                    foreach (var handle in _transformHandles)
+                    {
+                        if (closestHandleToAnyHand != null && handle == closestHandleToAnyHand)
+                        {
+                            handle.EnsureVisible();
+                        }
+                        else
+                        {
+                            handle.EnsureHidden();
+                        }
+                    }
+                    break;
 
-        case ToolState.Rotating:
-          // While rotating, only show the active rotating handle.
-          foreach (var handle in _transformHandles) {
-            if (_activeHandles.Contains(handle)) {
-              handle.EnsureVisible();
+                case ToolState.Translating:
+                    // ***************** How about if we make others not visible and only axis visible? ************************
+                    // While translating, show all translation handles except the other handle
+                    // on the same axis, and hide rotation handles.
+                    foreach (var handle in _transformHandles)
+                    {
+                        if (handle is TransformTranslationHandle)
+                        {
+                            var translateHandle = handle as TransformTranslationHandle;
+
+                            if (!_activeHandles.Contains(translateHandle)
+                                && _activeTranslationAxes.Contains(translateHandle.axis))
+                            {
+                                handle.EnsureVisible();
+                            }
+                            else
+                            {
+                                handle.EnsureVisible();
+                            }
+                        }
+                        else
+                        {
+                            handle.EnsureHidden();
+                        }
+                    }
+                    break;
+
+                case ToolState.Rotating:
+                    // While rotating, only show the active rotating handle.
+                    foreach (var handle in _transformHandles)
+                    {
+                        if (_activeHandles.Contains(handle))
+                        {
+                            handle.EnsureVisible();
+                        }
+                        else
+                        {
+                            handle.EnsureHidden();
+                        }
+                    }
+                    break;
             }
-            else {
-              handle.EnsureHidden();
+        }
+
+        /// <summary>
+        /// Called by handles when they are grasped.
+        /// </summary>
+        /// <param name="handle"></param>
+        public void NotifyHandleActivated(TransformHandle handle)
+        {
+            switch (_toolState)
+            {
+                case ToolState.Idle:
+                    _activeHandles.Add(handle);
+
+                    if (handle is TransformTranslationHandle)
+                    {
+                        _toolState = ToolState.Translating;
+                        _activeTranslationAxes.Add(((TransformTranslationHandle)handle).axis);
+                    }
+                    else
+                    {
+                        _toolState = ToolState.Rotating;
+                    }
+                    break;
+
+                case ToolState.Translating:
+                    if (handle is TransformRotationHandle)
+                    {
+                        Debug.LogError("Error: Can't rotate a transform while it is already being "
+                                     + "translated.");
+                    }
+                    else
+                    {
+                        _activeHandles.Add(handle);
+                        _activeTranslationAxes.Add(((TransformTranslationHandle)handle).axis);
+                    }
+                    break;
+
+                case ToolState.Rotating:
+                    Debug.LogError("Error: Only one handle can be active while a transform is being "
+                                 + "rotated.");
+                    break;
             }
-          }
-          break;
-      }
+        }
+
+        /// <summary>
+        /// Called by Handles when they are released.
+        /// </summary>
+        public void NotifyHandleDeactivated(TransformHandle handle)
+        {
+            if (handle is TransformTranslationHandle)
+            {
+                _activeTranslationAxes.Remove(((TransformTranslationHandle)handle).axis);
+            }
+
+            _activeHandles.Remove(handle);
+
+            switch (_toolState)
+            {
+                case ToolState.Idle:
+                    Debug.LogWarning("Warning: Handle was deactived while Tool was already idle.");
+                    break;
+
+                default:
+                    if (_activeHandles.Count == 0)
+                    {
+                        _toolState = ToolState.Idle;
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        public void ScaleObject(ScaleAxis axis)
+        {
+            switch (axis)
+            {
+                case ScaleAxis.x:
+                    break;
+                case ScaleAxis.y:
+                    break;
+                case ScaleAxis.z:
+                    break;
+            }
+        }
     }
-
-    /// <summary>
-    /// Called by handles when they are grasped.
-    /// </summary>
-    /// <param name="handle"></param>
-    public void NotifyHandleActivated(TransformHandle handle) {
-      switch (_toolState) {
-        case ToolState.Idle:
-          _activeHandles.Add(handle);
-
-          if (handle is TransformTranslationHandle) {
-            _toolState = ToolState.Translating;
-            _activeTranslationAxes.Add(((TransformTranslationHandle)handle).axis);
-          }
-          else {
-            _toolState = ToolState.Rotating;
-          }
-          break;
-
-        case ToolState.Translating:
-          if (handle is TransformRotationHandle) {
-            Debug.LogError("Error: Can't rotate a transform while it is already being "
-                         + "translated.");
-          }
-          else {
-            _activeHandles.Add(handle);
-            _activeTranslationAxes.Add(((TransformTranslationHandle)handle).axis);
-          }
-          break;
-
-        case ToolState.Rotating:
-          Debug.LogError("Error: Only one handle can be active while a transform is being "
-                       + "rotated.");
-          break;
-      }
-    }
-
-    /// <summary>
-    /// Called by Handles when they are released.
-    /// </summary>
-    public void NotifyHandleDeactivated(TransformHandle handle) {
-      if (handle is TransformTranslationHandle) {
-        _activeTranslationAxes.Remove(((TransformTranslationHandle)handle).axis);
-      }
-
-      _activeHandles.Remove(handle);
-
-      switch (_toolState) {
-        case ToolState.Idle:
-          Debug.LogWarning("Warning: Handle was deactived while Tool was already idle.");
-          break;
-
-        default:
-          if (_activeHandles.Count == 0) {
-            _toolState = ToolState.Idle;
-          }
-          break;
-      }
-    }
-
-    #endregion
-
-  }
 
 }
