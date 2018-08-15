@@ -59,17 +59,17 @@ namespace Leap.Unity.Examples
             // Calculate the constrained movement of the handle along its forward axis only.
             // What if for scaling, we got the distance between the hands? That way, it would feel more natural scaling the object.
             // Also another question is, how do we keep the arrow where we need it to be? Since the position of the object doesn't change, the position of the arrows don't technically need to change but should be changing... hmm...
-                // Actually, good and interesting question. How come the position of the arrows don't change if we're scaling the object?
+            // Actually, good and interesting question. How come the position of the arrows don't change if we're scaling the object?
+
 
             // I think we can leave this alone. Just target the different deltaAxis.
-            Vector3 deltaPos = solvedPos - presolvePos; 
-            Vector3 handleForwardDirection = presolveRot * Vector3.forward; 
-            Vector3 deltaAxisPos = handleForwardDirection * Vector3.Dot(handleForwardDirection, deltaPos); 
+            Vector3 deltaPos = solvedPos - presolvePos;
+            Vector3 handleForwardDirection = presolveRot * Vector3.forward;
+            Vector3 deltaAxisPos = handleForwardDirection * Vector3.Dot(handleForwardDirection, deltaPos);
 
-            // Do the movement.
             _tool.NotifyHandleMovement(deltaAxisPos);
 
-            // Resets position/rotation of handles.
+            // Resets position/rotation of handles. (What does this mean though?)
             // We do this because the object has an interaction behavior. When objects have interaction behaviors, they can be grasped/moved by the hand.
             _intObj.rigidbody.position = presolvePos;
             _intObj.rigidbody.rotation = presolveRot;

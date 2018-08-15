@@ -44,6 +44,12 @@ namespace Leap.Unity.Examples
         public enum ScaleAxis { x, y, z };
         public ScaleAxis ChosenAxis;
         public List<Hand> hands;
+        public TransformHandle HandleOne;
+        public TransformHandle HandleTwo;
+        public Vector3 InitialHandleOnePosition;
+        public Vector3 InitialHandleTwoPosition;
+        public Vector3 InitialHandOnePosition;
+        public Vector3 InitialHandTwoPosition;
 
         private Controller controller;
         private float scaleDistance;
@@ -92,13 +98,16 @@ namespace Leap.Unity.Examples
                 switch (ChosenAxis)
                 {
                     case ScaleAxis.x:
-                        EditScale.x = initialScaling.x + (scaleDistance - initialHandDistance);
+                        if (initialScaling.x + (scaleDistance - initialHandDistance) > 0)
+                            EditScale.x = initialScaling.x + (scaleDistance - initialHandDistance);
                         break;
                     case ScaleAxis.y:
-                        EditScale.y = initialScaling.y + (scaleDistance - initialHandDistance);
+                        if (initialScaling.y + scaleDistance - initialHandDistance > 0)
+                            EditScale.y = initialScaling.y + (scaleDistance - initialHandDistance);
                         break;
                     case ScaleAxis.z:
-                        EditScale.z = initialScaling.z + (scaleDistance - initialHandDistance);
+                        if (initialScaling.z + scaleDistance - initialHandDistance > 0)
+                            EditScale.z = initialScaling.z + (scaleDistance - initialHandDistance);
                         break;
                 }
 
@@ -148,8 +157,13 @@ namespace Leap.Unity.Examples
                     if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
                     {
                         xCount += 1;
+                        if (xCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
                         if (xCount == 2)
                         {
+                            HandleTwo = handle;
                             ChosenAxis = ScaleAxis.x;
                             _toolState = ToolState.Scaling;
                         }
@@ -158,8 +172,13 @@ namespace Leap.Unity.Examples
                     {
                         yCount += 1;
 
+                        if (yCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
                         if (yCount == 2)
                         {
+                            HandleTwo = handle;
                             ChosenAxis = ScaleAxis.y;
                             _toolState = ToolState.Scaling;
                         }
@@ -167,8 +186,13 @@ namespace Leap.Unity.Examples
                     if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
                     {
                         zCount += 1;
+                        if (zCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
                         if (zCount == 2)
                         {
+                            HandleTwo = handle;
                             ChosenAxis = ScaleAxis.z;
                             _toolState = ToolState.Scaling;
                         }
@@ -185,6 +209,12 @@ namespace Leap.Unity.Examples
                         initialScaling = target.transform.localScale; 
                         initialHandDistance = Vector3.Distance(leftPosition, rightPosition);
                         initialScaled = true;
+
+                        InitialHandleOnePosition = HandleOne.transform.position;
+                        InitialHandleTwoPosition = HandleTwo.transform.position;
+
+                        InitialHandOnePosition = leftPosition;
+                        InitialHandTwoPosition = rightPosition;
                     }
                 }
             }
