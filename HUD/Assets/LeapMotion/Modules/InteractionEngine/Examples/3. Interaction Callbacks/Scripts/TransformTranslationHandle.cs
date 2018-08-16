@@ -71,6 +71,22 @@ namespace Leap.Unity.Examples
 
             // Resets position/rotation of handles. (What does this mean though?)
             // We do this because the object has an interaction behavior. When objects have interaction behaviors, they can be grasped/moved by the hand.
+            //if (_tool._toolState == TransformTool.ToolState.Scaling)
+            //{
+            //    _intObj.rigidbody.rotation = presolveRot;
+            //    Vector3 test = _intObj.transform.position;
+            //    test.x = presolvePos.y;
+            //    test.z = presolvePos.z;
+            //    _intObj.transform.position = test;
+            //}
+            //else
+            //{
+            //    _intObj.rigidbody.position = presolvePos;
+            //    _intObj.rigidbody.rotation = presolveRot;
+            //}
+
+            Vector3 now = _intObj.transform.localScale;
+
             _intObj.rigidbody.position = presolvePos;
             _intObj.rigidbody.rotation = presolveRot;
         }

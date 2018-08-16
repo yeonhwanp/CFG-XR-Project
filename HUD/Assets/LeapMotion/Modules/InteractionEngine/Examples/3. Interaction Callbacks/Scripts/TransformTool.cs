@@ -44,12 +44,17 @@ namespace Leap.Unity.Examples
         public enum ScaleAxis { x, y, z };
         public ScaleAxis ChosenAxis;
         public List<Hand> hands;
+        public List<Transform> IndividualHandles;
+        public List<Transform> IndividualRotationHandles;
         public TransformHandle HandleOne;
         public TransformHandle HandleTwo;
         public Vector3 InitialHandleOnePosition;
         public Vector3 InitialHandleTwoPosition;
         public Vector3 InitialHandOnePosition;
         public Vector3 InitialHandTwoPosition;
+        public Vector3 EditScale;
+        public Vector3 InitialHandleScale;
+        public Vector3 InitialRotationHandleScale;
 
         private Controller controller;
         private float scaleDistance;
@@ -60,6 +65,20 @@ namespace Leap.Unity.Examples
         void Start()
         {
             controller = new Controller();
+            IndividualHandles = new List<Transform>();
+            InitialHandleScale = new Vector3(0.8f, 0.8f, 0.8f);
+            InitialRotationHandleScale = new Vector3(.5f, .5f, .5f);
+            GetArrows();
+
+            foreach (Transform individualHandle in IndividualHandles)
+            {
+                Transform parent = individualHandle.parent;
+                individualHandle.parent = null;
+                Vector3 scaleTmp = new Vector3(InitialHandleScale.x / target.transform.localScale.x, InitialHandleScale.y / target.transform.localScale.y, InitialHandleScale.z / target.transform.localScale.z);
+                individualHandle.parent = parent;
+                individualHandle.localScale = scaleTmp;
+            }
+
 
             if (interactionManager == null)
             {
@@ -93,7 +112,8 @@ namespace Leap.Unity.Examples
 
                 scaleDistance = Vector3.Distance(leftPosition, rightPosition); 
 
-                Vector3 EditScale = target.transform.localScale;
+                EditScale = target.transform.localScale;
+                float scaleAmount = scaleDistance - initialHandDistance;
 
                 switch (ChosenAxis)
                 {
@@ -111,7 +131,41 @@ namespace Leap.Unity.Examples
                         break;
                 }
 
+                foreach (Transform individualHandle in IndividualHandles)
+                {
+                    Transform parent = individualHandle.parent;
+                    individualHandle.parent = null;
+                    Vector3 scaleTmp = new Vector3(InitialHandleScale.x / EditScale.x, InitialHandleScale.y / EditScale.y, InitialHandleScale.z / EditScale.z);
+
+                    if (individualHandle.name == "Translate Pos X" || individualHandle.name == "Translate Neg X")
+                    {
+                        scaleTmp.z = InitialHandleScale.z / EditScale.x;
+                    }
+
+                    if (individualHandle.name == "Translate Pos Y" || individualHandle.name == "Translate Neg Y")
+                    {
+                        scaleTmp.z = InitialHandleScale.z / EditScale.y;
+                    }
+
+                    if (individualHandle.name == "Translate Pos Z" || individualHandle.name == "Translate Neg Z")
+                    {
+                        scaleTmp.z = InitialHandleScale.z / EditScale.z;
+                    }
+
+                    individualHandle.parent = parent;
+                    individualHandle.localScale = scaleTmp;
+                }
+
+                foreach (Transform rotationHandle in IndividualRotationHandles)
+                {
+                    Vector3 scaleTmp = new Vector3(InitialRotationHandleScale.x / EditScale.x, InitialRotationHandleScale.y / EditScale.y, InitialRotationHandleScale.z / EditScale.z);
+                    rotationHandle.localScale = InitialRotationHandleScale;
+                }
+
+                Debug.Log(InitialHandleScale);
+
                 target.transform.localScale = EditScale;
+
             }
         }
 
@@ -413,16 +467,31 @@ namespace Leap.Unity.Examples
 
         #endregion
 
-        public void ScaleObject(ScaleAxis axis)
+        private void GetArrows()
         {
-            switch (axis)
+            foreach (Transform handleTypes in transform)
             {
-                case ScaleAxis.x:
-                    break;
-                case ScaleAxis.y:
-                    break;
-                case ScaleAxis.z:
-                    break;
+                if (handleTypes.name == "Translate Handles")
+                {
+                    foreach (Transform handleAxis in handleTypes)
+                    {
+                        foreach (Transform individual in handleAxis)
+                        {
+                            IndividualHandles.Add(individual);
+                        }
+                    }
+                }
+
+                if (handleTypes.name == "Rotate Handles")
+                {
+                    foreach (Transform handleAxis in handleTypes)
+                    {
+                        foreach (Transform individual in handleAxis)
+                        {
+                            IndividualRotationHandles.Add(individual);
+                        }
+                    }
+                }
             }
         }
     }
