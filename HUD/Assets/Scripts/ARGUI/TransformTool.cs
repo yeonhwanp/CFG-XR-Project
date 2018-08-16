@@ -44,30 +44,44 @@ namespace Leap.Unity.Examples
         public enum ScaleAxis { x, y, z };
         public ScaleAxis ChosenAxis;
         public List<Hand> hands;
+        public List<Transform> IndividualHandles;
+        public List<Transform> IndividualRotationHandles;
+        public TransformHandle HandleOne;
+        public TransformHandle HandleTwo;
+        public Vector3 InitialHandleOnePosition;
+        public Vector3 InitialHandleTwoPosition;
+        public Vector3 InitialHandOnePosition;
+        public Vector3 InitialHandTwoPosition;
+        public Vector3 EditScale;
+        public Vector3 InitialHandleScale;
+        public Vector3 InitialRotationHandleScale;
+        public bool Connected = false;
 
         private Controller controller;
-        private float scaleDistance;
-        private float initialHandDistance;
         private Vector3 initialScaling;
+        private float initialHandDistance;
+        private float scaleDistance;
         private bool initialScaled = false;
 
         void Start()
         {
+            // Initializing and setting values.
             controller = new Controller();
+            IndividualHandles = new List<Transform>();
+            InitialHandleScale = new Vector3(0.8f, 0.8f, 0.8f);
+            InitialRotationHandleScale = new Vector3(.5f, .5f, .5f);
+            GetArrows();
 
+            // LeapMotion stuff here.
             if (interactionManager == null)
             {
                 interactionManager = InteractionManager.instance;
             }
-
             foreach (var handle in GetComponentsInChildren<TransformHandle>())
             {
                 _transformHandles.Add(handle);
             }
-
-            // PhysicsCallbacks is useful for creating explicit pre-physics and post-physics
-            // behaviour.
-            PhysicsCallbacks.OnPostPhysics += onPostPhysics; // Delegate (omg I still have to learn how these work lol)
+            PhysicsCallbacks.OnPostPhysics += onPostPhysics; 
         }
 
         void Update()
@@ -80,35 +94,13 @@ namespace Leap.Unity.Examples
             updateHandles();
 
             // Scaling stuff
-            if (_toolState == ToolState.Scaling)
-            {
-                Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
-                Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
-
-                scaleDistance = Vector3.Distance(leftPosition, rightPosition); 
-
-                Vector3 EditScale = target.transform.localScale;
-
-                switch (ChosenAxis)
-                {
-                    case ScaleAxis.x:
-                        EditScale.x = initialScaling.x + (scaleDistance - initialHandDistance);
-                        break;
-                    case ScaleAxis.y:
-                        EditScale.y = initialScaling.y + (scaleDistance - initialHandDistance);
-                        break;
-                    case ScaleAxis.z:
-                        EditScale.z = initialScaling.z + (scaleDistance - initialHandDistance);
-                        break;
-                }
-
-                target.transform.localScale = EditScale;
-            }
+            ScaleObject();
         }
 
         // Assuming I'll have to edit code here
         #region Handle Movement / Rotation
 
+        #region LeapMotion Stuff
         /// <summary>
         /// Transform handles call this method to notify the tool that they were used
         /// to move the target object.
@@ -126,74 +118,12 @@ namespace Leap.Unity.Examples
         {
             _rotateBuffer = deltaRotation * _rotateBuffer;
         }
+        #endregion
 
+        // Runs after FixedUpdate and PhysX.
         private void onPostPhysics()
         {
-            // Hooked up via PhysicsCallbacks in Start(), this method will run after
-            // FixedUpdate and after PhysX has run. We take the opportunity to immediately
-            // manipulate the target object's and this object's transforms using the
-            // accumulated information about movement and rotation from the Transform Handles.
-
-            // Apply accumulated movement and rotation to target object.
-    
-            // Checking to make sure that we actually want to scale, then setting ChosenAxis.
-            if (_activeHandles.Count == 2)
-            {
-                float xCount = 0;
-                float yCount = 0;
-                float zCount = 0;
-
-                foreach (TransformHandle handle in _activeHandles)
-                {
-                    if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
-                    {
-                        xCount += 1;
-                        if (xCount == 2)
-                        {
-                            ChosenAxis = ScaleAxis.x;
-                            _toolState = ToolState.Scaling;
-                        }
-                    }
-                    if (handle.name == "Translate Pos Y" || handle.name == "Translate Neg Y")
-                    {
-                        yCount += 1;
-
-                        if (yCount == 2)
-                        {
-                            ChosenAxis = ScaleAxis.y;
-                            _toolState = ToolState.Scaling;
-                        }
-                    }
-                    if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
-                    {
-                        zCount += 1;
-                        if (zCount == 2)
-                        {
-                            ChosenAxis = ScaleAxis.z;
-                            _toolState = ToolState.Scaling;
-                        }
-                    }
-                }
-
-                if (xCount == 2 || yCount == 2 || zCount == 2)
-                {
-                    if (!initialScaled)
-                    {
-                        Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
-                        Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
-
-                        initialScaling = target.transform.localScale; 
-                        initialHandDistance = Vector3.Distance(leftPosition, rightPosition);
-                        initialScaled = true;
-                    }
-                }
-            }
-
-            // Resetting the initialscale if we're done scaling/not scaling.
-            if (_activeHandles.Count != 2)
-            {
-                initialScaled = false;
-            }
+            ScalingSetup();
 
             switch (_toolState)
             {
@@ -383,18 +313,211 @@ namespace Leap.Unity.Examples
 
         #endregion
 
-        public void ScaleObject(ScaleAxis axis)
+        #region MyMethods
+
+        // Get all of the translation and rotation handles individually.
+        private void GetArrows()
         {
-            switch (axis)
+            foreach (Transform handleTypes in transform)
             {
-                case ScaleAxis.x:
-                    break;
-                case ScaleAxis.y:
-                    break;
-                case ScaleAxis.z:
-                    break;
+                if (handleTypes.name == "Translate Handles")
+                {
+                    foreach (Transform handleAxis in handleTypes)
+                    {
+                        foreach (Transform individual in handleAxis)
+                        {
+                            IndividualHandles.Add(individual);
+                        }
+                    }
+                }
+
+                if (handleTypes.name == "Rotate Handles")
+                {
+                    foreach (Transform handleAxis in handleTypes)
+                    {
+                        foreach (Transform individual in handleAxis)
+                        {
+                            IndividualRotationHandles.Add(individual);
+                        }
+                    }
+                }
             }
         }
+        
+        // Checks to see if object is being scaled + sets the intialScaling variable of object
+        private void ScalingSetup()
+        {
+            if (_activeHandles.Count == 2)
+            {
+                float xCount = 0;
+                float yCount = 0;
+                float zCount = 0;
+
+                foreach (TransformHandle handle in _activeHandles)
+                {
+                    if (handle.name == "Translate Pos X" || handle.name == "Translate Neg X")
+                    {
+                        xCount += 1;
+                        if (xCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
+                        if (xCount == 2)
+                        {
+                            HandleTwo = handle;
+                            ChosenAxis = ScaleAxis.x;
+                            _toolState = ToolState.Scaling;
+                        }
+                    }
+                    if (handle.name == "Translate Pos Y" || handle.name == "Translate Neg Y")
+                    {
+                        yCount += 1;
+
+                        if (yCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
+                        if (yCount == 2)
+                        {
+                            HandleTwo = handle;
+                            ChosenAxis = ScaleAxis.y;
+                            _toolState = ToolState.Scaling;
+                        }
+                    }
+                    if (handle.name == "Translate Pos Z" || handle.name == "Translate Neg Y")
+                    {
+                        zCount += 1;
+                        if (zCount == 1)
+                        {
+                            HandleOne = handle;
+                        }
+                        if (zCount == 2)
+                        {
+                            HandleTwo = handle;
+                            ChosenAxis = ScaleAxis.z;
+                            _toolState = ToolState.Scaling;
+                        }
+                    }
+                }
+
+                if (xCount == 2 || yCount == 2 || zCount == 2)
+                {
+                    if (!initialScaled)
+                    {
+                        Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
+                        Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
+
+                        initialScaling = target.transform.localScale;
+                        initialHandDistance = Vector3.Distance(leftPosition, rightPosition);
+                        initialScaled = true;
+
+                        InitialHandleOnePosition = HandleOne.transform.position;
+                        InitialHandleTwoPosition = HandleTwo.transform.position;
+
+                        InitialHandOnePosition = leftPosition;
+                        InitialHandTwoPosition = rightPosition;
+                    }
+                }
+            }
+            
+            // To reset values if we're done/not scaling.
+            if (_activeHandles.Count != 2)
+            {
+                initialScaled = false;
+            }
+        }
+        
+        // Deals with actually scaling the object
+        private void ScaleObject()
+        {
+            if (_toolState == ToolState.Scaling)
+            {
+                // Initial Stuff
+                Vector3 leftPosition = new Vector3(hands[0].PalmPosition.x * 1 / 1000, hands[0].PalmPosition.y * 1 / 1000, hands[0].PalmPosition.z * 1 / 1000);
+                Vector3 rightPosition = new Vector3(hands[1].PalmPosition.x * 1 / 1000, hands[1].PalmPosition.y * 1 / 1000, hands[1].PalmPosition.z * 1 / 1000);
+
+                // Scaling numbers and vectors
+                scaleDistance = Vector3.Distance(leftPosition, rightPosition);
+                EditScale = target.transform.localScale;
+                float scaleAmount = scaleDistance - initialHandDistance;
+
+                // Do actual scaling
+                switch (ChosenAxis)
+                {
+                    case ScaleAxis.x:
+                        if (initialScaling.x + (scaleDistance - initialHandDistance) > 0)
+                            EditScale.x = initialScaling.x + (scaleDistance - initialHandDistance);
+                        break;
+                    case ScaleAxis.y:
+                        if (initialScaling.y + scaleDistance - initialHandDistance > 0)
+                            EditScale.y = initialScaling.y + (scaleDistance - initialHandDistance);
+                        break;
+                    case ScaleAxis.z:
+                        if (initialScaling.z + scaleDistance - initialHandDistance > 0)
+                            EditScale.z = initialScaling.z + (scaleDistance - initialHandDistance);
+                        break;
+                }
+
+                // Scale other things then set scale
+                ScaleTranslationHandles();
+                ScaleRotationHandles();
+                target.transform.localScale = EditScale;
+            }
+        }
+
+        // Scales the translation handles appropriately while scaling
+        private void ScaleTranslationHandles()
+        {
+            foreach (Transform individualHandle in IndividualHandles)
+            {
+                Transform parent = individualHandle.parent;
+                individualHandle.parent = null;
+                Vector3 scaleTmp = new Vector3(InitialHandleScale.x / EditScale.x, InitialHandleScale.y / EditScale.y, InitialHandleScale.z / EditScale.z);
+
+                if (individualHandle.name == "Translate Pos X" || individualHandle.name == "Translate Neg X")
+                {
+                    scaleTmp.z = InitialHandleScale.z / EditScale.x;
+                }
+
+                if (individualHandle.name == "Translate Pos Y" || individualHandle.name == "Translate Neg Y")
+                {
+                    scaleTmp.z = InitialHandleScale.z / EditScale.y;
+                }
+
+                if (individualHandle.name == "Translate Pos Z" || individualHandle.name == "Translate Neg Z")
+                {
+                    scaleTmp.z = InitialHandleScale.z / EditScale.z;
+                }
+
+                individualHandle.parent = parent;
+                individualHandle.localScale = scaleTmp;
+            }
+        }
+
+        // Sets initial handle size so it doesnt randomly change when you start scaling
+        private void SetTranslationHandleSize()
+        {
+            foreach (Transform individualHandle in IndividualHandles)
+            {
+                Transform parent = individualHandle.parent;
+                individualHandle.parent = null;
+                Vector3 scaleTmp = new Vector3(InitialHandleScale.x / target.transform.localScale.x, InitialHandleScale.y / target.transform.localScale.y, InitialHandleScale.z / target.transform.localScale.z);
+                individualHandle.parent = parent;
+                individualHandle.localScale = scaleTmp;
+            }
+        }
+
+        // Scales the Rotation handles appropriately while scaling
+        private void ScaleRotationHandles()
+        {
+            foreach (Transform rotationHandle in IndividualRotationHandles)
+            {
+                Vector3 scaleTmp = new Vector3(InitialRotationHandleScale.x / EditScale.x, InitialRotationHandleScale.y / EditScale.y, InitialRotationHandleScale.z / EditScale.z);
+                rotationHandle.localScale = InitialRotationHandleScale;
+            }
+        }
+
+        #endregion
     }
 
 }
