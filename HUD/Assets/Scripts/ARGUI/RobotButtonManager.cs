@@ -130,6 +130,17 @@ namespace Leap.Unity.Examples
 
             return tool;
         }
+        
+        // Actually, it shouldn't be costly because you can just store references to the objects. YAY!
+        private void AttachClosest()
+        {
+            GameObject[] RootObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects(); // Gets the roots
+
+            foreach (GameObject component in RootObjects)
+            {
+                
+            }
+        }
     }
 }
 

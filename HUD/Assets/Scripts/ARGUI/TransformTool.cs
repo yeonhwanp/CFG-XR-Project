@@ -123,6 +123,7 @@ namespace Leap.Unity.Examples
         // Runs after FixedUpdate and PhysX.
         private void onPostPhysics()
         {
+
             ScalingSetup();
 
             switch (_toolState)
@@ -137,6 +138,19 @@ namespace Leap.Unity.Examples
                     break;
                 case ToolState.Scaling: 
                     break;
+            }
+
+            // Select this object
+            if (_toolState != ToolState.Idle)
+            {
+                GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject = target.gameObject;
+            }
+
+            // Deselect the object (more like de-color it)
+            if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject != target.gameObject)
+            {
+                Material selectedMaterial = target.GetComponent<Renderer>().material;
+                selectedMaterial.SetColor("_Color", Color.white);
             }
 
             // Explicitly sync TransformHandles' rigidbodies with their transforms,

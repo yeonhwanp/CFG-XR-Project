@@ -101,12 +101,6 @@ public class ButtonManagerScript : MonoBehaviour {
                     closestJoint.GetComponent<ObjectJoint>().ChildLink = selected;
                     selected.GetComponent<RobotLink>().ParentJoint = closestJoint;
 
-                    // Protecting it from scaling issues down the road
-                    //GameObject ScaleProtect = new GameObject();
-                    //ScaleProtect.name = "ScaleProtect";
-                    //ScaleProtect.transform.parent = closestJoint.transform;
-                    //selected.transform.parent = ScaleProtect.transform;
-
                     selected.transform.parent = closestJoint.transform;
 
                     // "Locking" the object
@@ -134,12 +128,6 @@ public class ButtonManagerScript : MonoBehaviour {
                     thisJoint.ParentJoint = closestLink.GetComponent<RobotLink>().ParentJoint;
                     thisJoint.ParentJoint.GetComponent<ObjectJoint>().ChildJoints.Add(selected);
                     thisJoint.ParentLink = closestLink;
-
-                    // Protecting from resizing issues
-                    //GameObject ScaleProtect = new GameObject();
-                    //ScaleProtect.name = "ScaleProtect";
-                    //ScaleProtect.transform.parent = closestLink.transform;
-                    //selected.transform.parent = ScaleProtect.transform;
 
                     selected.transform.parent = closestLink.transform;
 
