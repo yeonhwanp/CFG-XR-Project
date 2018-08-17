@@ -121,7 +121,6 @@ public class ButtonManagerScript : MonoBehaviour {
                 // If there is a link, attach it to the closest one.
                 if (closestLink != null)
                 {
-                    Debug.Log("hello");
                     ObjectJoint thisJoint = selected.GetComponent<ObjectJoint>();
 
                     // Doing ObjectJoint/RobotLink stuff

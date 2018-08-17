@@ -98,7 +98,7 @@ namespace Leap.Unity.Examples
 
                                 break;
                             case ButtonType.Attach:
-                                Debug.Log("Attach function not implemented yet!");
+                                AttachObjects();
                                 break;
                         }
 
@@ -121,25 +121,119 @@ namespace Leap.Unity.Examples
         private GameObject SpawnTransformTool(GameObject parent)
         {
             GameObject tool = Instantiate(MovingTool);
-            
+
             tool.transform.parent = parent.transform;
             tool.GetComponent<TransformTool>().target = parent.transform;
             tool.transform.localScale = toolTransformSize;
             tool.transform.localPosition = Vector3.zero;
-            tool.GetComponent<TransformTool>().Connected = true;
+            tool.GetComponent<TransformTool>().ToolConnected = true;
 
             return tool;
         }
-        
-        // Actually, it shouldn't be costly because you can just store references to the objects. YAY!
-        private void AttachClosest()
-        {
-            GameObject[] RootObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects(); // Gets the roots
 
-            foreach (GameObject component in RootObjects)
+        private void AttachObjects()
+        {
+            GameObject selected = GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject;
+
+            if (selected != null)
             {
-                
+                if (selected.GetComponent<RobotLink>() != null)
+                {
+                    GameObject closestJoint = GetClosestJoint(selected);
+
+                    if (closestJoint != null)
+                    {
+                        closestJoint.GetComponent<ObjectJoint>().ChildLink = selected;
+                        selected.GetComponent<RobotLink>().ParentJoint = closestJoint;
+
+                        selected.transform.parent = closestJoint.transform;
+                        foreach(Transform child in selected.transform)
+                        {
+                            if (child.name == "Transform Tool(Clone)")
+                            {
+                                child.GetComponent<TransformTool>().ObjectConnected = true;
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        Debug.Log("You need a Joint to attach the Link to!");
+                    }
+                }
+
+                else if (selected.GetComponent<ObjectJoint>() != null)
+                {
+                    GameObject closestLink = GetClosestLink(selected);
+
+                    if (closestLink != null)
+                    {
+                        ObjectJoint thisJoint = selected.GetComponent<ObjectJoint>();
+
+                        thisJoint.ParentJoint = closestLink.GetComponent<RobotLink>().ParentJoint;
+                        thisJoint.ParentJoint.GetComponent<ObjectJoint>().ChildJoints.Add(selected);
+                        thisJoint.ParentLink = closestLink;
+
+                        selected.transform.parent = closestLink.transform;
+                    }
+
+                    else
+                    {
+                        Debug.Log("You need a Link to attach the Joint to!");
+                    }
+                }
             }
+        }
+
+        private GameObject GetClosestJoint(GameObject link)
+        {
+            GameObject closest = null;
+            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+
+            foreach(GameObject GO in allObjects)
+            {
+                if (GO.GetComponent<ObjectJoint>() != null && GO.activeInHierarchy)
+                {
+                    if (closest == null)
+                    {
+                        closest = GO;
+                    }
+                    else
+                    {
+                        if (Vector3.Distance(link.transform.position, GO.transform.position) < Vector3.Distance(link.transform.position, closest.transform.position))
+                        {
+                            closest = GO;
+                        }
+                    }
+                }
+            }
+
+            return closest;
+        }
+
+        private GameObject GetClosestLink(GameObject joint)
+        {
+            GameObject closest = null;
+            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+            foreach (GameObject GO in allObjects)
+            {
+                if (GO.GetComponent<RobotLink>() != null)
+                {
+                    if (closest == null)
+                    {
+                        closest = GO;
+                    }
+                    else
+                    {
+                        if (Vector3.Distance(joint.transform.position, GO.transform.position) < Vector3.Distance(joint.transform.position, closest.transform.position))
+                        {
+                            closest = GO;
+                        }
+                    }
+                }
+            }
+
+            return closest;
         }
     }
 }
