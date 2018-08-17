@@ -55,7 +55,8 @@ namespace Leap.Unity.Examples
         public Vector3 EditScale;
         public Vector3 InitialHandleScale;
         public Vector3 InitialRotationHandleScale;
-        public bool Connected = false;
+        public bool ToolConnected = false;
+        public bool ObjectConnected = false;
 
         private Controller controller;
         private Vector3 initialScaling;
@@ -123,6 +124,7 @@ namespace Leap.Unity.Examples
         // Runs after FixedUpdate and PhysX.
         private void onPostPhysics()
         {
+
             ScalingSetup();
 
             switch (_toolState)
@@ -132,11 +134,34 @@ namespace Leap.Unity.Examples
                     this.transform.rotation = target.transform.rotation;
                     break;
                 case ToolState.Translating:
-                    target.transform.position += _moveBuffer; 
-                    this.transform.position = target.transform.position;
+                    if (!ObjectConnected)
+                    {
+                        target.transform.position += _moveBuffer;
+                        this.transform.position = target.transform.position;
+                    }
+                    else
+                    {
+                        Debug.Log("hello? " + ObjectConnected);
+                        GameObject rootJoint = GetRootJoint(target.gameObject);
+                        rootJoint.transform.position += _moveBuffer;
+                        transform.position = target.transform.position;
+                    }
                     break;
                 case ToolState.Scaling: 
                     break;
+            }
+
+            // Select this object
+            if (_toolState != ToolState.Idle)
+            {
+                GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject = target.gameObject;
+            }
+
+            // Deselect the object (more like de-color it)
+            if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject != target.gameObject)
+            {
+                Material selectedMaterial = target.GetComponent<Renderer>().material;
+                selectedMaterial.SetColor("_Color", Color.white);
             }
 
             // Explicitly sync TransformHandles' rigidbodies with their transforms,
@@ -514,6 +539,41 @@ namespace Leap.Unity.Examples
             {
                 Vector3 scaleTmp = new Vector3(InitialRotationHandleScale.x / EditScale.x, InitialRotationHandleScale.y / EditScale.y, InitialRotationHandleScale.z / EditScale.z);
                 rotationHandle.localScale = InitialRotationHandleScale;
+            }
+        }
+
+        private static GameObject GetRootJoint(GameObject thisObject)
+        {
+
+            // If it's a joint
+            if (thisObject.GetComponent<ObjectJoint>() != null)
+            {
+                if (thisObject.GetComponent<ObjectJoint>().ParentJoint != null)
+                {
+                    return GetRootJoint(thisObject.GetComponent<ObjectJoint>().ParentJoint);
+                }
+                else
+                {
+                    return thisObject;
+                }
+            }
+
+            // If it's a link
+            else if (thisObject.GetComponent<RobotLink>() != null)
+            {
+                if (thisObject.GetComponent<RobotLink>().ParentJoint != null)
+                {
+                    return GetRootJoint(thisObject.GetComponent<RobotLink>().ParentJoint);
+                }
+                else
+                {
+                    return thisObject;
+                }
+            }
+
+            else
+            {
+                return null;
             }
         }
 
