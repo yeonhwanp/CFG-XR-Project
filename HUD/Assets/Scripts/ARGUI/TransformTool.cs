@@ -57,12 +57,15 @@ namespace Leap.Unity.Examples
         public Vector3 InitialRotationHandleScale;
         public bool ToolConnected = false;
         public bool ObjectConnected = false;
+        public bool isRotationLocked = false; // Need to work on this
 
         private Controller controller;
         private Vector3 initialScaling;
+        private GameObject arrowOne;
         private float initialHandDistance;
         private float scaleDistance;
         private bool initialScaled = false;
+        private bool _rotationMarkerSpawned;
 
         void Start()
         {
@@ -141,7 +144,6 @@ namespace Leap.Unity.Examples
                     }
                     else
                     {
-                        Debug.Log("hello? " + ObjectConnected);
                         GameObject rootJoint = GetRootJoint(target.gameObject);
                         rootJoint.transform.position += _moveBuffer;
                         transform.position = target.transform.position;
@@ -149,6 +151,34 @@ namespace Leap.Unity.Examples
                     break;
                 case ToolState.Scaling: 
                     break;
+            }
+
+            // Spawn the rotation axis stuff.
+            if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject == target.gameObject && !_rotationMarkerSpawned && target.GetComponent<ObjectJoint>() != null)
+            {
+                _rotationMarkerSpawned = true;
+
+                arrowOne = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                arrowOne.transform.localScale = new Vector3(0.03f, 0.05f, 0.03f);
+                arrowOne.transform.parent = target.transform;
+                Vector3 arrowOneTransform = new Vector3(0, .3f, 0);
+                Quaternion arrowOneRotation = Quaternion.Euler(0, 0, 0);
+                arrowOne.transform.localPosition = arrowOneTransform;
+                arrowOne.transform.localRotation = arrowOneRotation;
+
+                arrowOne.GetComponent<Renderer>().material.SetColor("_Color", Color.magenta);
+            }
+
+            if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject != target.gameObject)
+            {
+                //if (target.GetComponent<ObjectJoint>() != null)
+                //{
+                //    _rotationMarkerSpawned = false;
+                //    Destroy(arrowOne);
+                //}
+
+                _rotationMarkerSpawned = false;
+                Destroy(arrowOne);
             }
 
             // Select this object
