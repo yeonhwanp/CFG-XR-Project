@@ -34,11 +34,14 @@ namespace Leap.Unity.Examples
         #endregion
 
         // -------------------------------------------------- My Code ------------------------------------------------ //
-        public enum ButtonType { SpawnJoint, SpawnLink, Attach };
+        public enum ButtonType { SpawnJoint, SpawnLink, Attach, Delete };
         public ButtonType ButtonChoice;
         public GameObject MovingTool;
+
         private bool _isPushed = false; // For Cooldown
         private Vector3 toolTransformSize;
+        private int JointIDCount = 0;
+        private int LinkIDCount = 0;
 
         // Just initialization here
         void Start()
@@ -85,6 +88,9 @@ namespace Leap.Unity.Examples
                                 GameObject newLink = RobotLink.SpawnLink();
                                 GameObject Linktool = SpawnTransformTool(newLink);
 
+                                LinkIDCount += 1;
+                                newLink.GetComponent<RobotLink>().SelfID = LinkIDCount;
+
                                 newLink.transform.localScale = new Vector3(.1855826f, 0.1855826f, 0.1855826f);
                                 newLink.transform.position = new Vector3(0.02505559f, -0.1699998f, 0.597624f);
 
@@ -93,12 +99,18 @@ namespace Leap.Unity.Examples
                                 GameObject newJoint = ObjectJoint.SpawnJoint();
                                 GameObject Jointtool = SpawnTransformTool(newJoint);
 
+                                JointIDCount += 1;
+                                newJoint.GetComponent<ObjectJoint>().SelfID = JointIDCount;
+
                                 newJoint.transform.localScale = new Vector3(.1855826f, 0.1855826f, 0.1855826f);
                                 newJoint.transform.position = new Vector3(0.02505559f, -0.1699998f, 0.597624f);
 
                                 break;
                             case ButtonType.Attach:
                                 AttachObjects();
+                                break;
+                            case ButtonType.Delete:
+                                DeleteObject();
                                 break;
                         }
 
@@ -131,6 +143,7 @@ namespace Leap.Unity.Examples
             return tool;
         }
 
+        #region Attaching
         private void AttachObjects()
         {
             GameObject selected = GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject;
@@ -235,6 +248,45 @@ namespace Leap.Unity.Examples
 
             return closest;
         }
+        #endregion
+
+        #region Deleting
+
+        // Ok I'm going to make this a bit easier for myself by referring to the children of the link?
+        private void DeleteObject()
+        {
+            GameObject selected = GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject;
+            if (selected.GetComponent<RobotLink>() != null)
+            {
+                List<Transform> childrenTransforms = new List<Transform>();
+                foreach (Transform child in selected.transform)
+                {
+                    childrenTransforms.Add(child);
+                }
+                // If it's a leaf and no children
+                if (childrenTransforms.Count == 0)
+                {
+                    selected.GetComponent<RobotLink>().ParentJoint.GetComponent<ObjectJoint>().ChildLink = null;
+                    Destroy(selected);
+                }
+                // If it has children
+                else
+                {
+                    ObjectJoint parentJoint = selected.GetComponent<RobotLink>().ParentJoint.GetComponent<ObjectJoint>();
+                    parentJoint.ChildLink = null;
+                    parentJoint.ChildJoints = null;
+                    Destroy(selected);
+                }
+            }
+            // If it's a joint.
+            // Technically, it's just detaching, but atm I don't know how to or where to place the new "joint" so I'm just going to leave as is.
+            else
+            {
+                selected.transform.parent = null;
+                selected.GetComponent<ObjectJoint>().ParentJoint = null;
+            }
+        }
+        #endregion
     }
 }
 

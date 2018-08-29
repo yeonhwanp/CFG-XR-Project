@@ -19,7 +19,7 @@ public class RobotLink : MonoBehaviour
     public float mass;
 
     public GameObject ParentJoint;
-
+    public int SelfID;
     #endregion
 
     /// <summary>
