@@ -57,11 +57,11 @@ namespace Leap.Unity.Examples
         public Vector3 InitialRotationHandleScale;
         public bool ToolConnected = false;
         public bool ObjectConnected = false;
-        public bool isRotationLocked = false; // Need to work on this
 
         private Controller controller;
         private Vector3 initialScaling;
         private GameObject arrowOne;
+        private List<string> rotateHandleNames;
         private float initialHandDistance;
         private float scaleDistance;
         private bool initialScaled = false;
@@ -72,6 +72,7 @@ namespace Leap.Unity.Examples
             // Initializing and setting values.
             controller = new Controller();
             IndividualHandles = new List<Transform>();
+            rotateHandleNames = new List<string>() { "Y Rotator 0", "Y Rotator 1", "Y Rotator 2", "Y Rotator 3" };
             InitialHandleScale = new Vector3(0.8f, 0.8f, 0.8f);
             InitialRotationHandleScale = new Vector3(.5f, .5f, .5f);
             GetArrows();
@@ -171,12 +172,6 @@ namespace Leap.Unity.Examples
 
             if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject != target.gameObject)
             {
-                //if (target.GetComponent<ObjectJoint>() != null)
-                //{
-                //    _rotationMarkerSpawned = false;
-                //    Destroy(arrowOne);
-                //}
-
                 _rotationMarkerSpawned = false;
                 Destroy(arrowOne);
             }
@@ -244,7 +239,39 @@ namespace Leap.Unity.Examples
                     {
                         if (closestHandleToAnyHand != null && handle == closestHandleToAnyHand)
                         {
-                            handle.EnsureVisible();
+                            // Check if rotation should be restricted (aka is it connected?)
+                            if (ObjectConnected)
+                            {
+                                // If it's a Link, then shouldn't be able to rotate it (but should be able to translate the parent using it)
+                                if (target.GetComponent<ObjectJoint>() == null)
+                                {
+                                    if (closestHandleToAnyHand is TransformTranslationHandle)
+                                    {
+                                        handle.EnsureVisible();
+                                    }
+                                    else
+                                    {
+                                        handle.EnsureHidden();
+                                    }
+                                }
+                                // If it's a Joint, then we want to be able to rotate around the designated axis.
+                                else
+                                {
+                                    if (rotateHandleNames.Contains(closestHandleToAnyHand.name) || closestHandleToAnyHand is TransformTranslationHandle)
+                                    {
+                                        handle.EnsureVisible();
+                                    }
+                                    else
+                                    {
+                                        handle.EnsureHidden();
+                                    }
+                                }
+                            }
+                            // If rotation shouldn't be restricted, then just show any handle.
+                            else
+                            {
+                                handle.EnsureVisible();
+                            }
                         }
                         else
                         {
@@ -516,6 +543,25 @@ namespace Leap.Unity.Examples
                 // Scale other things then set scale
                 ScaleTranslationHandles();
                 ScaleRotationHandles();
+
+                // Get all children using method... ok I need to fix this thing now ok
+
+                foreach (Transform childTransform in target.transform)
+                {
+                    if (childTransform.GetComponent<ObjectJoint>() != null || childTransform.GetComponent<RobotLink>() != null)
+                    {
+                        Transform parent = childTransform.parent;
+                        childTransform.parent = null;
+                        Vector3 scaleTmp = childTransform.localScale;
+                        // Need to somehow get their initial scaling... o right that's why I made the dictionaries and stuff
+                        scaleTmp.x = scaleTmp.x / EditScale.x;
+                        scaleTmp.y = scaleTmp.y / EditScale.y;
+                        scaleTmp.z = scaleTmp.z / EditScale.z;
+                        childTransform.parent = parent;
+                        childTransform.localScale = scaleTmp;
+                    }
+                }
+
                 target.transform.localScale = EditScale;
             }
         }

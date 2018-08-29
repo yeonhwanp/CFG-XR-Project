@@ -21,7 +21,8 @@ public class ObjectJoint : MonoBehaviour
     // Useful when creating from script
     public IList<int> ChildJointIDs = new List<int>(); 
     public int ChildLinkID; 
-    public int ParentLinkID; 
+    public int ParentLinkID;
+    public int SelfID;
 
     // Position values 
     public Vector3 RotateAxis;

@@ -355,7 +355,7 @@ public class ClickerTest : MonoBehaviour {
                 break;
         }
 
-        oppositeScaleChildren(EditScale);
+        oppositeScaleChildren(EditScale, gameObject);
 
         return returnScale;
     }
@@ -382,27 +382,77 @@ public class ClickerTest : MonoBehaviour {
 
     // Scales the children in the opposite way such that they retain their "scale." 
     // Intorduces "space" atm but doesnt seem like a scaling issue... It might scale the space around the objects just a little bit?
-    private void oppositeScaleChildren(Vector3 newScale)
+    //private void oppositeScaleChildren(Vector3 newScale)
+    //{
+    //    // Get all of the children then set their scale to the opposite reciprocal
+    //    Transform[] childrenTransforms = GetComponentsInChildren<Transform>();
+    //    foreach (Transform childTransform in childrenTransforms)
+    //    {
+    //        if (childTransform != transform)
+    //        {
+    //            Transform parent = childTransform.parent;
+    //            childTransform.parent = null;
+    //            Vector3 scaleTmp = childTransform.localScale;
+    //            scaleTmp.x = scaleTmp.x / newScale.x;
+    //            scaleTmp.y = scaleTmp.y / newScale. y;
+    //            scaleTmp.z = scaleTmp.z / newScale.z;
+    //            childTransform.parent = parent;
+    //            childTransform.localScale = scaleTmp;
+    //        }
+    //    }
+
+    //    // Set gameObject scale
+    //    transform.localScale = newScale;
+    //}
+
+
+    private void oppositeScaleChildren(Vector3 newScale, GameObject thisObject)
     {
-        // Get all of the children then set their scale to the opposite reciprocal
-        Transform[] childrenTransforms = GetComponentsInChildren<Transform>();
-        foreach (Transform childTransform in childrenTransforms)
+        Transform originalParent = transform.parent;
+
+        foreach (Transform childTransform in thisObject.transform)
         {
-            if (childTransform != transform)
-            { 
-                childTransform.parent = null;
-                Vector3 scaleTmp = childTransform.localScale;
-                scaleTmp.x = scaleTmp.x / newScale.x;
-                scaleTmp.y = scaleTmp.y / newScale.y;
-                scaleTmp.z = scaleTmp.z / newScale.z;
-                childTransform.parent = transform;
-                childTransform.localScale = scaleTmp;
-            }
+            Transform parent = thisObject.transform;
+            childTransform.parent = null;
+            Vector3 scaleTmp = childTransform.localScale;
+            scaleTmp.x = scaleTmp.x / newScale.x;
+            scaleTmp.y = scaleTmp.y / newScale.y;
+            scaleTmp.z = scaleTmp.z / newScale.z;
+            childTransform.parent = parent;
+            childTransform.localScale = scaleTmp;
+            //foreach (Transform child in childTransform)  
+            //{
+            //    // Problem: It keeps scaling the child for some reason?
+            //    // And now this code stuff doesnt work huh
+                  // But why doesn't it work for the thing?
+                  // Doesn't work if the parent is scaled for some reason...
+                  // So can we unparent from the parent then parent again?
+                  // Now it gets smaller???
+            //    oppositeScaleChildren(scaleTmp, childTransform.gameObject);
+            //}
         }
 
-        // Set gameObject scale
         transform.localScale = newScale;
     }
+
+    //private void oppositeScaleChildren(Vector3 newScale, GameObject thisObject) 
+    //{
+    //    Dictionary<Transform, Transform> parents = new Dictionary<Transform, Transform>();
+    //    Transform[] childrenTransforms = GetComponentsInChildren<Transform>();
+    //    int counter = 0;
+    //    foreach (Transform childTransform in childrenTransforms)
+    //    {
+    //        parents.Add(childTransform, childTransform.parent);
+    //        childTransform.parent = null;
+    //    }
+
+    //    transform.localScale = newScale;
+
+    //    foreach(KeyValuePair<Transform, Transform> pairs in parents)
+    //    {
+    //        pairs.Key.parent = pairs.Value;
+    //    }
+    //}
     #endregion
 
     // Method for moving the object 
