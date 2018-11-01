@@ -265,7 +265,7 @@ namespace Leap.Unity {
       Vector3 calculatedFingerPointing = CalculateZeroedVector(distance);
       return calculatedFingerPointing * -1f;
     }
-    /**Finds SimpleAxis cardinal vector to a vector */
+    /**Finds nearest cardinal vector to a vector */
     public static Vector3 CalculateZeroedVector(Vector3 vectorToZero) {
       var zeroed = new Vector3();
       float max = Mathf.Max(Mathf.Abs(vectorToZero.x), Mathf.Abs(vectorToZero.y), Mathf.Abs(vectorToZero.z));

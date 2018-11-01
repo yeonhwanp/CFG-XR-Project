@@ -420,16 +420,16 @@ public class ClickerTest : MonoBehaviour {
             scaleTmp.z = scaleTmp.z / newScale.z;
             childTransform.parent = parent;
             childTransform.localScale = scaleTmp;
-            //foreach (Transform child in childTransform)  
-            //{
-            //    // Problem: It keeps scaling the child for some reason?
-            //    // And now this code stuff doesnt work huh
-                  // But why doesn't it work for the thing?
-                  // Doesn't work if the parent is scaled for some reason...
-                  // So can we unparent from the parent then parent again?
-                  // Now it gets smaller???
-            //    oppositeScaleChildren(scaleTmp, childTransform.gameObject);
-            //}
+            foreach (Transform child in childTransform)
+            {
+                // Problem: It keeps scaling the child for some reason?
+                // And now this code stuff doesnt work huh
+                //But why doesn't it work for the thing?
+                //   Doesn't work if the parent is scaled for some reason... The grandchild goes a bit crazy on me (larger) for whatever reason
+                //   So can we unparent from the parent then parent again?
+                //   Now it gets smaller???
+                oppositeScaleChildren(scaleTmp, childTransform.gameObject);
+            }
         }
 
         transform.localScale = newScale;

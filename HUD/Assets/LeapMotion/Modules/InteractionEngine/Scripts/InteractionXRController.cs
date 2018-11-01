@@ -840,7 +840,7 @@ namespace Leap.Unity.Interaction {
       drawer.color = Color.Lerp(GizmoColors.GraspPoint, Color.white, graspAmount);
       drawer.DrawWireSphere(GetGraspPoint(), maxGraspDistance);
 
-      // SimpleAxis graspable object
+      // Nearest graspable object
       if (_closestGraspableObject != null) {
         drawer.color = Color.Lerp(GizmoColors.Graspable, Color.white, Mathf.Sin(Time.time * 2 * Mathf.PI * 2F));
         drawer.DrawWireSphere(_closestGraspableObject.rigidbody.position, maxGraspDistance * 0.75F);

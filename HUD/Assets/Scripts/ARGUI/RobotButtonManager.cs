@@ -40,6 +40,8 @@ namespace Leap.Unity.Examples
 
         private bool _isPushed = false; // For Cooldown
         private Vector3 toolTransformSize;
+        private Vector3 spawnLocation;
+        private Vector3 spawnScale;
         private int JointIDCount = 0;
         private int LinkIDCount = 0;
 
@@ -47,6 +49,8 @@ namespace Leap.Unity.Examples
         void Start()
         {
             toolTransformSize = new Vector3(5.388435f, 5.388435f, 5.388435f);
+            spawnLocation = new Vector3(-.283f, -.1011024f, .015f);
+            spawnScale = new Vector3(.1855826f, 0.1855826f, 0.1855826f);
 
             _intObj = GetComponent<InteractionBehaviour>();
 
@@ -91,8 +95,8 @@ namespace Leap.Unity.Examples
                                 LinkIDCount += 1;
                                 newLink.GetComponent<RobotLink>().SelfID = LinkIDCount;
 
-                                newLink.transform.localScale = new Vector3(.1855826f, 0.1855826f, 0.1855826f);
-                                newLink.transform.position = new Vector3(0.02505559f, -0.1699998f, 0.597624f);
+                                newLink.transform.localScale = spawnScale;
+                                newLink.transform.position = spawnLocation;
 
                                 break;
                             case ButtonType.SpawnJoint:
@@ -102,8 +106,8 @@ namespace Leap.Unity.Examples
                                 JointIDCount += 1;
                                 newJoint.GetComponent<ObjectJoint>().SelfID = JointIDCount;
 
-                                newJoint.transform.localScale = new Vector3(.1855826f, 0.1855826f, 0.1855826f);
-                                newJoint.transform.position = new Vector3(0.02505559f, -0.1699998f, 0.597624f);
+                                newJoint.transform.localScale = spawnScale;
+                                newJoint.transform.position = spawnLocation;
 
                                 break;
                             case ButtonType.Attach:

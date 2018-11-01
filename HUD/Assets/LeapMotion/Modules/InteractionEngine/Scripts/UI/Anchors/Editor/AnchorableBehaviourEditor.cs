@@ -36,7 +36,7 @@ namespace Leap.Unity.Interaction {
 
       specifyConditionalDrawing(() => { return target.interactionBehaviour != null; },
                                 "detachWhenGrasped",
-                                "_tryAnchorSimpleAxisOnGraspEnd",
+                                "_tryAnchorNearestOnGraspEnd",
                                 "isAttractedByHand",
                                 "maxAttractionReach",
                                 "attractionReachByDistance");
@@ -69,13 +69,13 @@ namespace Leap.Unity.Interaction {
       // While in edit-mode, we only expect there to be the empty lambda that initializes the Action.
       int expectedMinimumActionListeners = EditorApplication.isPlaying ? 2 : 1;
 
-      bool hasInvalidPostGraspEndCallback = !target.tryAnchorSimpleAxisOnGraspEnd
+      bool hasInvalidPostGraspEndCallback = !target.tryAnchorNearestOnGraspEnd
                                          && (target.OnPostTryAnchorOnGraspEnd.GetInvocationList().Length > expectedMinimumActionListeners
                                              || (_tableEditor != null &&
                                                  _tableEditor.HasAnyCallbacks((int)AnchorableBehaviour.EventType.OnPostTryAnchorOnGraspEnd)));
       if (hasInvalidPostGraspEndCallback) {
         EditorGUILayout.HelpBox("This object's OnPostObjectGraspEnd is subscribed to, but the event will never "
-                              + "fire because tryAnchorSimpleAxisOnGraspEnd is disabled.",
+                              + "fire because tryAnchorNearestOnGraspEnd is disabled.",
                                 MessageType.Warning);
       }
     }
