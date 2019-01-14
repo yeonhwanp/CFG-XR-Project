@@ -16,8 +16,8 @@ This folder is home to all of the files used to create and test the application.
   - Used for simulations in MagicLeap.
   - This is in a different project because MagicLeap uses a newer and customized version of Unity. This version crashes a lot.
   
-**4. .NetServer:**
+**4. NetServer:**
 
-  - This folder contains the backend to be used with the application.
+  - This folder contains the backend (.NET 3.5) to be used with the application.
   - Mainly used for debugging purposes at the moment.
   - Contains an app that simulates the server to send/receive ProtoBufs from.
