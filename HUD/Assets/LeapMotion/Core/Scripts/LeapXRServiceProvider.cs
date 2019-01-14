@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
  /******************************************************************************
 =======
 /******************************************************************************
@@ -232,18 +232,11 @@ namespace Leap.Unity {
 
     protected override void Update() {
       manualUpdateHasBeenCalledSinceUpdate = false;
-<<<<<<< HEAD
+
       base.Update(); //###################################################################### YOOOOOOO #####################################
       imageTimeStamp = _leapController.FrameTimestamp();
     }
 
-
-=======
-      base.Update();
-      imageTimeStamp = _leapController.FrameTimestamp();
-    }
-
->>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
     void LateUpdate() {
       var projectionMatrix = _cachedCamera.projectionMatrix;
       switch (SystemInfo.graphicsDeviceType) {
