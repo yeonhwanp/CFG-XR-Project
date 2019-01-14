@@ -1,0 +1,30 @@
+[
+ {
+  "dest": "bin/libil2cpp.so",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Data/Native/libil2cpp.so"
+ },
+ {
+  "dest": "bin/UnityEngine.SpatialTracking.dll",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Data/Plugins/UnityEngine.SpatialTracking.dll"
+ },
+ {
+  "dest": "bin/UnityEngine.TestRunner.dll",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Data/Plugins/UnityEngine.TestRunner.dll"
+ },
+ {
+  "dest": "bin/UnityMagicLeap.so",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Data/Plugins/UnityMagicLeap.so"
+ },
+ {
+  "dest": "bin/nunit.framework.dll",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Data/Plugins/nunit.framework.dll"
+ },
+ {
+  "dest": "bin/Player.elf",
+  "src": "C:/Users/Brian/Desktop/SummerUROP-master/HUD/Temp/StagingArea/Player.elf"
+ },
+ {
+  "dest": "bin/libc++_shared.so",
+  "src": "C:/Users/Brian/MagicLeap/mlsdk/v0.17.0/lumin/stl/libc++/lib/libc++_shared.so"
+ }
+]

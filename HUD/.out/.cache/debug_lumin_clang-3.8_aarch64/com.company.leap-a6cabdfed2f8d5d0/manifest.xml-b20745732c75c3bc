@@ -1,0 +1,11 @@
+<manifest xmlns:ml="magicleap" ml:developer_id="0c87a6cb-4424-465c-aa03-5b9aa5c2c53a" ml:package="com.company.leap" ml:version_code="1" ml:version_name="">
+  <application ml:sdk_version="1.0" ml:visible_name="HUD">
+    <uses-privilege ml:name="LowLatencyLightwear" />
+    <uses-privilege ml:name="GesturesConfig" />
+    <uses-privilege ml:name="GesturesSubscribe" />
+    <uses-privilege ml:name="WorldReconstruction" />
+    <component ml:binary_name="bin/Player.elf" ml:name=".fullscreen" ml:type="Fullscreen" ml:visible_name="HUD">
+      <icon ml:model_folder="Icon/Model" ml:portal_folder="Icon/Portal" />
+    </component>
+  </application>
+</manifest>
