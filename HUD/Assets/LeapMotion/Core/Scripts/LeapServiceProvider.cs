@@ -292,10 +292,15 @@ namespace Leap.Unity {
 
         _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
       }
+<<<<<<< HEAD
       else { // TODO REPLACE THIS
         _leapController.Frame(_untransformedUpdateFrame);
 
                 Debug.Log("TESTING");
+=======
+      else {
+        _leapController.Frame(_untransformedUpdateFrame);
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
       }
 
       if (_untransformedUpdateFrame != null) {

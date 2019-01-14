@@ -47,12 +47,19 @@ PlayerSettings:
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
+<<<<<<< HEAD
   m_ActiveColorSpace: 1
+=======
+  m_ActiveColorSpace: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   m_MTRendering: 1
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
+<<<<<<< HEAD
   tizenShowActivityIndicatorOnLoading: -1
+=======
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   iosAppInBackgroundBehavior: 0
   displayResolutionDialog: 1
   iosAllowHTTPDownload: 1
@@ -82,7 +89,11 @@ PlayerSettings:
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
   gpuSkinning: 1
+<<<<<<< HEAD
   graphicsJobs: 1
+=======
+  graphicsJobs: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   xboxPIXTextureCapture: 0
   xboxEnableAvatar: 0
   xboxEnableKinect: 0
@@ -111,6 +122,11 @@ PlayerSettings:
   videoMemoryForVertexBuffers: 0
   psp2PowerMode: 0
   psp2AcquireBGM: 1
+<<<<<<< HEAD
+=======
+  vulkanEnableSetSRGBWrite: 0
+  vulkanUseSWCommandBuffers: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   m_SupportedAspectRatios:
     4:3: 1
     5:4: 1
@@ -138,6 +154,7 @@ PlayerSettings:
     hololens:
       depthFormat: 1
       depthBufferSharingEnabled: 0
+<<<<<<< HEAD
     lumin:
       depthFormat: 0
       frameTiming: 2
@@ -148,6 +165,12 @@ PlayerSettings:
     oculus:
       sharedDepthBuffer: 0
       dashSupport: 0
+=======
+    oculus:
+      sharedDepthBuffer: 0
+      dashSupport: 0
+    enable360StereoCapture: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   protectGraphicsMemory: 0
   useHDRDisplay: 0
   m_ColorGamuts: 00000000
@@ -155,8 +178,12 @@ PlayerSettings:
   resolutionScalingMode: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
+<<<<<<< HEAD
   applicationIdentifier:
     Lumin: com.company.leap
+=======
+  applicationIdentifier: {}
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
@@ -240,6 +267,10 @@ PlayerSettings:
   appleEnableAutomaticSigning: 0
   iOSRequireARKit: 0
   appleEnableProMotion: 0
+<<<<<<< HEAD
+=======
+  vulkanEditorSupport: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   clonedFromGUID: 56e7a2d3a00f33d44bdd161b773c35b5
   templatePackageId: com.unity.template.3d@1.0.0
   templateDefaultScene: Assets/Scenes/SampleScene.unity
@@ -248,6 +279,10 @@ PlayerSettings:
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: 
   AndroidKeyaliasName: 
+<<<<<<< HEAD
+=======
+  AndroidBuildApkPerCpuArchitecture: 0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
   AndroidEnableTango: 0
@@ -296,10 +331,13 @@ PlayerSettings:
     m_Devices:
     - Oculus
     - OpenVR
+<<<<<<< HEAD
   - m_BuildTarget: Lumin
     m_Enabled: 1
     m_Devices:
     - Lumin
+=======
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   m_BuildTargetEnableVuforiaSettings: []
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
@@ -309,6 +347,10 @@ PlayerSettings:
     iPhone: 1
     tvOS: 1
   m_BuildTargetGroupLightmapEncodingQuality: []
+<<<<<<< HEAD
+=======
+  m_BuildTargetGroupLightmapSettings: []
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
@@ -432,6 +474,11 @@ PlayerSettings:
   switchDataLossConfirmation: 0
   switchSupportedNpadStyles: 3
   switchNativeFsCacheSize: 32
+<<<<<<< HEAD
+=======
+  switchIsHoldTypeHorizontal: 0
+  switchSupportedNpadCount: 8
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   switchSocketConfigEnabled: 0
   switchTcpInitialSendBufferSize: 32
   switchTcpInitialReceiveBufferSize: 64
@@ -591,11 +638,18 @@ PlayerSettings:
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}
   incrementalIl2cppBuild: {}
+<<<<<<< HEAD
   allowUnsafeCode: 1
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 0
   apiCompatibilityLevelPerPlatform:
     Lumin: 1
+=======
+  allowUnsafeCode: 0
+  additionalIl2CppArgs: 
+  scriptingRuntimeVersion: 0
+  apiCompatibilityLevelPerPlatform:
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
     Standalone: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
@@ -609,7 +663,10 @@ PlayerSettings:
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: 
+<<<<<<< HEAD
   metroCommandLineArgsFile: 
+=======
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
@@ -625,6 +682,7 @@ PlayerSettings:
   metroFTAFileTypes: []
   metroProtocolName: 
   metroCompilationOverrides: 1
+<<<<<<< HEAD
   tizenProductDescription: 
   tizenProductURL: 
   tizenSigningProfileName: 
@@ -633,6 +691,8 @@ PlayerSettings:
   tizenDeploymentTarget: 
   tizenDeploymentTargetType: -1
   tizenMinOSVersion: 1
+=======
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   n3dsUseExtSaveData: 0
   n3dsCompressStaticMem: 1
   n3dsExtSaveDataNumber: 0x12345
@@ -653,6 +713,10 @@ PlayerSettings:
   XboxOneGameOsOverridePath: 
   XboxOnePackagingOverridePath: 
   XboxOneAppManifestOverridePath: 
+<<<<<<< HEAD
+=======
+  XboxOneVersion: 1.0.0.0
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   XboxOnePackageEncryption: 0
   XboxOnePackageUpdateGranularity: 2
   XboxOneDescription: 
@@ -675,6 +739,7 @@ PlayerSettings:
   cloudServicesEnabled:
     Collab: 1
     UNet: 1
+<<<<<<< HEAD
   luminIcon:
     m_Name: 
     m_ModelFolderPath: C:/Users/Brian/Desktop/mlkeys/Icon
@@ -690,6 +755,8 @@ PlayerSettings:
   - GesturesConfig
   - GesturesSubscribe
   - WorldReconstruction
+=======
+>>>>>>> 9beb8a3df7db3e2c1f8fb3d1e4dcb9245c2f2f93
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 2
   cloudProjectId: d31dc579-657a-45bb-a35f-950f13c1b567
