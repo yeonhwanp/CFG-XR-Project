@@ -4,6 +4,8 @@ This repo hosts the files to a mixed reality application which will be deployed 
 
 This folder is home to all of the files used to create and test the application.
 
+## Folders
+
 **1. Archive:** This folder hosts all of the outdated files that may be of use sometime in the future.
 
 **2. HUD:** 
