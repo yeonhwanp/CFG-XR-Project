@@ -232,8 +232,8 @@ namespace Leap.Unity {
 
     protected override void Update() {
       manualUpdateHasBeenCalledSinceUpdate = false;
-
       base.Update(); //###################################################################### YOOOOOOO #####################################
+      // So I think that this is updating the... leapmotion frames or something? So I have to change the thing that's underlying this thing
       imageTimeStamp = _leapController.FrameTimestamp();
     }
 

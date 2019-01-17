@@ -239,9 +239,83 @@ namespace Leap.Unity {
       }
     }
 
-    #endregion
+        #endregion
 
-    #region Unity Events
+        #region Unity Events
+
+    // My variables for capturing data
+    bool capturing = true;
+    bool allCaptured = false;
+    int amountCaptured = 0;
+    List<Frame> capturedFrames = new List<Frame>();
+    List<long> capturedOffsets = new List<long>();
+    List<long> capturedTimeStamps = new List<long>();
+    List<long> capturedInterpolationTimes = new List<long>();
+    FrameContainer testContainer = new FrameContainer();
+
+    // My Variables for playing data back
+    bool recovered = false;
+    FrameContainer recoveredContainer;
+    List<Frame> recoveredFrames;
+    List<long> recoveredOffsets;
+    List<long> recoveredTimeStamps;
+    List<long> recoveredInterpolationTimes;
+    int whichFrame = 0;
+
+    protected virtual void CaptureValues(Frame captureFrame, long captureOffset, long captureTimeStamp, long captureInterpolationTime)
+        {
+            if (!allCaptured)
+            {
+                if (amountCaptured > 300)
+                {
+                    allCaptured = true;
+                    Debug.Log("All captured!");
+
+                    // Setting the properties of the class then serializing the container
+                    testContainer.playbackFrames = capturedFrames;
+                    testContainer.playbackOffsets = capturedOffsets;
+                    testContainer.playbackTimestamps = capturedTimeStamps;
+                    testContainer.playbackInterpolationTimes = capturedInterpolationTimes;
+                    HandSerializer.WriteToBinaryFile(@"C:\Users\Brian\Desktop\containers.bin", testContainer);
+                }
+
+                else
+                {
+                    // Adding to the individual lists
+                    capturedFrames.Add(captureFrame);
+                    capturedOffsets.Add(captureOffset);
+                    capturedTimeStamps.Add(captureTimeStamp);
+                    capturedInterpolationTimes.Add(captureInterpolationTime);
+
+                    // Incrementing the amountCaptured value and debugging purposes
+                    amountCaptured++;
+                    Debug.Log("Capturing in progress: " + amountCaptured);
+                }
+            }
+        }
+
+    protected virtual void recoverData()
+        {
+            // Instantiating the Container and the lists that come with it 
+            if (!recovered)
+            {
+                recovered = true;
+                recoveredContainer = HandSerializer.ReadFromBinaryFile<FrameContainer>(@"C:\Users\Brian\Desktop\containers.bin");
+                recoveredFrames = recoveredContainer.playbackFrames;
+                recoveredOffsets = recoveredContainer.playbackOffsets;
+                recoveredTimeStamps = recoveredContainer.playbackTimestamps;
+                recoveredInterpolationTimes = recoveredContainer.playbackInterpolationTimes;
+
+                Debug.Log("hey!");
+            }
+
+            // Setting the values each time... Hopefully this works?
+            if (whichFrame < 300)
+            {
+                Debug.Log("Playing back frame " + whichFrame);
+                whichFrame++;
+            }
+        }
 
     protected virtual void Reset() {
       editTimePose = TestHandFactory.TestHandPose.DesktopModeA;
@@ -261,7 +335,9 @@ namespace Leap.Unity {
     }
 
     protected virtual void Update() {
+
       if (_workerThreadProfiling) {
+                Debug.Log("hello");
         LeapProfiling.Update();
       }
 
@@ -285,19 +361,43 @@ namespace Leap.Unity {
             if (_useInterpolation)
             {
 #if !UNITY_ANDROID || UNITY_EDITOR
+
+                // I'm sure that this just helps with something... Just don't know what lol
+                // Interesting... trying to log the capturedFrames data makes the hands disappear. Why? Is that why the hands aren't showing up?
+                // Maybe I have to capture it somewhere else?
+                // Or... Maybe I've been going about this wrong the entire time? Maybe I should just feed the frames to the controller? I'm not sure what the best course of action would be.
                 _smoothedTrackingLatency.value = Mathf.Min(_smoothedTrackingLatency.value, 30000f);
                 _smoothedTrackingLatency.Update((float)(_leapController.Now() - _leapController.FrameTimestamp()), Time.deltaTime);
 #endif
-                long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
-                _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
+                if (capturing)
+                {
+                    // Most important part for interaction.
+                    long interpolationTime = CalculateInterpolationTime(); // My own for recording values
+                    long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
+                    _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
 
-                _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
+                    // Most important part for getting hands to show up
+                    _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
+
+                    // Just capturing values here
+                    // Why doesn't the frame capture values properly?
+                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
+                    //Debug.Log(capturedFrames[amountCaptured].Hands[0].PalmPosition + "hi");
+                }
+
+                else
+                {
+                    // Timestamps are different, but the fingers remain the same? Confused. Hands too. I'll check the other ones.
+                    recoverData();
+                    long timestamp = recoveredTimeStamps[whichFrame];
+                    _unityToLeapOffset = recoveredOffsets[whichFrame];
+                    _leapController.GetInterpolatedFrameFromTime(recoveredFrames[whichFrame], recoveredTimeStamps[whichFrame], recoveredInterpolationTimes[whichFrame] - (BounceAmount * 1000));
+                }
+
             }
             else
-            { // TODO REPLACE THIS
+            { 
                 _leapController.Frame(_untransformedUpdateFrame);
-
-                Debug.Log("TESTING");
             }
 
       if (_untransformedUpdateFrame != null) {
