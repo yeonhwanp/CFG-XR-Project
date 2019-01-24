@@ -12,31 +12,32 @@ namespace Leap {
   using System.Threading;
 
   using LeapInternal;
+    using UnityEngine;
 
-  /// <summary>
-  /// The Controller class is your main interface to the Leap Motion Controller.
-  /// 
-  /// Create an instance of this Controller class to access frames of tracking
-  /// data and configuration information.Frame data can be polled at any time
-  /// using the Controller.Frame() function.Call frame() or frame(0) to get the
-  /// most recent frame.Set the history parameter to a positive integer to access
-  /// previous frames.A controller stores up to 60 frames in its frame history.
-  /// 
-  /// 
-  /// Polling is an appropriate strategy for applications which already have an
-  /// intrinsic update loop, such as a game. You can also subscribe to the FrameReady
-  /// event to get tracking frames through an event delegate.
-  /// 
-  /// If the current thread implements a SynchronizationContext that contains a message
-  /// loop, events are posted to that threads message loop. Otherwise, events are called
-  /// on an independent thread and applications must perform any needed synchronization
-  /// or marshalling of data between threads. Note that Unity3D does not create an
-  /// appropriate SynchronizationContext object. Typically, event handlers cannot access
-  /// any Unity objects.
-  /// 
-  /// @since 1.0
-  /// </summary>
-  public class Controller :
+    /// <summary>
+    /// The Controller class is your main interface to the Leap Motion Controller.
+    /// 
+    /// Create an instance of this Controller class to access frames of tracking
+    /// data and configuration information.Frame data can be polled at any time
+    /// using the Controller.Frame() function.Call frame() or frame(0) to get the
+    /// most recent frame.Set the history parameter to a positive integer to access
+    /// previous frames.A controller stores up to 60 frames in its frame history.
+    /// 
+    /// 
+    /// Polling is an appropriate strategy for applications which already have an
+    /// intrinsic update loop, such as a game. You can also subscribe to the FrameReady
+    /// event to get tracking frames through an event delegate.
+    /// 
+    /// If the current thread implements a SynchronizationContext that contains a message
+    /// loop, events are posted to that threads message loop. Otherwise, events are called
+    /// on an independent thread and applications must perform any needed synchronization
+    /// or marshalling of data between threads. Note that Unity3D does not create an
+    /// appropriate SynchronizationContext object. Typically, event handlers cannot access
+    /// any Unity objects.
+    /// 
+    /// @since 1.0
+    /// </summary>
+    public class Controller :
     IController {
     Connection _connection;
     bool _disposed = false;
@@ -500,7 +501,7 @@ namespace Leap {
     /// </summary>
     public void Frame(Frame toFill, int history = 0) {
       LEAP_TRACKING_EVENT trackingEvent;
-      _connection.Frames.Get(out trackingEvent, history);
+      _connection.Frames.Get(out trackingEvent, history); //YO TODO 
       toFill.CopyFrom(ref trackingEvent);
     }
 
@@ -536,7 +537,7 @@ namespace Leap {
     /// Fills the Frame with data taken at the specified time, interpolating the data between existing frames, if necessary.
     /// </summary>
     public void GetInterpolatedFrame(Frame toFill, Int64 time) {
-      _connection.GetInterpolatedFrame(toFill, time);
+     _connection.GetInterpolatedFrame(toFill, time); // HUH???
     }
 
     /// <summary>

@@ -14,6 +14,7 @@
 using UnityEngine;
 using System;
 using Leap.Unity.Attributes;
+using System.Collections.Generic;
 
 namespace Leap.Unity {
 
@@ -191,7 +192,7 @@ namespace Leap.Unity {
     [NonSerialized]
     public long imageTimeStamp = 0;
 
-    #endregion
+        #endregion
 
     #region Unity Events
 
@@ -231,11 +232,17 @@ namespace Leap.Unity {
     }
 
     protected override void Update() {
-      manualUpdateHasBeenCalledSinceUpdate = false;
-      base.Update(); //###################################################################### YOOOOOOO #####################################
-      // So I think that this is updating the... leapmotion frames or something? So I have to change the thing that's underlying this thing
-      imageTimeStamp = _leapController.FrameTimestamp();
-            //Debug.Log(CurrentFrame.Hands[0].PalmPosition); // OH WOW THIS WORKS... CAN WE REPLACE?????????
+
+            //// Original Stuff
+            //manualUpdateHasBeenCalledSinceUpdate = false;
+            //base.Update(); //###################################################################### YOOOOOOO ####################################
+            //imageTimeStamp = _leapController.FrameTimestamp();
+            ////Debug.Log(CurrentFrame.Hands[0].PalmPosition); // OH WOW THIS WORKS... Do we/can we serialize from here? JK... It's read only...
+
+            manualUpdateHasBeenCalledSinceUpdate = false;
+            base.Update();
+            imageTimeStamp = _leapController.FrameTimestamp();
+
         }
 
     void LateUpdate() {

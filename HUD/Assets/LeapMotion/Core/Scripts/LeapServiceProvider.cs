@@ -13,12 +13,13 @@ using UnityEngine;
 
 namespace Leap.Unity {
   using Attributes;
+    using System.Runtime.CompilerServices;
 
-  /// <summary>
-  /// The LeapServiceProvider provides tracked Leap Hand data and images from the device
-  /// via the Leap service running on the client machine.
-  /// </summary>
-  public class LeapServiceProvider : LeapProvider {
+    /// <summary>
+    /// The LeapServiceProvider provides tracked Leap Hand data and images from the device
+    /// via the Leap service running on the client machine.
+    /// </summary>
+    public class LeapServiceProvider : LeapProvider {
 
     #region Constants
 
@@ -244,7 +245,7 @@ namespace Leap.Unity {
         #region Unity Events
 
     // My variables for capturing data
-    bool capturing = true;
+    bool capturing = false;
     bool allCaptured = false;
     int amountCaptured = 0;
     List<Frame> capturedFrames = new List<Frame>();
@@ -270,19 +271,22 @@ namespace Leap.Unity {
                 {
                     allCaptured = true;
                     Debug.Log("All captured!");
-
+                    
                     // Setting the properties of the class then serializing the container
                     testContainer.playbackFrames = capturedFrames;
                     testContainer.playbackOffsets = capturedOffsets;
                     testContainer.playbackTimestamps = capturedTimeStamps;
                     testContainer.playbackInterpolationTimes = capturedInterpolationTimes;
-                    HandSerializer.WriteToBinaryFile(@"C:\Users\Brian\Desktop\containers.bin", testContainer);
+                    HandSerializer.WriteToBinaryFile(@"C:\Users\Brian\Desktop\test.bin", testContainer);
                 }
 
                 else
                 {
+                    //// Copying the Frame object
+                    Frame clonedFrame = ObjectCopier.Clone(captureFrame);
+
                     // Adding to the individual lists
-                    capturedFrames.Add(captureFrame);
+                    capturedFrames.Add(clonedFrame);
                     capturedOffsets.Add(captureOffset);
                     capturedTimeStamps.Add(captureTimeStamp);
                     capturedInterpolationTimes.Add(captureInterpolationTime);
@@ -300,7 +304,7 @@ namespace Leap.Unity {
             if (!recovered)
             {
                 recovered = true;
-                recoveredContainer = HandSerializer.ReadFromBinaryFile<FrameContainer>(@"C:\Users\Brian\Desktop\containers.bin");
+                recoveredContainer = HandSerializer.ReadFromBinaryFile<FrameContainer>(@"C:\Users\Brian\Desktop\test.bin");
                 recoveredFrames = recoveredContainer.playbackFrames;
                 recoveredOffsets = recoveredContainer.playbackOffsets;
                 recoveredTimeStamps = recoveredContainer.playbackTimestamps;
@@ -314,6 +318,11 @@ namespace Leap.Unity {
             {
                 Debug.Log("Playing back frame " + whichFrame);
                 whichFrame++;
+            }
+
+            if (whichFrame == 300)
+            {
+                Debug.Log("Finished Playback!");
             }
         }
 
@@ -366,6 +375,7 @@ namespace Leap.Unity {
                 // Interesting... trying to log the capturedFrames data makes the hands disappear. Why? Is that why the hands aren't showing up?
                 // Maybe I have to capture it somewhere else?
                 // Or... Maybe I've been going about this wrong the entire time? Maybe I should just feed the frames to the controller? I'm not sure what the best course of action would be.
+
                 _smoothedTrackingLatency.value = Mathf.Min(_smoothedTrackingLatency.value, 30000f);
                 _smoothedTrackingLatency.Update((float)(_leapController.Now() - _leapController.FrameTimestamp()), Time.deltaTime);
 #endif
@@ -376,20 +386,28 @@ namespace Leap.Unity {
                     long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
                     _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
 
+                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
+
                     // Most important part for getting hands to show up
                     _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
-                    //CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
-                    // Touching the hands makes them disappear.
+
+
+                    // Just some debug statements
+                    //if (CurrentFrame.Hands.Count > 0)
+                    //{
+                    //    Debug.Log(CurrentFrame.Hands[0].PalmPosition);
+                    //}
                 }
 
                 else
                 {
                     // Timestamps are different, but the fingers remain the same? Confused. Hands too. I'll checwhk the other ones.
+                    // YES IT WORKS HAHAHAHAHAHAHAHA
                     recoverData();
-                    long timestamp = recoveredTimeStamps[whichFrame];
-                    _unityToLeapOffset = recoveredOffsets[whichFrame];
-                    Debug.Log(recoveredFrames[whichFrame].Hands[0].PalmPosition + "hi");
-                    _leapController.GetInterpolatedFrameFromTime(recoveredFrames[whichFrame], recoveredTimeStamps[whichFrame], recoveredInterpolationTimes[whichFrame] - (BounceAmount * 1000));
+                    long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
+                    _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
+                    _untransformedUpdateFrame = recoveredFrames[whichFrame];
+                    _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, recoveredTimeStamps[whichFrame], recoveredInterpolationTimes[whichFrame] - (BounceAmount * 1000));
                 }
 
             }
@@ -432,8 +450,7 @@ namespace Leap.Unity {
             throw new System.InvalidOperationException(
               "Unexpected frame optimization mode: " + _frameOptimization);
         }
-        _leapController.GetInterpolatedFrame(_untransformedFixedFrame, timestamp);
-
+        _leapController.GetInterpolatedFrame(_untransformedFixedFrame, timestamp); //BRIAN CHECK THIS OUT
       }
       else {
         _leapController.Frame(_untransformedFixedFrame);
