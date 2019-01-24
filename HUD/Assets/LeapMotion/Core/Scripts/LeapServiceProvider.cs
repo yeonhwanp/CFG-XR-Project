@@ -371,43 +371,35 @@ namespace Leap.Unity {
             {
 #if !UNITY_ANDROID || UNITY_EDITOR
 
-                // I'm sure that this just helps with something... Just don't know what lol
-                // Interesting... trying to log the capturedFrames data makes the hands disappear. Why? Is that why the hands aren't showing up?
-                // Maybe I have to capture it somewhere else?
-                // Or... Maybe I've been going about this wrong the entire time? Maybe I should just feed the frames to the controller? I'm not sure what the best course of action would be.
-
                 _smoothedTrackingLatency.value = Mathf.Min(_smoothedTrackingLatency.value, 30000f);
                 _smoothedTrackingLatency.Update((float)(_leapController.Now() - _leapController.FrameTimestamp()), Time.deltaTime);
 #endif
                 if (capturing)
                 {
-                    // Most important part for interaction.
+                    // Timestamp stuff -- actually really important to simulating Frame data.
                     long interpolationTime = CalculateInterpolationTime(); // My own for recording values
                     long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
                     _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
 
-                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
+                    // Capturing Frames and other necessary values for playback
+                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime); 
 
                     // Most important part for getting hands to show up
                     _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
-
-
-                    // Just some debug statements
-                    //if (CurrentFrame.Hands.Count > 0)
-                    //{
-                    //    Debug.Log(CurrentFrame.Hands[0].PalmPosition);
-                    //}
                 }
 
                 else
                 {
-                    // Timestamps are different, but the fingers remain the same? Confused. Hands too. I'll checwhk the other ones.
-                    // YES IT WORKS HAHAHAHAHAHAHAHA
+                    // Recover the serialiazed data
                     recoverData();
-                    long timestamp = CalculateInterpolationTime() + (ExtrapolationAmount * 1000);
-                    _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
-                    _untransformedUpdateFrame = recoveredFrames[whichFrame];
-                    _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, recoveredTimeStamps[whichFrame], recoveredInterpolationTimes[whichFrame] - (BounceAmount * 1000));
+
+                    // Set stuff to make it look the same as above
+                    long interpolationtime = recoveredInterpolationTimes[whichFrame];
+                    long timestamp = recoveredTimeStamps[whichFrame];
+                    _unityToLeapOffset = recoveredTimeStamps[whichFrame];
+
+                    _untransformedUpdateFrame = recoveredFrames[whichFrame]; // This is important because I think other methods _untransformedUpdateFrame somewhere else
+                    _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, interpolationtime - (BounceAmount * 1000));
                 }
 
             }
