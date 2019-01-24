@@ -378,19 +378,17 @@ namespace Leap.Unity {
 
                     // Most important part for getting hands to show up
                     _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
-
-                    // Just capturing values here
-                    // Why doesn't the frame capture values properly?
-                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
-                    //Debug.Log(capturedFrames[amountCaptured].Hands[0].PalmPosition + "hi");
+                    //CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime);
+                    // Touching the hands makes them disappear.
                 }
 
                 else
                 {
-                    // Timestamps are different, but the fingers remain the same? Confused. Hands too. I'll check the other ones.
+                    // Timestamps are different, but the fingers remain the same? Confused. Hands too. I'll checwhk the other ones.
                     recoverData();
                     long timestamp = recoveredTimeStamps[whichFrame];
                     _unityToLeapOffset = recoveredOffsets[whichFrame];
+                    Debug.Log(recoveredFrames[whichFrame].Hands[0].PalmPosition + "hi");
                     _leapController.GetInterpolatedFrameFromTime(recoveredFrames[whichFrame], recoveredTimeStamps[whichFrame], recoveredInterpolationTimes[whichFrame] - (BounceAmount * 1000));
                 }
 

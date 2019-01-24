@@ -235,7 +235,8 @@ namespace Leap.Unity {
       base.Update(); //###################################################################### YOOOOOOO #####################################
       // So I think that this is updating the... leapmotion frames or something? So I have to change the thing that's underlying this thing
       imageTimeStamp = _leapController.FrameTimestamp();
-    }
+            //Debug.Log(CurrentFrame.Hands[0].PalmPosition); // OH WOW THIS WORKS... CAN WE REPLACE?????????
+        }
 
     void LateUpdate() {
       var projectionMatrix = _cachedCamera.projectionMatrix;
