@@ -244,7 +244,7 @@ namespace Leap.Unity {
 
         #region Unity Events
 
-    // My variables for capturing data
+    // My variables for capturing object data
     bool capturing = false;
     bool allCaptured = false;
     int amountCaptured = 0;
@@ -254,7 +254,7 @@ namespace Leap.Unity {
     List<long> capturedInterpolationTimes = new List<long>();
     FrameContainer testContainer = new FrameContainer();
 
-    // My Variables for playing data back
+    // My Variables for playing object data back
     bool recovered = false;
     FrameContainer recoveredContainer;
     List<Frame> recoveredFrames;
@@ -263,7 +263,13 @@ namespace Leap.Unity {
     List<long> recoveredInterpolationTimes;
     int whichFrame = 0;
 
-    protected virtual void CaptureValues(Frame captureFrame, long captureOffset, long captureTimeStamp, long captureInterpolationTime)
+    // My variables for capturing movement data
+    List<Frame> capturedObjects = new List<Frame>();
+    List<long> capturedObjectStamps = new List<long>();
+    FrameContainer objectContainer = new FrameContainer();
+    // Hm.. will this work at the same time though? As in, will it be synced? Not sure. Will check tomorrow.
+
+    protected virtual void CaptureObjectValues(Frame captureFrame, long captureOffset, long captureTimeStamp, long captureInterpolationTime)
         {
             if (!allCaptured)
             {
@@ -298,7 +304,7 @@ namespace Leap.Unity {
             }
         }
 
-    protected virtual void recoverData()
+    protected virtual void recoverObjectData()
         {
             // Instantiating the Container and the lists that come with it 
             if (!recovered)
@@ -382,7 +388,7 @@ namespace Leap.Unity {
                     _unityToLeapOffset = timestamp - (long)(Time.time * S_TO_NS);
 
                     // Capturing Frames and other necessary values for playback
-                    CaptureValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime); 
+                    CaptureObjectValues(_untransformedUpdateFrame, _unityToLeapOffset, timestamp, interpolationTime); 
 
                     // Most important part for getting hands to show up
                     _leapController.GetInterpolatedFrameFromTime(_untransformedUpdateFrame, timestamp, CalculateInterpolationTime() - (BounceAmount * 1000));
@@ -391,7 +397,7 @@ namespace Leap.Unity {
                 else
                 {
                     // Recover the serialiazed data
-                    recoverData();
+                    recoverObjectData();
 
                     // Set stuff to make it look the same as above
                     long interpolationtime = recoveredInterpolationTimes[whichFrame];
@@ -425,7 +431,7 @@ namespace Leap.Unity {
 
         long timestamp;
         switch (_frameOptimization) {
-          case FrameOptimizationMode.None:
+          case FrameOptimizationMode.None: // I think that this is the one that actually matters. (aka is getting used)
             // By default we use Time.fixedTime to ensure that our hands are on the same
             // timeline as Update.  We add an extrapolation value to help compensate
             // for latency.
