@@ -245,7 +245,7 @@ namespace Leap.Unity {
         #region Unity Events
 
     // My variables for capturing object data
-    bool capturing = false;
+    bool capturing = false; // USE TO CAPTURE AND PLAYBACK DATA
     bool allCaptured = false;
     int amountCaptured = 0;
     List<Frame> capturedFrames = new List<Frame>();
@@ -263,11 +263,18 @@ namespace Leap.Unity {
     List<long> recoveredInterpolationTimes;
     int whichFrame = 0;
 
-    // My variables for capturing movement data
+    // My variables for capturing + playing back physics data
+    bool objectRecovered = false;
+    bool allObjectCaptured = false;
+    FrameContainer recoveredObjectContainer;
+    List<Frame> recoveredObjectFrames;
+    List<long> recoveredObjectStamps;
     List<Frame> capturedObjects = new List<Frame>();
     List<long> capturedObjectStamps = new List<long>();
     FrameContainer objectContainer = new FrameContainer();
-    // Hm.. will this work at the same time though? As in, will it be synced? Not sure. Will check tomorrow.
+
+    // NOTES: Need to serialize Physics data after Picture data for this to work for some strange reason.
+    // Also, I think it records a little less than you would think it does (from the debugging console).
 
     protected virtual void CaptureObjectValues(Frame captureFrame, long captureOffset, long captureTimeStamp, long captureInterpolationTime)
         {
@@ -276,7 +283,7 @@ namespace Leap.Unity {
                 if (amountCaptured > 300)
                 {
                     allCaptured = true;
-                    Debug.Log("All captured!");
+                    Debug.Log("All Object data captured!");
                     
                     // Setting the properties of the class then serializing the container
                     testContainer.playbackFrames = capturedFrames;
@@ -448,7 +455,45 @@ namespace Leap.Unity {
             throw new System.InvalidOperationException(
               "Unexpected frame optimization mode: " + _frameOptimization);
         }
-        _leapController.GetInterpolatedFrame(_untransformedFixedFrame, timestamp); //BRIAN CHECK THIS OUT
+        if (capturing)
+                {
+                    _leapController.GetInterpolatedFrame(_untransformedFixedFrame, timestamp); //BRIAN CHECK THIS OUT
+
+                    if (amountCaptured < 300)
+                    {
+                        capturedObjectStamps.Add(timestamp);
+                        Frame clonedFrame = ObjectCopier.Clone(_untransformedFixedFrame);
+                        capturedObjects.Add(clonedFrame);
+                    }
+                    else
+                    {
+                        if (allCaptured && !allObjectCaptured)
+                        {
+                            objectContainer.playbackFrames = capturedObjects;
+                            objectContainer.playbackTimestamps = capturedObjectStamps;
+                            HandSerializer.WriteToBinaryFile(@"C:\Users\Brian\Desktop\move.bin", testContainer);
+                            Debug.Log("All Physics Data Captured!");
+                            allObjectCaptured = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!objectRecovered)
+                    {
+                        objectRecovered = true;
+                        recoveredObjectContainer = HandSerializer.ReadFromBinaryFile<FrameContainer>(@"C:\Users\Brian\Desktop\move.bin");
+                        recoveredObjectFrames = recoveredObjectContainer.playbackFrames;
+                        recoveredObjectStamps = recoveredObjectContainer.playbackTimestamps;
+                    }
+                    else
+                    {
+                        _untransformedFixedFrame = recoveredObjectFrames[whichFrame];
+                        timestamp = recoveredObjectStamps[whichFrame];
+
+                        _leapController.GetInterpolatedFrame(_untransformedFixedFrame, timestamp);
+                    }
+                }
       }
       else {
         _leapController.Frame(_untransformedFixedFrame);
