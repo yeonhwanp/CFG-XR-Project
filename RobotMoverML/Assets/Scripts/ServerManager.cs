@@ -9,14 +9,24 @@ using System.Text;
 using System;
 using Google.Protobuf;
 
+/// <summary>
+/// A Client-side class to send and receive data to a remove server using a UDP protocol.
+/// </summary>
 public class ClientUDP<T> where T: IMessage<T>, new()
 {
+
+    /// <summary>
+    /// Connects to a remote UDP server using the port provided to send object information.
+    ///
+    /// <param name="sendPort"> An integer representing the port to connect to. </param>
+    /// <param name="sendObject"> An object to send to the other server. </param>
+    ///</summary>
     public static T UDPSend(int sendPort, T sendObject)
     {
         int listenPort = 0;
         T received;
 
-        IPAddress target = IPAddress.Parse("127.0.0.1");
+        IPAddress target = IPAddress.Parse("127.0.0.1"); // Should not hardcode IP addresses in future iterations
         IPEndPoint theEndPoint = new IPEndPoint(target, sendPort);
         Socket thisSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -60,6 +70,9 @@ public class ClientUDP<T> where T: IMessage<T>, new()
 }
 
 #if end
+/// <summary>
+/// A deprecated client-side class to send and receive data over a TCP connection.
+/// </summary>
 public class ClientTCP
 {
     private const int port = 15000;
@@ -87,7 +100,6 @@ public class ClientTCP
         {
             Debug.Log(e.ToString());
         }
-
         client.Close();
     }
 }

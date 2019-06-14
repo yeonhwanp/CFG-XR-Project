@@ -1,25 +1,26 @@
-# CSAIL CFG XR Project
+# MIT-CSAIL CFG: XR Project
 
-This repo hosts the files to a mixed reality application which will be deployed using the MagicLeap. The application features an interface for the user to manipulate individual robot parts (links, joints, etc.) to create a fully functional robot in real world space. 
-
-This folder is home to all of the files used to create and test the application.
+## Overview
+This project aims to bring a mixed reality interface for robotic design combining the technologies
+of the MagicLeap headset and LeapMotion sensor. This project can/will eventually be able to:
+- Utilize the Magic Leap's camera to take image/mesh data from the real world to make accurate predictions about its surroundings.
+- Convert real-world hand gestures into commands by using the LeapMotion's gesture sensing technologies.
+- Optimize goals for a virtual robot given high-level constraints.
 
 ## Folders
+**1. Archive**
+- Contains all outdated files that may still have some use in the future.
 
-**1. Archive:** This folder hosts all of the outdated files that may be of use sometime in the future.
+**2. Main**
+- Contains the main project.
+	- TODO: Fix custom object scaling
+	- TODO: Incorporate LeapMotion gestures into the MagicLeap application
 
-**2. HUD:** 
-  - This folder contains the main project.
-  - Everything is completed except for the scaling component.
-  - Currently working on delivering gestural data from the Leapmotion over to the MagicLeap over websockets.
-  
-**3. RobotMoverML:** 
+**3. RobotMoverML**
+- Contains necessary files to run virtual simulations on the MagicLeap.
+- This application is built in a different project because the MagicLeap has dependencies from an experimental build of Unity that crashes a lot.
 
-  - Used for simulations in MagicLeap.
-  - This is in a different project because MagicLeap uses a newer and customized version of Unity. This version crashes a lot.
-  
-**4. NetServer:**
+**4. NetServer**
+- Contains the backend (.NET 3.5) to send and receive ProtoBufs over websockets.
+- Also used for debugging purposes.
 
-  - This folder contains the backend (.NET 3.5) to be used with the application.
-  - Mainly used for debugging purposes at the moment.
-  - Contains an app that simulates the server to send/receive ProtoBufs from.
