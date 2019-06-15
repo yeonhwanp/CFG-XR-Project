@@ -9,12 +9,14 @@ using System.Text;
 using System;
 using Google.Protobuf;
 
-// Need to combine
-
+/// <summary>
+/// A Client-side class to send and receive mesh data to a remove server using a UDP protocol.
+/// Look @ServerManager in root folder to see more documentation.
+/// </summary>
 public class MeshClientUDP<T> where T : IMessage<T>, new()
 {
-    // Unlike the robot script, I'm not going to accept messages because... I know it's possible and it's annoying to debug
-    // But, will log the amount of elements the MeshList is holding so that we can verify it's the same.
+    // Unlike the robot script, I'm not going to accept messages.
+    // But, will log the amount of elements the MeshList is holding so that I can verify that it's the same on the server side.
     public static void UDPSend(int sendPort, T sendObject)
     {
         int listenPort = 0;
@@ -40,7 +42,7 @@ public class MeshClientUDP<T> where T : IMessage<T>, new()
 
         using (MemoryStream ms = new MemoryStream())
         {
-            // Writing to the stream 
+            // Writing to the stream
             sendObject.WriteTo(ms);
             ms.Position = 0;
             Debug.Log("ok here: " + ms.ToArray().Length);

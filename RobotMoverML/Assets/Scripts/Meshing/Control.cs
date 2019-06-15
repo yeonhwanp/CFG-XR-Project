@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.XR.MagicLeap;
 
+
+/// <summary>
+/// Control: A class to handle gestural user input (buttons).
+///
+/// Attributes:
+///     ButtonStates, BtnState: An enum indicating whether the button is currently unpressed, pressed, or just released.
+/// </summary>
 public class Control : MonoBehaviour
 {
-    #region Public Variables 
+    #region Public Variables
     public enum ButtonStates { Normal, Pressed, JustReleased };
     public ButtonStates BtnState;
     #endregion

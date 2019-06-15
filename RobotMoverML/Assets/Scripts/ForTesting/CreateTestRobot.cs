@@ -9,14 +9,15 @@ using Google.Protobuf;
 // TODO: Add Rigidbody to everything --> not important
 // TODO: Create a "root" joint --> Pretty important but not important to function (i think?)
 // TODO: Create a robot with four legs --> Goal (so pretty important)
-// TODO: Send data over protobuf... PLEASE WORK
+// TODO: Send data over protobuf.
 
 // NOTE: Do we want to merge the dictionary into one? But then... Lots of refactoring to do jeez.
 // NOTE: I see... what local position does omg ok it makes more sense now.]
 // NOTE: Defaults to local position if there is a parent.
 
-// NOTE: Unity bug... Can't scale non-uniformally -> will have shape shifting children  
+// NOTE: Unity bug... Can't scale non-uniformally -> will have shape shifting children
 
+/// <summary> CreateTestRobot: A class to create a robot to demo. </summary>
 public class CreateTestRobot : MonoBehaviour {
 
     // For sending configuration over
@@ -27,7 +28,6 @@ public class CreateTestRobot : MonoBehaviour {
     void Start ()
     {
         // Creating the structure
-
         testStructure.RootJointID = 1;
 
         // Creating RootJoint
@@ -201,7 +201,7 @@ public class CreateTestRobot : MonoBehaviour {
             testList.PList[3].Rotation = -45;
             testList.PList[6].Rotation = 90;
             testList.PList[7].Rotation = 90;
-                 
+
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 

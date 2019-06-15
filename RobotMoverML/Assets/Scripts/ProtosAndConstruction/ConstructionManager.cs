@@ -49,6 +49,8 @@ public class ConstructionManager : MonoBehaviour {
     ///     3. Setting misc. properties as well as removing the collider.
     ///
     /// <param name="jointConfig"> A protobuf object holding all of the necessary information to recreate a joint. </param>
+    ///
+    /// <returns> A GameObject representing a joint on a robot. </returns>
     /// </summary>
     public static GameObject GenerateJoint(JointStorage jointConfig)
     {
@@ -84,6 +86,8 @@ public class ConstructionManager : MonoBehaviour {
     /// TODO: See if link component is actually useful.
     ///
     /// <param name="linkConfig"> A protobuf object holding all of the necessary information to recreate a link. </param>
+    ///
+    /// <returns> A GameObject representing a link of a robot. </returns>
     /// </summary>
     public static GameObject GenerateLink(LinkStorage linkConfig)
     {
@@ -109,6 +113,8 @@ public class ConstructionManager : MonoBehaviour {
     /// TODO: Add more shapes.
     ///
     /// <param name="specs"> A protobuf object holding all of the information regarding a link's shape. </param>
+    ///
+    /// <returns> A GameObject representing the shape of a link. </returns>
     /// </summary>
     public static GameObject GenerateShape(ObjectSpecs specs)
     {

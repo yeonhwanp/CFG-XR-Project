@@ -8,6 +8,15 @@ using Google.Protobuf;
 using System.Runtime.InteropServices;
 using Priority_Queue;
 
+/// <summary>
+/// Meshing: A class to handle meshing of the area seen by the MagicLeap.
+///
+/// Attributes:
+///     BlackMaterial, GroundMaterial, InactiveMaterial: The materials to show for the states respectively. (inactive, active, ground)
+///     _mapper: The mapper used to help with the meshing.
+///     testList: The MeshList to add meshes to send over the server.
+///     Camera: The camera GameObject being used by the MagicLeap.
+/// </summary>
 public class Meshing : MonoBehaviour
 {
     #region Public Variables
@@ -64,7 +73,7 @@ public class Meshing : MonoBehaviour
     private void AddToList(MeshList testList, List<MeshList> listofMeshes)
     {
         List<int> sentList = new List<int>();
-        SimplePriorityQueue<GameObject, float> priorityq = new SimplePriorityQueue<GameObject, float>(); 
+        SimplePriorityQueue<GameObject, float> priorityq = new SimplePriorityQueue<GameObject, float>();
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -103,7 +112,7 @@ public class Meshing : MonoBehaviour
         float distance = Mathf.Pow(Mathf.Pow(other.transform.position.x, 2) + Mathf.Pow(other.transform.position.y, 2) + Mathf.Pow(other.transform.position.z, 2), .5f);
         return distance;
     }
-    
+
     /// <summary>
     /// Adds a MeshProto into a MeshList for sending over.
     /// </summary>
