@@ -1,8 +1,5 @@
 # Scripts
 
-TODO:
-- High-level constraints
-
 **1. 2DGUI:**
   - Currently working on the 2D interface for debugging purposes.
   - Includes scripts that manage buttons + clicks.

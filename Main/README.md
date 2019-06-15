@@ -7,3 +7,4 @@ This folder contains the main project.
 
 ## TODO:
 - Fix scaling with children.
+- Add high level constraints.
