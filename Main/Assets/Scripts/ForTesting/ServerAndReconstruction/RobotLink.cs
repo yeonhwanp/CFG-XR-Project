@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Quite useless at the moment, but might have some use in the future.
-/// Stores all of the values.
+/// RobotLink: Stores all of the properties of a link.
+/// Not used at the moment.
+///
+/// Attributes:
+///     SelfObject: The GameObject that this RobotLink object is attached to.
+///     localCOM: The center of mass of this link.
+///     intertiaTensor: The inertiaTensor of this link.
+///     mass: The mass of this link.
 /// </summary>
 public class RobotLink : MonoBehaviour
 {
@@ -22,9 +28,6 @@ public class RobotLink : MonoBehaviour
     public int SelfID;
     #endregion
 
-    /// <summary>
-    /// Initializer
-    /// </summary>
     private void Start()
     {
         Rigidbody thisObjectRB = gameObject.GetComponent<Rigidbody>();
@@ -36,6 +39,9 @@ public class RobotLink : MonoBehaviour
 
     #region TO BE USED FOR GUI
 
+    /// <summary>
+    /// SpawnJoint: Spawns a new joint object.
+    /// </summary>
     public static GameObject SpawnLink()
     {
         Vector3 SpawnPosition = new Vector3(0.05f, 0f, -5.8f);

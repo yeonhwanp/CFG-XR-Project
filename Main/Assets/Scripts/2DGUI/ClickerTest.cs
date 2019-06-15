@@ -1,19 +1,15 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-/// <summary>
-/// Attached to all of the spawned GameObjects.
-/// Controls what happens to the object with click actions.
-/// </summary>
+// NOTE: Buttons might stop working after a while.
+// BUG: Cannot move children while scaling.
+// BUG: If you scale an object thats a child by the y (bigger) then hold transform on the child it'll zoom to you.
 
-    // NOTE: Buttons stop working after a while? Wha???
-    // BUG: Moving while scaling not working with children
-        // I think it's because we scale it and weird stuff Im gonna try something
-        // Meh tried to fix it but we'll see
-        // I think it's just more math -- but not that big of a problem.
-    // BUG: If you scale an object thats a child by the y (bigger) then hold transform on the child it'll zoom to you??? Confused. After these two bugs, should be good to conitnue.
+/// <summary>
+/// ClickerTest: A class control what happens to the object with mouse-click actions. Attached to all spawned GameObjects.
+/// </summary>
 public class ClickerTest : MonoBehaviour {
 
     #region Variables
@@ -21,14 +17,14 @@ public class ClickerTest : MonoBehaviour {
     SelectorManagerScript SelectorManager;
     ButtonManagerScript ButtonManager;
 
-    // Rotation Stuff
+    // Rotation
     private bool _markersSpawned = false;
-    public bool IsLocked = false; 
+    public bool IsLocked = false;
     public bool IsRotationLocked = false;
     GameObject arrowOne;
     GameObject arrowTwo;
 
-    // For scaling
+    // Scaling
     public bool _Snapped = false;
     private float sizingFactor = 0.4f;
     private float closestFloat = 0;
@@ -39,7 +35,7 @@ public class ClickerTest : MonoBehaviour {
     public Axis LocalAxis;
     public enum Axis { x, y, z};
 
-    // Moving/General Mouse stuff
+    // Moving and use for general mouse actions.
     Vector3 screenSpace;
     Vector3 mousePosition;
     Vector3 mouseInWorld;
@@ -105,7 +101,7 @@ public class ClickerTest : MonoBehaviour {
                 Destroy(arrowOne.GetComponent<CapsuleCollider>());
             }
 
-            // Actual rotation managed here
+            // Actual rotation managed.
             if (Input.GetMouseButton(0))
             {
                 float rotSpeed = 5;
@@ -177,8 +173,8 @@ public class ClickerTest : MonoBehaviour {
             else
             {
                 Debug.Log("hello");
-                
-                GameObject root = GetRootJoint(gameObject); 
+
+                GameObject root = GetRootJoint(gameObject);
 
                 screenSpace = Camera.main.WorldToScreenPoint(root.transform.position); // We need to get the root WorldToScreenPoint because we're moving the root.
                 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
@@ -224,7 +220,7 @@ public class ClickerTest : MonoBehaviour {
     #region Scaling
 
     // This method gets the starting position/sizes then applys other methods to scale the gameObject.
-    // Bug: still scaling after transform and stuff... ?
+    // Bug: Still scaling upon transform change.
     private void ChangeScale()
     {
         if (Input.GetMouseButtonDown(0))
@@ -240,7 +236,7 @@ public class ClickerTest : MonoBehaviour {
             {
                 if (!_Snapped) // To make sure we scale only one side at a time
                 {
-                    SetLocalAxis(); 
+                    SetLocalAxis();
                     SetGlobalAxis();
                     float mouseAmount = GetMouseAmount();
                     ScaleObject(mouseAmount);
@@ -258,7 +254,7 @@ public class ClickerTest : MonoBehaviour {
         // Unsnap
         if (Input.GetMouseButtonUp(0))
         {
-            _Snapped = false; 
+            _Snapped = false;
             closestFloat = 0;
         }
     }
@@ -341,7 +337,7 @@ public class ClickerTest : MonoBehaviour {
         switch (LocalAxis)
         {
             case Axis.x:
-                // Tbh idk how this stuff works... 
+                // Tbh idk how this stuff works...
                 returnScale = initialScaling.x + (scaleAmount) * sizingFactor;
                 EditScale.x = returnScale;
                 break;
@@ -367,7 +363,7 @@ public class ClickerTest : MonoBehaviour {
         switch (GlobalAxis)
         {
             case Axis.x:
-                EditPosition.x = initialScalingPositions.x + transform.localScale.x / 2.0f; 
+                EditPosition.x = initialScalingPositions.x + transform.localScale.x / 2.0f;
                 break;
             case Axis.y:
                 EditPosition.y = initialScalingPositions.y + transform.localScale.y / 2.0f;
@@ -380,7 +376,7 @@ public class ClickerTest : MonoBehaviour {
         transform.position = EditPosition;
     }
 
-    // Scales the children in the opposite way such that they retain their "scale." 
+    // Scales the children in the opposite way such that they retain their "scale."
     // Intorduces "space" atm but doesnt seem like a scaling issue... It might scale the space around the objects just a little bit?
     //private void oppositeScaleChildren(Vector3 newScale)
     //{
@@ -435,7 +431,7 @@ public class ClickerTest : MonoBehaviour {
         transform.localScale = newScale;
     }
 
-    //private void oppositeScaleChildren(Vector3 newScale, GameObject thisObject) 
+    //private void oppositeScaleChildren(Vector3 newScale, GameObject thisObject)
     //{
     //    Dictionary<Transform, Transform> parents = new Dictionary<Transform, Transform>();
     //    Transform[] childrenTransforms = GetComponentsInChildren<Transform>();
@@ -455,11 +451,11 @@ public class ClickerTest : MonoBehaviour {
     //}
     #endregion
 
-    // Method for moving the object 
+    // Method for moving the object
     private void MoveObject(GameObject movingObject)
     {
         movingObject.transform.position = mouseInWorld;
-    } 
+    }
 
     // Method for getting the rootJoint recursively (Used for moving locked object)
     private static GameObject GetRootJoint(GameObject thisObject)

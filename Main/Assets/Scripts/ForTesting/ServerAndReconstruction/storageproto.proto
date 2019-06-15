@@ -1,24 +1,48 @@
 syntax = "proto3";
 
-// NOTE: Add features: Fixed or not fixed (root), add revolute joint for the world or 6DOF (if it's not fixed)
+// TODO: Add descriptor for fixed/not fixed roots
+// TODO: Add revolute joint for the world (or 6 DOF if it's not fixed)
 
-// This is for joint positions (for now)
+/* PositionList: Smaller class to represent joint positions.
+ * Attributes:
+ *     PList: A hashtable mapping jointIDs [integers] -> positions [PositionStorage]
+ */
 message PositionList {
 	map<int32, PositionStorage> PList = 1;
 }
 
+/* PositionStorage: A class to hold joint movement data.
+ * Attributes:
+ *     Rotation: A float representing the current rotation of the joint
+ * 	   Veloctiy: A float representing the current velocity of the joint
+ */
 message PositionStorage {
 	float Rotation = 1;
 	float Velocity = 2;
 }
 
-// This is for robot configuration (for now)
+/* RobotStructure: A class to hold all the information necessary to reconstruct or store a robot.
+ * Attributes:
+ *     JointDict: A hastable mapping JointIDs [int] -> Joints [JointStorage].
+ * 	   linkDict: A hashtable mapping linkIDs [int] -> Links [linkDict].
+ */
 message RobotStructure {
 	int32 rootJointID = 1;
 	map<int32, JointStorage> JointDict = 2;
 	map<int32, LinkStorage> linkDict = 3;
 }
 
+/* JointStorage: A class to hold all the information regarding a certain joint.
+ * Attributes:
+ *     PositionParams: A list of floats to represent the x, y, z position vector.
+ * 	   RotationParams: A list of floats to represent the W, x, y, z rotation quaternion.
+ *	   AxisParams: A list of floats to represent the rotation axis of the joint as well to
+ * 				   specify which axis it was rotating on.
+ * 	   ChildrenJoints: A list of ints representing the jointIDs of this joint's children joints.
+ * 	   ChildrenLink: An integer representing the linkID of the direct child of this joint.
+ * 	   ParentLink: An integer representing the linkID of the direct parent of this joint.
+ * 	   Parent: The parent joint that controls this joint.
+ */
 message JointStorage {
 	repeated float PositionParams = 1; //Make a vec3d message
 	repeated float RotationParams = 2; //Make a vec3d message
@@ -29,6 +53,16 @@ message JointStorage {
 	JointStorage Parent = 7;
 }
 
+/* LinkStorage: A class to hold all the information regarding a certain link.
+ * Attributes:
+ *     PositionParams: A list of floats to represent the x, y, z position vector.
+ * 	   RotationParams: A list of floats to represent the W, x, y, z rotation quaternion.
+ *	   CenterofMassParams: A list of floats representing the parameters necessary retrieve the center of mass of this link.
+ * 	   ITParams: ???
+ * 	   mass: A float representing the mass of this object.
+ * 	   shape: An ObjectSpecs object describing the shape of the object and other parameters related to its shape.
+ * 	   Parent: The parent joint that controls this joint.
+ */
 message LinkStorage {
 	repeated float PositionParams = 1; //Make a vec3d message
 	repeated float RotationParams = 2; //Make a vec3d message
@@ -38,11 +72,20 @@ message LinkStorage {
 	ObjectSpecs shape = 6;
 }
 
+/* ObjectSpecs: A class to represent the shape of an object
+ * Attributes:
+ *     Type: An "enum" of the shape represented by a string.
+ * 	   ScaleParams: A list of floats regarding the scaling of the object.
+ */
 message ObjectSpecs {
 	string Type = 1; //enum
 	repeated float ScaleParams = 2; //Add some documentation saying prarameters for each supported type
 }
 
+/* Vector3D: A class to hold an information about a Vector3D object in Unity.
+ * Attributes:
+ *     x, y, z: Vector3D parameters
+ */
 message Vector3d{
 	float x = 1;
 	float y = 2;

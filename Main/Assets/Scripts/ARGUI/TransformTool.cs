@@ -77,7 +77,7 @@ namespace Leap.Unity.Examples
             InitialRotationHandleScale = new Vector3(.5f, .5f, .5f);
             GetArrows();
 
-            // LeapMotion stuff here.
+            // LeapMotion properties
             if (interactionManager == null)
             {
                 interactionManager = InteractionManager.instance;
@@ -86,19 +86,19 @@ namespace Leap.Unity.Examples
             {
                 _transformHandles.Add(handle);
             }
-            PhysicsCallbacks.OnPostPhysics += onPostPhysics; 
+            PhysicsCallbacks.OnPostPhysics += onPostPhysics;
         }
 
         void Update()
         {
-            // Hand stuff
+            // Hand properties.
             Frame frame = controller.Frame();
             hands = frame.Hands;
 
             // Enable or disable handles based on hand proximity and tool state.
             updateHandles();
 
-            // Scaling stuff
+            // Scaling method.
             ScaleObject();
         }
 
@@ -106,9 +106,10 @@ namespace Leap.Unity.Examples
         #region Handle Movement / Rotation
 
         #region LeapMotion Stuff
+
         /// <summary>
-        /// Transform handles call this method to notify the tool that they were used
-        /// to move the target object.
+        /// NotifyHandleMovement: Transform handles call this method to notify the tool that they were used
+        ///                       to move the target object.
         /// </summary>
         public void NotifyHandleMovement(Vector3 deltaPosition)
         {
@@ -116,8 +117,8 @@ namespace Leap.Unity.Examples
         }
 
         /// <summary>
-        /// Transform handles call this method to notify the tool that they were used
-        /// to rotate the target object.
+        /// NotifyHandleRotation: Transform handles call this method to notify the tool that they were used
+        ///                       to rotate the target object.
         /// </summary>
         public void NotifyHandleRotation(Quaternion deltaRotation)
         {
@@ -150,11 +151,11 @@ namespace Leap.Unity.Examples
                         transform.position = target.transform.position;
                     }
                     break;
-                case ToolState.Scaling: 
+                case ToolState.Scaling:
                     break;
             }
 
-            // Spawn the rotation axis stuff.
+            // Spawn the rotation axis handles.
             if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject == target.gameObject && !_rotationMarkerSpawned && target.GetComponent<ObjectJoint>() != null)
             {
                 _rotationMarkerSpawned = true;
@@ -182,7 +183,7 @@ namespace Leap.Unity.Examples
                 GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject = target.gameObject;
             }
 
-            // Deselect the object (more like de-color it)
+            // Deselect the object
             if (GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject != target.gameObject)
             {
                 Material selectedMaterial = target.GetComponent<Renderer>().material;
@@ -203,10 +204,8 @@ namespace Leap.Unity.Examples
 
         #endregion
 
-        // No need to edit this (I think?)
         #region Handle Visibility
 
-        // Literally just handles visibility. Maybe we should add a scaling enum? Yea... So it doesnt move. I guess?
         private void updateHandles()
         {
             switch (_toolState)
@@ -281,7 +280,7 @@ namespace Leap.Unity.Examples
                     break;
 
                 case ToolState.Translating:
-                    // ***************** How about if we make others not visible and only axis visible? ************************
+                    // ***************** TODO: How about if we make others not visible and only axis visible? ************************
                     // While translating, show all translation handles except the other handle
                     // on the same axis, and hide rotation handles.
                     foreach (var handle in _transformHandles)
@@ -325,9 +324,8 @@ namespace Leap.Unity.Examples
         }
 
         /// <summary>
-        /// Called by handles when they are grasped.
+        /// NotifyHandleActivated: Called by handles when they are grasped.
         /// </summary>
-        /// <param name="handle"></param>
         public void NotifyHandleActivated(TransformHandle handle)
         {
             switch (_toolState)
@@ -367,7 +365,7 @@ namespace Leap.Unity.Examples
         }
 
         /// <summary>
-        /// Called by Handles when they are released.
+        /// NotifyHandleDeactivated: Called by Handles when they are released.
         /// </summary>
         public void NotifyHandleDeactivated(TransformHandle handle)
         {
@@ -425,7 +423,7 @@ namespace Leap.Unity.Examples
                 }
             }
         }
-        
+
         // Checks to see if object is being scaled + sets the intialScaling variable of object
         private void ScalingSetup()
         {
@@ -501,14 +499,14 @@ namespace Leap.Unity.Examples
                     }
                 }
             }
-            
+
             // To reset values if we're done/not scaling.
             if (_activeHandles.Count != 2)
             {
                 initialScaled = false;
             }
         }
-        
+
         // Deals with actually scaling the object
         private void ScaleObject()
         {

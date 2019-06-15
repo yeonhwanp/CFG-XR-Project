@@ -122,7 +122,7 @@ namespace Leap.Unity.Examples
                     }
                 }
 
-                // For the cooldown
+                // For the button cooldown
                 if (_intObj is InteractionButton && !(_intObj as InteractionButton).isPressed)
                 {
                     _isPushed = false;
@@ -256,7 +256,7 @@ namespace Leap.Unity.Examples
 
         #region Deleting
 
-        // Ok I'm going to make this a bit easier for myself by referring to the children of the link?
+        // Referring to the children of the link.
         private void DeleteObject()
         {
             GameObject selected = GameObject.Find("Plane").GetComponent<ButtonStateManager>().SelectedObject;

@@ -21,7 +21,6 @@ public class MakeMethods : MonoBehaviour
     ///
     /// <returns> The newly generated JointStorage object. </returns>
     /// </summary>
-    // Returns a new JointStorage
     public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, bool isRoot = false, JointStorage ParentJoint = null, List<int> Children = null, int child = 0, int parent = 0)
     {
         JointStorage newJointStorage = new JointStorage();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Used to manage "selecting" an object.
+/// SelectorManagerScript: Used to manage "selecting" an object.
 /// </summary>
 public class SelectorManagerScript : MonoBehaviour {
 
@@ -11,7 +11,7 @@ public class SelectorManagerScript : MonoBehaviour {
 
     private void Update()
     {
-        if (selected != gameObject && selected != null) 
+        if (selected != gameObject && selected != null)
         {
             Material theMaterial = selected.GetComponent<Renderer>().material;
             theMaterial.SetColor("_Color", Color.black);
@@ -25,7 +25,7 @@ public class SelectorManagerScript : MonoBehaviour {
         {
             Material theMaterial = selected.GetComponent<Renderer>().material;
             theMaterial.SetColor("_Color", Color.gray);
-            //selected = null; 
+            //selected = null;
         }
     }
 }

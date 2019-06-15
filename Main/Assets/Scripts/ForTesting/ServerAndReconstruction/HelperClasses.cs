@@ -2,12 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// General helpful methods
-/// </summary>
+/// <summary> MakeMethods: Class to hold methods to help with saving robot parts. </summary>
 public class MakeMethods : MonoBehaviour
 {
-    // Returns a new JointStorage
+    /// <summary>
+    /// MakeJoint: Creates a new JointStorage object.
+    ///
+    /// <param name="Position"> A vector representing the global position of the joint. </param>
+    /// <param name="Rotation"> A quaternion representing the global rotation of the joint. </param>
+    /// <param name="Axis"> A vector representing the axis that the joint is rotating around. </param>
+    /// <param name="RotationAmount"> A float representing the amount that the joint is rotated around the axis. </param>
+    /// <param name="isRoot"> An optional boolean indicating whether this joint is the root joint. </param>
+    /// <param name="ParentJoint"> An optional JointStorage object referring to a parent joint. </param>
+    /// <param name="Children"> An optional list of children jointIDs. </param>
+    /// <param name="child"> An optional linkID indicating the child link. </param>
+    /// <param name = "parent"> An optional linkID indicating the parent link. </param>
+    ///
+    /// <returns> The newly generated JointStorage object. </returns>
+    /// </summary>
     public static JointStorage MakeJoint(Vector3 Position, Quaternion Rotation, Vector3 Axis, float RotationAmount, bool isRoot = false, JointStorage ParentJoint = null, List<int> Children = null, int child = 0, int parent = 0)
     {
         JointStorage newJointStorage = new JointStorage();
@@ -37,7 +49,15 @@ public class MakeMethods : MonoBehaviour
         return newJointStorage;
     }
 
-    // Returns a new LinkStorage
+    /// <summary>
+    /// MakeLink: Creates a new LinkStorage object.
+    ///
+    /// <param name="Position"> A vector representing the global position of the link. </param>
+    /// <param name="Rotation"> A quaternion representing the global rotation of the link. </param>
+    /// <param name="Shape"> A vector representing the axis that the joint is rotating link. </param>
+    ///
+    /// <returns> The newly generated LinkStorage object. </returns>
+    /// </summary>
     public static LinkStorage MakeLink(Vector3 Position, Quaternion Rotation, ObjectSpecs Shape)
     {
         LinkStorage newLinkStorage = new LinkStorage();
@@ -50,7 +70,14 @@ public class MakeMethods : MonoBehaviour
         return newLinkStorage;
     }
 
-    // Returns a new shape spec
+    /// <summary>
+    /// MakeShape: Creates a new ObjectSpecs object.
+    ///
+    /// <param name="type"> A string representing the type of shape the link is. </param>
+    /// <param name="x, y, z"> Coordinates representing the scale of the object.. </param>
+    ///
+    /// <returns> The newly generated ObjectSpecs object. </returns>
+    /// </summary>
     public static ObjectSpecs MakeShape(string type, float x, float y, float z)
     {
         ObjectSpecs newShape = new ObjectSpecs();
@@ -63,12 +90,17 @@ public class MakeMethods : MonoBehaviour
 }
 
 
-/// <summary>
-/// I've been confused by this multiple times so I'm going to add a comment here
-/// This class holds a method that fills in PositionStorage.PList.
-/// </summary>
+/// <summary> PositionListCreator: A wrapper class to hold a method that fills in PositionStorage.PList. </summary>
 public static class PositionListCreator
 {
+    /// <summary>
+    /// CreateDict: Given the root joint, assigns all of the positions of the joints in the joint's dictionary.
+    ///
+    /// <param name="rootJoint"> The joint to store the dictioary in. </param>
+    /// <param name="defaultDict"> The dictionary to store the PositionStorages in. </param>
+    ///
+    /// <returns> The newly generated ObjectSpecs object. </returns>
+    /// </summary>
     public static void CreateDict(GameObject rootJoint, IDictionary<int, PositionStorage> defaultDict)
     {
         ObjectJoint JointObject = rootJoint.GetComponent<ObjectJoint>();

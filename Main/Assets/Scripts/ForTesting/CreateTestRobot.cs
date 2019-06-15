@@ -5,9 +5,8 @@ using System.IO;
 using Google.Protobuf;
 
 /// <summary>
-/// Class used for creating a test robot over network, as well as moving its joints.
+/// CreateTestRobot: Class used for creating a test robot over network, as well as moving its joints.
 /// </summary>
-
 public class CreateTestRobot : MonoBehaviour {
 
     // For sending configuration over
@@ -191,7 +190,7 @@ public class CreateTestRobot : MonoBehaviour {
             testList.PList[3].Rotation = -45;
             testList.PList[6].Rotation = 90;
             testList.PList[7].Rotation = 90;
-                 
+
             ObjectJoint.SetJoints(testList, GameObject.Find("Sphere"));
         }
 

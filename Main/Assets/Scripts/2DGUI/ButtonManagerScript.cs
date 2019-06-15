@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// NOTE: Do we want to be able to move the thi ng freely after attaching? Probably not. Will set a flag in the thing to prevent from happening.
-// NOTE: Also, want to prevent being able to attach to other joints just by moving it. Set with LOCK flag.
-// NOTE: Want to clean up code eventually... Esp ClickerTest.
-
-
-// NOTE: Also, disbale IsRoot.
-
 /// <summary>
-/// <summary>
-/// Class to keep track of button states
+/// ButtonManagerScript: A class to keep track of and manage button states.
+///
+/// Attributes:
+///     JointButton: A reference to the Button that spawns a joint.
+///		LinkButton: A reference to the Button that spawns a link.
+///		MoveButton: A reference to the Button that allows the user to move camera.
+///		TransformButton: A reference to the Button that allows the user to move the selected object.
+///		ScaleButton: A reference to the Button that allows the user to scale the selected object.
+///		RotateButton: A reference to the Button that allows the user to rotate the selected object.
+///		AttachButton: A reference to the Button that allows the user to attach the selected objet to another object.
+///		enabledButton: An enum indicating which Button was last pressed (and is thus enabled).
 /// </summary>
 public class ButtonManagerScript : MonoBehaviour {
 
@@ -82,6 +84,9 @@ public class ButtonManagerScript : MonoBehaviour {
         newLink.AddComponent<ClickerTest>();
     }
 
+	/// <summary>
+	/// Attach: Attaches the currently selected objet to the nearest available link/joint depending on what is selected.
+	/// </summary>
     private void Attach()
     {
         GameObject selected = GameObject.Find("Plane").GetComponent<SelectorManagerScript>().selected;

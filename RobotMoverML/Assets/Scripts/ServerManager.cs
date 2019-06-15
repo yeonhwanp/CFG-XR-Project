@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net.Sockets;
@@ -10,7 +10,7 @@ using System;
 using Google.Protobuf;
 
 /// <summary>
-/// A Client-side class to send and receive data to a remove server using a UDP protocol.
+/// A Client-side class to send and receive robot data to a remove server using a UDP protocol.
 /// </summary>
 public class ClientUDP<T> where T: IMessage<T>, new()
 {

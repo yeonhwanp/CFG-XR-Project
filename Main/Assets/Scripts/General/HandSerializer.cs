@@ -5,13 +5,17 @@ using System.IO;
 
 
 /// <summary>
-/// This class contains a method to serialize and deserialize any kind of object, but is to be used
-/// for debugging purposes for feeding data from a websocket and feeding it into the leapserviceprovider.
+/// HandSerializer: This class contains a method to serialize and deserialize any kind of object. It is to be used
+///                 for debugging purposes for feeding data from a websocket and feeding it into the leapserviceprovider.
 /// </summary>
-public static class HandSerializer { 
-     
+public static class HandSerializer {
+
     /// <summary>
-    /// Method to save an object to file.
+    /// WriteToBinaryFile: Method to save an object to file.
+    ///
+    /// <param name="filePath"> The filepath to save the serialized hand to. </param>
+    /// <param name="objectToWrite"> The hand object to save. </param>
+    /// <param name="append"> An optional boolean indicating whether this should create or append to an existing file. </param>
     /// </summary>
     public static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
     {
@@ -23,7 +27,9 @@ public static class HandSerializer {
     }
 
     /// <summary>
-    /// Method to read an object from file.
+    /// WriteToBinaryFile: Method to read an object to file.
+    ///
+    /// <param name="filePath"> The filepath to read the serialized hand from. </param>
     /// </summary>
     public static T ReadFromBinaryFile<T>(string filePath)
     {
