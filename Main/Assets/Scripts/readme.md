@@ -1,16 +1,17 @@
 # Scripts
 
-**1. 2DGUI:** 
-  - Currently working on the 2D interface for debugging purposes. 
+TODO:
+- High-level constraints
+
+**1. 2DGUI:**
+  - Currently working on the 2D interface for debugging purposes.
   - Includes scripts that manage buttons + clicks.
-  - Code is currently somewhat messy.
 
 **2. ARGUI:**
-  - To include scripts for leapmotion/magicleap UI development.
-  
+  - Includes scripts for leapmotion/magicleap frontend.
+
 **3. ForTesting:**
-  - Scripts to be used to debug the program.
-  
-**4. ServerandReconstruction:**
-  - Protobufs and scripts for reconstructing them are included here.
-  - Also includes the script that manages server communications.
+  - Scripts to be used to debug the program and also backend server management.
+
+**4. General:**
+  - Contains scripts to be used for all around the program.
