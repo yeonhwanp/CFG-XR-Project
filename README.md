@@ -1,6 +1,6 @@
 # MIT-CSAIL CFG: XR Project
 
-Bring robots to life in a mixed reality enviornment using gestures!
+Bring virtual robots to life in a mixed reality enviornment using gestures!
 
 ## Features
 - Record natural gestures with the LeapMotion's sensors to create robot links and joints in a mixed reality space.
@@ -11,6 +11,7 @@ Bring robots to life in a mixed reality enviornment using gestures!
 - [Unity](https://unity.com)
 - [MagicLeap](https://magicleap.com)
 - [LeapMotion](https://leapmotion.com)
+- [.NET 3.5](https://www.microsoft.com/en-us/download/details.aspx?id=21)
 
 ## Install
 1. Make sure you have the latest version of [Unity](https://unity3d.com/get-unity/update)
