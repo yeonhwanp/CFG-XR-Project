@@ -1,10 +1,7 @@
 # MIT-CSAIL CFG: XR Project
 
 This project aims to bring a mixed reality interface for robotic design combining the technologies
-of the MagicLeap headset and LeapMotion sensor. This project can/will eventually be able to:
-- Utilize the Magic Leap's camera to take image/mesh data from the real world to make accurate predictions about its surroundings.
-- Convert real-world hand gestures into commands by using the LeapMotion's gesture sensing technologies.
-- Optimize goals for a virtual robot given high-level constraints.
+of the MagicLeap headset and LeapMotion sensor. 
 
 ## Features
 - Record natural gestures with the LeapMotion's sensors to create robot links and joints in a mixed reality space.
