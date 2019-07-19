@@ -1,13 +1,31 @@
 # MIT-CSAIL CFG: XR Project
 
-## Overview
 This project aims to bring a mixed reality interface for robotic design combining the technologies
 of the MagicLeap headset and LeapMotion sensor. This project can/will eventually be able to:
 - Utilize the Magic Leap's camera to take image/mesh data from the real world to make accurate predictions about its surroundings.
 - Convert real-world hand gestures into commands by using the LeapMotion's gesture sensing technologies.
 - Optimize goals for a virtual robot given high-level constraints.
 
-## Folders
+## Features
+- Record natural gestures with the LeapMotion's sensors to create robot links and joints in a mixed reality space.
+- Utilize the MagicLeap's visual technology to extract image and mesh data from the real world and optimize goals for virtual robots given high-level constraints.
+
+## Dependencies
+<b>Built with</b>
+- [Unity](https://unity.com)
+- [MagicLeap](https://magicleap.com)
+- [LeapMotion](https://leapmotion.com)
+
+## Install
+1. Make sure you have the latest version of [Unity](https://unity3d.com/get-unity/update)
+2. Make sure you have the latest verison of [LeapMotion Unity Core Assets and Modules](https://developer.leapmotion.com/unity#5436356)
+3. Clone the project: `git clone git@github.com:yeonhwanp/CFG-XR-Project.git`
+
+## Usage
+1. Open up Unity -> Add a new project and load in this project
+2. Load `/CFG-XR-Project/Main/Assets/Scenes/HUD3D.unity`
+
+## Directories
 **1. Archive**
 - Contains all outdated files that may still have some use in the future.
 
@@ -23,4 +41,5 @@ of the MagicLeap headset and LeapMotion sensor. This project can/will eventually
 **4. NetServer**
 - Contains the backend (.NET 3.5) to send and receive ProtoBufs over websockets.
 - Also used for debugging purposes.
+
 
